@@ -116,9 +116,10 @@ class GraphIntelligenceEngine:
             overall_customer_graph_density=round(nx.density(customer_graph), 8),
             community_count=len(community_sizes),
             largest_community_size=max(community_sizes.values(), default=0),
-            average_connected_applicants=round(
-                fmean(feature.connected_applicant_count for feature in features),
-                4 if features else 0.0,
+            average_connected_applicants=(
+                round(fmean(feature.connected_applicant_count for feature in features), 4)
+                if features
+                else 0.0
             ),
         )
         return GraphIntelligenceResult(summary=summary, features=features)
