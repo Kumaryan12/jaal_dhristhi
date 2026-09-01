@@ -4,6 +4,7 @@ import type {
   DashboardSummary,
   DemoSimulation,
   Explanation,
+  LiveMonitor,
   NetworkGraph,
 } from './types';
 
@@ -64,6 +65,10 @@ async function postJson<T>(
 
 export function getDashboardSummary(signal?: AbortSignal) {
   return getJson<DashboardSummary>('/api/v1/dashboard/summary', signal);
+}
+
+export function getLiveMonitor(limit = 20, signal?: AbortSignal) {
+  return getJson<LiveMonitor>(`/api/v1/monitor/activity?limit=${limit}`, signal);
 }
 
 export function getAnalytics(

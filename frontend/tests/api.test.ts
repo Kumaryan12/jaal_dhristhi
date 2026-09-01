@@ -4,6 +4,7 @@ import {
   analyseApplication,
   ApiError,
   getDashboardSummary,
+  getLiveMonitor,
   getNetwork,
   simulateEmergingRisk,
 } from '../lib/api';
@@ -35,6 +36,26 @@ describe('API client', () => {
     await expect(getDashboardSummary()).resolves.toEqual(payload);
     expect(fetchMock).toHaveBeenCalledWith(
       'http://127.0.0.1:8000/api/v1/dashboard/summary',
+      expect.objectContaining({ headers: { Accept: 'application/json' } }),
+    );
+  });
+
+  it('requests a bounded live monitor feed', async () => {
+    const payload = {
+      dataset_id: 'seed-2026',
+      events: [],
+      focus_customer_id: 'CUS-S-1',
+      data_timestamp: '2026-08-31T12:00:00Z',
+      request_id: 'req_monitor',
+    };
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify(payload), { status: 200 }),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(getLiveMonitor(12)).resolves.toEqual(payload);
+    expect(fetchMock).toHaveBeenCalledWith(
+      'http://127.0.0.1:8000/api/v1/monitor/activity?limit=12',
       expect.objectContaining({ headers: { Accept: 'application/json' } }),
     );
   });

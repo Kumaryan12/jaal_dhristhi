@@ -1,361 +1,278 @@
 'use client';
 
+import '@xyflow/react/dist/style.css';
+
+import {
+  Background,
+  BackgroundVariant,
+  Controls,
+  type Edge,
+  type Node,
+  ReactFlow,
+} from '@xyflow/react';
 import {
   AlertTriangle,
-  ArrowRight,
   ArrowUpRight,
-  IndianRupee,
+  Building2,
+  Link2,
   Network,
   RefreshCw,
   ShieldAlert,
+  Smartphone,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
 
 import { AppShell } from '../components/app-shell';
-import { IntelligenceJourney } from '../components/intelligence-journey';
-import { getAnalytics, getDashboardSummary } from '../lib/api';
-import type { Analytics, DashboardSummary } from '../lib/types';
+import { ErrorPanel, LoadingPanel, PageHeading, RiskBadge } from '../components/ui';
+import { getDashboardSummary, getLiveMonitor, getNetwork } from '../lib/api';
+import type { ActivityEvent, DashboardSummary, LiveMonitor, NetworkGraph } from '../lib/types';
 
+const number = new Intl.NumberFormat('en-IN');
 const inr = new Intl.NumberFormat('en-IN', {
   style: 'currency',
   currency: 'INR',
   maximumFractionDigits: 0,
   notation: 'compact',
 });
-const number = new Intl.NumberFormat('en-IN');
 
-export default function ExecutiveDashboard() {
+export default function LiveMonitorPage() {
+  const [monitor, setMonitor] = useState<LiveMonitor | null>(null);
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
-  const [analytics, setAnalytics] = useState<Analytics | null>(null);
+  const [network, setNetwork] = useState<NetworkGraph | null>(null);
+  const [visibleCount, setVisibleCount] = useState(6);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     const controller = new AbortController();
     Promise.all([
+      getLiveMonitor(20, controller.signal),
       getDashboardSummary(controller.signal),
-      getAnalytics(undefined, controller.signal),
     ])
-      .then(([nextSummary, nextAnalytics]) => {
+      .then(async ([nextMonitor, nextSummary]) => {
+        const nextNetwork = await getNetwork(
+          nextMonitor.focus_customer_id,
+          { depth: 2, maxNodes: 50 },
+          controller.signal,
+        );
+        setMonitor(nextMonitor);
         setSummary(nextSummary);
-        setAnalytics(nextAnalytics);
+        setNetwork(nextNetwork);
+        setVisibleCount(Math.min(6, nextMonitor.events.length));
       })
       .catch((reason: unknown) => {
         if (!controller.signal.aborted) {
-          setError(
-            reason instanceof Error
-              ? reason.message
-              : 'Unable to load intelligence.',
-          );
+          setError(reason instanceof Error ? reason.message : 'Unable to load the live monitor.');
         }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
       });
     return () => controller.abort();
   }, [refreshKey]);
 
-  const trend = useMemo(() => {
-    if (!analytics) return [];
-    return analytics.daily_activity.slice(-45).map((item) => ({
-      ...item,
-      label: new Date(`${item.date}T00:00:00Z`).toLocaleDateString('en-IN', {
-        day: '2-digit',
-        month: 'short',
-      }),
-    }));
-  }, [analytics]);
+  useEffect(() => {
+    if (!monitor || visibleCount >= monitor.events.length) return;
+    const timer = window.setInterval(() => {
+      setVisibleCount((count) => Math.min(count + 1, monitor.events.length));
+    }, 5_000);
+    return () => window.clearInterval(timer);
+  }, [monitor, visibleCount]);
 
-  const metrics = [
-    {
-      label: 'Total applications',
-      value: summary ? number.format(summary.total_applications) : '—',
-      note: 'Current portfolio snapshot',
-      icon: ArrowUpRight,
-      tone: 'blue',
-    },
-    {
-      label: 'Detected networks',
-      value: summary ? number.format(summary.detected_networks) : '—',
-      note: 'Connected ecosystems',
-      icon: Network,
-      tone: 'violet',
-    },
-    {
-      label: 'High-risk ecosystems',
-      value: summary ? number.format(summary.high_risk_ecosystems) : '—',
-      note: 'Enhanced verification',
-      icon: ShieldAlert,
-      tone: 'red',
-    },
-    {
-      label: 'Potential exposure',
-      value: summary ? inr.format(summary.potential_exposure) : '—',
-      note: 'Medium + high review band',
-      icon: IndianRupee,
-      tone: 'green',
-    },
-  ];
+  const visibleEvents = useMemo(() => {
+    if (!monitor) return [];
+    return [...monitor.events].reverse().slice(0, visibleCount).reverse();
+  }, [monitor, visibleCount]);
+
+  const graph = useMemo(
+    () => (network ? mapMonitorGraph(network, visibleCount) : { nodes: [], edges: [] }),
+    [network, visibleCount],
+  );
+  const insights = useMemo(() => {
+    const material = visibleEvents.filter((event) => event.status !== 'Analysed');
+    return (material.length ? material : visibleEvents).slice(0, 4);
+  }, [visibleEvents]);
 
   return (
     <AppShell activePath="/">
-      <div className="mx-auto max-w-[1500px]">
-        <section className="presentation-hero px-6 py-7 text-white sm:px-8 sm:py-9 lg:px-10">
-          <div className="relative z-10 grid gap-8 xl:grid-cols-[minmax(0,1.25fr)_minmax(390px,.75fr)] xl:items-center">
-            <div>
-              <div className="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[.17em] text-[var(--aqua)]">
-                <span className="h-px w-7 bg-[var(--aqua)]" /> The judge takeaway
-              </div>
-              <h1 className="mt-4 max-w-3xl text-[clamp(2rem,4vw,3.4rem)] font-bold leading-[1.04] tracking-[-.055em]">
-                A safe-looking borrower can hide inside a risky network.
-              </h1>
-              <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-300 sm:text-base sm:leading-7">
-                JaalDrishti connects fragmented lending events, detects fast-emerging ecosystems, and explains the evidence before exposure becomes loss.
-              </p>
-              <div className="mt-7 flex flex-wrap items-center gap-3">
-                <Link
-                  href="/demo"
-                  className="inline-flex h-11 items-center gap-2 rounded-xl bg-[var(--blue)] px-5 text-xs font-bold text-white shadow-[0_10px_30px_rgba(27,98,255,.34)]"
-                >
-                  Start the 3-minute walkthrough <ArrowRight size={15} />
-                </Link>
-                <a href="#how-it-works" className="inline-flex h-11 items-center rounded-xl border border-white/15 bg-white/[.06] px-5 text-xs font-bold text-slate-100">
-                  See how detection works
-                </a>
-              </div>
-            </div>
-            <div className="story-score-card p-5 sm:p-6" aria-label="Illustrative risk transition">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold uppercase tracking-[.14em] text-slate-400">Same borrower · richer context</span>
-                <span className="rounded-full bg-emerald-400/10 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-emerald-200">Computed live</span>
-              </div>
-              <div className="mt-6 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Individual view</p>
-                  <p className="mt-1 text-4xl font-bold tracking-[-.06em] text-emerald-300">0</p>
-                  <p className="mt-1 text-xs font-bold text-emerald-200">LOW risk</p>
-                </div>
-                <ArrowRight className="text-[var(--aqua)]" size={20} />
-                <div className="text-right">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Ecosystem view</p>
-                  <p className="mt-1 text-4xl font-bold tracking-[-.06em] text-red-300">85</p>
-                  <p className="mt-1 text-xs font-bold text-red-200">HIGH risk</p>
-                </div>
-              </div>
-              <div className="mt-5 grid grid-cols-3 gap-2 border-t border-white/10 pt-4 text-center">
-                {['6 applicants', '1 shared device', '< 2 hour burst'].map((fact) => (
-                  <span key={fact} className="rounded-lg bg-white/[.055] px-2 py-2 text-[10px] font-semibold text-slate-300">{fact}</span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="how-it-works" className="mt-5 panel scroll-mt-24">
-          <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
-            <div>
-              <p className="eyebrow">How the intelligence works</p>
-              <h2 className="panel-title">From raw lending events to an explainable human decision</h2>
-            </div>
+      <div className="mx-auto max-w-[1600px]">
+        <PageHeading
+          eyebrow="Risk operations"
+          title="Live Ecosystem Monitor"
+          description="Monitoring lending activity and emerging relationship patterns across customers, devices, accounts, dealers, and locations."
+          actions={
             <button
               type="button"
               onClick={() => {
+                setLoading(true);
                 setError(null);
                 setRefreshKey((value) => value + 1);
               }}
-              className="inline-flex h-9 items-center gap-2 self-start rounded-xl border border-[var(--line)] bg-white px-3 text-[11px] font-semibold shadow-sm sm:self-auto"
+              className="inline-flex h-9 items-center gap-2 rounded-md border border-[var(--line)] bg-white px-3 text-xs font-medium text-slate-600 hover:bg-slate-50"
             >
-              <RefreshCw size={14} /> Refresh data
+              <RefreshCw size={14} /> Refresh
             </button>
+          }
+        />
+
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-y border-[var(--line)] bg-white px-4 py-2.5 text-[11px] text-[var(--muted)]">
+          <div className="flex items-center gap-5">
+            <span className="inline-flex items-center gap-2 font-semibold text-[var(--green)]"><span className="h-1.5 w-1.5 rounded-full bg-[var(--green)]" /> Stream operational</span>
+            <span>Dataset {monitor?.dataset_id ?? '—'}</span>
+            <span className="hidden sm:inline">Synthetic event replay · 5 second interval</span>
           </div>
-          <div className="mt-5"><IntelligenceJourney compact /></div>
-        </section>
+          <span>Last evaluated {monitor ? new Date(monitor.data_timestamp).toLocaleString('en-IN') : '—'}</span>
+        </div>
 
-        {error && (
-          <div
-            className="mt-6 flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950"
-            role="alert"
-          >
-            <AlertTriangle className="mt-0.5 shrink-0" size={17} />
-            <div>
-              <p className="font-semibold">Intelligence service needs attention</p>
-              <p className="mt-0.5 text-xs leading-5 text-amber-800">
-                {error} Start the Phase 7 API and generate demo data, then
-                refresh.
-              </p>
-            </div>
-          </div>
-        )}
+        {loading ? (
+          <div className="mt-5"><LoadingPanel label="Connecting to lending activity" /></div>
+        ) : error ? (
+          <div className="mt-5"><ErrorPanel message={error} /></div>
+        ) : monitor && network ? (
+          <>
+            <section className="mt-5 grid min-h-[610px] gap-4 xl:grid-cols-[minmax(350px,.9fr)_minmax(520px,1.45fr)_minmax(300px,.72fr)]">
+              <article className="overflow-hidden rounded-lg border border-[var(--line)] bg-white">
+                <PanelHeader title="Application stream" detail={`${visibleEvents.length} of ${monitor.events.length} events`} />
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[620px] border-collapse text-left text-[11px]">
+                    <thead className="border-b border-[var(--line)] bg-[var(--subtle)] text-[9px] font-semibold uppercase tracking-[.08em] text-[var(--muted)]">
+                      <tr><th className="px-4 py-2.5">Time</th><th className="px-3 py-2.5">Application</th><th className="px-3 py-2.5">Customer</th><th className="px-3 py-2.5">Dealer</th><th className="px-3 py-2.5">Status</th></tr>
+                    </thead>
+                    <tbody className="divide-y divide-[var(--line)]">
+                      {visibleEvents.map((event, index) => (
+                        <tr key={event.application_id} className={index === 0 ? 'bg-blue-50/40' : 'hover:bg-slate-50'}>
+                          <td className="whitespace-nowrap px-4 py-3 font-mono text-[10px] text-[var(--muted)]">{formatTime(event.timestamp)}</td>
+                          <td className="px-3 py-3 font-mono font-semibold text-[var(--navy)]">{event.application_id}</td>
+                          <td className="px-3 py-3 text-slate-600">{event.customer_id}</td>
+                          <td className="px-3 py-3 font-mono text-slate-600">{event.dealer_id}</td>
+                          <td className="px-3 py-3"><StatusLabel status={event.status} /></td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </article>
 
-        <section
-          className="mt-7 grid gap-3 sm:grid-cols-2 xl:grid-cols-4"
-          aria-label="Portfolio metrics"
-        >
-          {metrics.map(({ label, value, note, icon: Icon, tone }) => (
-            <article key={label} className="metric-card">
-              <div className={`metric-icon metric-icon-${tone}`}>
-                <Icon size={17} />
+              <article className="relative overflow-hidden rounded-lg border border-[var(--line)] bg-white">
+                <PanelHeader title="Relationship graph" detail={`Focus · ${network.customer_id}`} />
+                <div className="absolute left-4 top-[58px] z-10 flex flex-wrap gap-2">
+                  <GraphKey icon={Smartphone} label="Device" />
+                  <GraphKey icon={Building2} label="Dealer" />
+                  <GraphKey icon={Link2} label="Observed relationship" />
+                </div>
+                <div className="h-[556px]" aria-label="Live relationship graph">
+                  <ReactFlow nodes={graph.nodes} edges={graph.edges} fitView minZoom={0.35} maxZoom={1.8} nodesDraggable={false} nodesConnectable={false} proOptions={{ hideAttribution: true }}>
+                    <Background variant={BackgroundVariant.Dots} color="#d1d5db" gap={20} size={1} />
+                    <Controls showInteractive={false} />
+                  </ReactFlow>
+                </div>
+              </article>
+
+              <aside className="overflow-hidden rounded-lg border border-[var(--line)] bg-white">
+                <PanelHeader title="Intelligence panel" detail="Recent insights" />
+                <div className="divide-y divide-[var(--line)]">
+                  {insights.map((event) => <InsightEvent key={event.application_id} event={event} />)}
+                </div>
+                <div className="m-4 rounded-md border border-red-200 bg-red-50 p-4">
+                  <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.09em] text-[var(--red)]"><ShieldAlert size={14} /> Needs attention</div>
+                  <p className="mt-2 text-2xl font-semibold tracking-[-.04em] text-[var(--navy)]">{summary?.high_risk_ecosystems ?? '—'}</p>
+                  <p className="mt-1 text-[11px] leading-5 text-slate-600">High-risk connected ecosystems are routed for enhanced verification.</p>
+                  <Link href="/investigate" className="mt-3 inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--blue)]">Open investigations <ArrowUpRight size={12} /></Link>
+                </div>
+              </aside>
+            </section>
+
+            <section className="mt-4 overflow-hidden rounded-lg border border-[var(--line)] bg-white" aria-label="Portfolio snapshot">
+              <div className="grid sm:grid-cols-2 xl:grid-cols-4">
+                <SnapshotFact label="Applications monitored" value={summary ? number.format(summary.total_applications) : '—'} />
+                <SnapshotFact label="Networks detected" value={summary ? number.format(summary.detected_networks) : '—'} />
+                <SnapshotFact label="High-risk ecosystems" value={summary ? number.format(summary.high_risk_ecosystems) : '—'} tone="risk" />
+                <SnapshotFact label="Review exposure" value={summary ? inr.format(summary.potential_exposure) : '—'} />
               </div>
-              <p className="mt-5 text-xs font-semibold text-[var(--muted)]">
-                {label}
-              </p>
-              <p className="mt-1 text-[1.85rem] font-bold tracking-[-.04em] text-[var(--navy)]">
-                {value}
-              </p>
-              <p className="mt-3 border-t border-[var(--line)] pt-3 text-[11px] text-slate-500">
-                {note}
-              </p>
-            </article>
-          ))}
-        </section>
-
-        <section className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1.55fr)_minmax(320px,.8fr)]">
-          <article className="panel min-h-[385px]">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="eyebrow">Emerging activity</p>
-                <h2 className="panel-title">
-                  Application and high-risk trend
-                </h2>
-              </div>
-              <span className="rounded-lg bg-slate-100 px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                Last 45 active days
-              </span>
-            </div>
-            <div
-              className="mt-7 h-[285px]"
-              aria-label="Application activity chart"
-            >
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart
-                  data={trend}
-                  margin={{ left: -20, right: 4, top: 8, bottom: 0 }}
-                >
-                  <defs>
-                    <linearGradient
-                      id="applicationFill"
-                      x1="0"
-                      y1="0"
-                      x2="0"
-                      y2="1"
-                    >
-                      <stop
-                        offset="0%"
-                        stopColor="#1b62ff"
-                        stopOpacity={0.26}
-                      />
-                      <stop
-                        offset="100%"
-                        stopColor="#1b62ff"
-                        stopOpacity={0.01}
-                      />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid
-                    stroke="#e8edf4"
-                    strokeDasharray="3 5"
-                    vertical={false}
-                  />
-                  <XAxis
-                    dataKey="label"
-                    axisLine={false}
-                    tickLine={false}
-                    minTickGap={38}
-                    tick={{ fill: '#7c8799', fontSize: 10 }}
-                  />
-                  <YAxis
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fill: '#7c8799', fontSize: 10 }}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      border: '1px solid #e1e7ef',
-                      borderRadius: 12,
-                      boxShadow: '0 12px 32px rgba(17,31,55,.12)',
-                      fontSize: 12,
-                    }}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="application_count"
-                    name="Applications"
-                    stroke="#1b62ff"
-                    strokeWidth={2.4}
-                    fill="url(#applicationFill)"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="high_risk_count"
-                    name="High risk"
-                    stroke="#ed4b5f"
-                    strokeWidth={2}
-                    fill="transparent"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </article>
-
-          <article className="panel">
-            <p className="eyebrow">Risk mix</p>
-            <h2 className="panel-title">Portfolio review bands</h2>
-            <div className="mt-7 space-y-5">
-              {analytics?.risk_distribution.map((item) => {
-                const total = analytics.risk_distribution.reduce(
-                  (sum, row) => sum + row.count,
-                  0,
-                );
-                const percent = total ? (item.count / total) * 100 : 0;
-                return (
-                  <div key={item.risk_level}>
-                    <div className="mb-2 flex items-end justify-between">
-                      <span
-                        className={`risk-label risk-${item.risk_level.toLowerCase()}`}
-                      >
-                        {item.risk_level}
-                      </span>
-                      <span className="text-sm font-bold text-[var(--navy)]">
-                        {number.format(item.count)}{' '}
-                        <span className="text-[10px] font-medium text-[var(--muted)]">
-                          {percent.toFixed(1)}%
-                        </span>
-                      </span>
-                    </div>
-                    <div className="h-2 overflow-hidden rounded-full bg-slate-100">
-                      <div
-                        className={`h-full rounded-full risk-bar-${item.risk_level.toLowerCase()}`}
-                        style={{ width: `${Math.max(percent, 1)}%` }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-            <div className="mt-8 rounded-2xl bg-[var(--navy)] p-5 text-white">
-              <div className="flex items-center gap-2 text-xs font-semibold">
-                <ShieldAlert size={15} className="text-[var(--aqua)]" />
-                Analyst attention
-              </div>
-              <p className="mt-3 text-3xl font-bold tracking-tight">
-                {summary
-                  ? number.format(summary.high_risk_ecosystems)
-                  : '—'}
-              </p>
-              <p className="mt-1 text-xs leading-5 text-slate-400">
-                High-risk connected ecosystems require enhanced verification.
-              </p>
-            </div>
-          </article>
-        </section>
+            </section>
+          </>
+        ) : null}
       </div>
     </AppShell>
   );
+}
+
+function PanelHeader({ title, detail }: { title: string; detail: string }) {
+  return <div className="flex h-[52px] items-center justify-between border-b border-[var(--line)] px-4"><h2 className="text-sm font-semibold text-[var(--navy)]">{title}</h2><span className="text-[10px] text-[var(--muted)]">{detail}</span></div>;
+}
+
+function StatusLabel({ status }: { status: ActivityEvent['status'] }) {
+  const classes = status === 'Requires Review' ? 'bg-red-50 text-red-700' : status === 'Relationship Found' ? 'bg-amber-50 text-amber-700' : 'bg-green-50 text-green-700';
+  return <span className={`inline-flex whitespace-nowrap rounded px-2 py-1 text-[9px] font-semibold ${classes}`}>{status}</span>;
+}
+
+function InsightEvent({ event }: { event: ActivityEvent }) {
+  const high = event.risk_level === 'HIGH';
+  return (
+    <div className="p-4">
+      <div className="flex items-start gap-3">
+        <span className={`mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded ${high ? 'bg-red-50 text-[var(--red)]' : 'bg-amber-50 text-[var(--amber)]'}`}>{high ? <AlertTriangle size={14} /> : <Network size={14} />}</span>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center justify-between gap-2"><p className="text-[11px] font-semibold text-[var(--navy)]">{event.primary_signal ? humanize(event.primary_signal) : 'Relationship discovered'}</p><RiskBadge level={event.risk_level} /></div>
+          <p className="mt-1.5 text-[10px] leading-4 text-[var(--muted)]">{event.device_id} · {event.dealer_id}</p>
+          <div className="mt-2 flex items-center justify-between text-[10px]"><span className="font-mono text-slate-500">{event.application_id}</span><span className="font-semibold text-[var(--navy)]">Risk {event.risk_score.toFixed(0)}</span></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function GraphKey({ icon: Icon, label }: { icon: typeof Smartphone; label: string }) {
+  return <span className="inline-flex items-center gap-1.5 rounded border border-[var(--line)] bg-white px-2 py-1 text-[9px] font-medium text-slate-500"><Icon size={11} />{label}</span>;
+}
+
+function SnapshotFact({ label, value, tone }: { label: string; value: string; tone?: 'risk' }) {
+  return <div className="border-b border-[var(--line)] px-5 py-4 last:border-0 sm:border-r xl:border-b-0"><p className="text-[10px] font-medium text-[var(--muted)]">{label}</p><p className={`mt-1 text-xl font-semibold tracking-[-.03em] ${tone === 'risk' ? 'text-[var(--red)]' : 'text-[var(--navy)]'}`}>{value}</p></div>;
+}
+
+function mapMonitorGraph(graph: NetworkGraph, visibleCount: number): { nodes: Node[]; edges: Edge[] } {
+  const maxVisible = Math.min(graph.nodes.length, Math.max(4, visibleCount));
+  const selected = new Set(graph.nodes.slice(0, maxVisible).map((item) => item.id));
+  const rows = new Map<string, number>();
+  const columns: Record<string, number> = { customer: 40, device: 310, account: 520, dealer: 310, location: 520 };
+  const nodes = graph.nodes.filter((item) => selected.has(item.id)).map((item) => {
+    const row = rows.get(item.type) ?? 0;
+    rows.set(item.type, row + 1);
+    const color = item.type === 'customer' ? '#0057a8' : item.type === 'dealer' ? '#d97706' : item.type === 'account' ? '#00843d' : '#0b1f3a';
+    return {
+      id: item.id,
+      position: { x: columns[item.type] ?? 520, y: 80 + row * 100 },
+      data: { label: item.label },
+      style: {
+        width: item.type === 'customer' ? 92 : 142,
+        height: item.type === 'customer' ? 72 : 44,
+        borderRadius: item.type === 'customer' ? 999 : 6,
+        border: `${item.is_focus ? 2 : 1}px solid ${color}`,
+        background: item.is_focus ? color : '#fff',
+        color: item.is_focus ? '#fff' : '#374151',
+        fontSize: 10,
+        fontWeight: 600,
+        boxShadow: 'none',
+      },
+    } satisfies Node;
+  });
+  const edges = graph.edges.filter((edge) => selected.has(edge.source) && selected.has(edge.target)).map((edge) => ({
+    id: edge.id,
+    source: edge.source,
+    target: edge.target,
+    label: edge.type.replaceAll('_', ' '),
+    labelStyle: { fontSize: 8, fill: '#6b7280' },
+    style: { stroke: '#9ca3af', strokeWidth: 1.2 },
+  } satisfies Edge));
+  return { nodes, edges };
+}
+
+function humanize(value: string) {
+  return value.toLowerCase().replaceAll('_', ' ').replace(/^./, (letter) => letter.toUpperCase());
+}
+
+function formatTime(value: string) {
+  return new Date(value).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 }

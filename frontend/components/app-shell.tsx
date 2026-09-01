@@ -1,15 +1,17 @@
 'use client';
 
 import {
-  Activity,
-  ChartNoAxesCombined,
+  BarChart3,
+  Bell,
+  Building2,
+  CalendarDays,
   ChevronRight,
-  CircleHelp,
+  CircleUserRound,
+  FlaskConical,
   LayoutDashboard,
   Network,
   Search,
   ShieldCheck,
-  Sparkles,
 } from 'lucide-react';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
@@ -17,11 +19,12 @@ import type { ReactNode } from 'react';
 import { API_BASE_URL } from '../lib/api';
 
 const navigation = [
-  { href: '/', label: 'Executive overview', icon: LayoutDashboard },
-  { href: '/investigate', label: 'Investigate', icon: Search },
-  { href: '/network', label: 'Network explorer', icon: Network },
-  { href: '/analytics', label: 'Analytics', icon: ChartNoAxesCombined },
-  { href: '/demo', label: 'Judge walkthrough', icon: Sparkles },
+  { href: '/', label: 'Live Monitor', icon: LayoutDashboard },
+  { href: '/investigate', label: 'Investigations', icon: Search },
+  { href: '/network', label: 'Network Intelligence', icon: Network },
+  { href: '/dealers', label: 'Dealer Intelligence', icon: Building2 },
+  { href: '/analytics', label: 'Portfolio Insights', icon: BarChart3 },
+  { href: '/demo', label: 'Simulation Lab', icon: FlaskConical },
 ];
 
 interface AppShellProps {
@@ -33,92 +36,109 @@ interface AppShellProps {
 export function AppShell({ activePath, children, presentationMode = false }: AppShellProps) {
   return (
     <div className="min-h-screen bg-[var(--canvas)] text-[var(--ink)]">
-      {!presentationMode && <aside className="fixed inset-y-0 left-0 z-40 hidden w-[248px] flex-col bg-[var(--navy)] px-4 py-5 text-white lg:flex">
-        <Link href="/" className="flex items-center gap-3 px-2" aria-label="JaalDrishti home">
-          <span className="grid h-10 w-10 place-items-center rounded-xl bg-[var(--blue)] shadow-[0_8px_28px_rgba(27,98,255,.35)]">
-            <ShieldCheck size={22} strokeWidth={2.2} />
-          </span>
-          <span>
-            <span className="block text-[15px] font-bold tracking-tight">JaalDrishti</span>
-            <span className="block text-[10px] font-medium uppercase tracking-[.14em] text-slate-400">
-              Ecosystem intelligence
-            </span>
-          </span>
-        </Link>
-
-        <nav className="mt-9 space-y-1" aria-label="Primary navigation">
-          {navigation.map(({ href, label, icon: Icon }) => {
-            const active = href === activePath;
-            return (
-              <Link
-                key={href}
-                href={href}
-                aria-current={active ? 'page' : undefined}
-                className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
-                  active
-                    ? 'bg-white/10 text-white shadow-[inset_3px_0_0_var(--aqua)]'
-                    : 'text-slate-400 hover:bg-white/[.06] hover:text-white'
-                }`}
-              >
-                <Icon size={17} />
-                <span>{label}</span>
-                {active && <ChevronRight className="ml-auto text-[var(--aqua)]" size={15} />}
-              </Link>
-            );
-          })}
-        </nav>
-
-        <div className="mt-auto rounded-2xl border border-white/10 bg-white/[.045] p-4">
-          <div className="mb-3 flex items-center gap-2 text-xs font-semibold text-slate-200">
-            <Activity size={14} className="text-[var(--aqua)]" />
-            Decision-support layer
-          </div>
-          <p className="text-xs leading-5 text-slate-400">
-            Network evidence supports analyst review. Final credit action remains human-authorized.
-          </p>
-        </div>
-      </aside>}
-
-      <div className={presentationMode ? '' : 'lg:pl-[248px]'}>
-        {!presentationMode && <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-[var(--line)] bg-white/90 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3 lg:hidden">
-            <span className="grid h-9 w-9 place-items-center rounded-xl bg-[var(--navy)] text-white">
-              <ShieldCheck size={20} />
-            </span>
-            <span className="text-sm font-bold">JaalDrishti</span>
-          </div>
-          <div className="hidden items-center gap-2 text-xs text-[var(--muted)] lg:flex">
-            <span className="h-2 w-2 rounded-full bg-[var(--green)] shadow-[0_0_0_4px_rgba(15,178,131,.12)]" />
-            Live synthetic intelligence · Explainable by design
-          </div>
-          <div className="flex items-center gap-3">
-            <a
-              href={`${API_BASE_URL}/docs`}
-              target="_blank"
-              rel="noreferrer"
-              className="grid h-9 w-9 place-items-center rounded-xl border border-[var(--line)] text-[var(--muted)]"
-              aria-label="Open API documentation"
-            >
-              <CircleHelp size={17} />
-            </a>
-            <div className="hidden text-right sm:block">
-              <p className="text-xs font-semibold">Risk Operations</p>
-              <p className="text-[11px] text-[var(--muted)]">Analyst workspace</p>
-            </div>
-            <span className="grid h-9 w-9 place-items-center rounded-xl bg-[var(--navy)] text-xs font-bold text-white">RO</span>
-          </div>
-        </header>}
-
-        <main className={`px-4 pb-24 sm:px-6 lg:px-8 lg:pb-10 ${presentationMode ? 'pt-5' : 'pt-7'}`}>{children}</main>
-
-        {!presentationMode && <nav className="fixed inset-x-3 bottom-3 z-40 grid grid-cols-5 rounded-2xl border border-white/70 bg-[var(--navy)] p-1.5 shadow-2xl lg:hidden" aria-label="Mobile navigation">
-          {navigation.map(({ href, label, icon: Icon }) => (
-            <Link key={href} href={href} aria-label={label} aria-current={href === activePath ? 'page' : undefined} className={`flex flex-col items-center gap-1 rounded-xl py-2 text-[10px] font-medium ${href === activePath ? 'bg-white/10 text-white' : 'text-slate-400'}`}>
-              <Icon size={17} />
-              <span>{label.split(' ')[0]}</span>
+      {!presentationMode && (
+        <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r border-[var(--line)] bg-white lg:flex">
+          <div className="border-b border-[var(--line)] px-5 py-5">
+            <Link href="/" className="flex items-center gap-3" aria-label="TVS JaalDrishti home">
+              <span className="grid h-9 w-9 place-items-center rounded-md bg-[var(--navy)] text-white">
+                <ShieldCheck size={19} strokeWidth={2.2} />
+              </span>
+              <span>
+                <span className="block text-[10px] font-bold uppercase tracking-[.16em] text-[var(--blue)]">TVS Credit</span>
+                <span className="mt-0.5 block text-[15px] font-semibold tracking-[-.02em] text-[var(--navy)]">JaalDrishti</span>
+              </span>
             </Link>
-          ))}
-        </nav>}
+          </div>
+
+          <nav className="flex-1 px-3 py-5" aria-label="Primary navigation">
+            <p className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-[.14em] text-slate-400">Workspace</p>
+            <div className="space-y-1">
+              {navigation.map(({ href, label, icon: Icon }) => {
+                const active = href === activePath;
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    aria-current={active ? 'page' : undefined}
+                    className={`group flex h-10 items-center gap-3 rounded-md px-3 text-[13px] font-medium transition-colors ${
+                      active
+                        ? 'bg-blue-50 text-[var(--blue)]'
+                        : 'text-slate-600 hover:bg-slate-50 hover:text-[var(--navy)]'
+                    }`}
+                  >
+                    <Icon size={16} strokeWidth={active ? 2.2 : 1.8} />
+                    <span>{label}</span>
+                    {active && <ChevronRight className="ml-auto" size={14} />}
+                  </Link>
+                );
+              })}
+            </div>
+          </nav>
+
+          <div className="border-t border-[var(--line)] p-4">
+            <div className="rounded-md border border-[var(--line)] bg-[var(--subtle)] p-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-semibold uppercase tracking-[.12em] text-[var(--muted)]">System status</span>
+                <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-[var(--green)]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[var(--green)]" /> Live
+                </span>
+              </div>
+              <a href={`${API_BASE_URL}/health`} target="_blank" rel="noreferrer" className="mt-2 block text-[11px] text-slate-500 hover:text-[var(--blue)]">
+                API and intelligence services operational
+              </a>
+            </div>
+          </div>
+        </aside>
+      )}
+
+      <div className={presentationMode ? '' : 'lg:pl-60'}>
+        {!presentationMode && (
+          <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-[var(--line)] bg-white px-4 sm:px-6 lg:px-7">
+            <div className="flex items-center gap-2 lg:hidden">
+              <span className="grid h-8 w-8 place-items-center rounded-md bg-[var(--navy)] text-white"><ShieldCheck size={17} /></span>
+              <span className="text-sm font-semibold text-[var(--navy)]">JaalDrishti</span>
+            </div>
+
+            <label className="relative hidden max-w-md flex-1 md:block">
+              <span className="sr-only">Search workspace</span>
+              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="search"
+                placeholder="Search application, customer, dealer or device"
+                className="h-9 w-full rounded-md border border-[var(--line)] bg-[var(--subtle)] pl-9 pr-3 text-xs text-[var(--ink)] placeholder:text-slate-400 focus:border-blue-300 focus:bg-white"
+              />
+            </label>
+
+            <div className="ml-auto flex items-center gap-2">
+              <div className="hidden items-center gap-2 rounded-md border border-[var(--line)] bg-white px-3 py-2 text-[11px] font-medium text-slate-600 xl:flex">
+                <CalendarDays size={14} /> 01 Aug – 31 Aug 2026
+              </div>
+              <div className="hidden items-center gap-2 rounded-md bg-green-50 px-3 py-2 text-[10px] font-bold uppercase tracking-[.08em] text-[var(--green)] sm:flex">
+                <span className="h-1.5 w-1.5 rounded-full bg-[var(--green)]" /> Live stream active
+              </div>
+              <button type="button" className="relative grid h-9 w-9 place-items-center rounded-md border border-[var(--line)] bg-white text-slate-500" aria-label="Notifications">
+                <Bell size={16} />
+                <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-[var(--red)]" />
+              </button>
+              <div className="flex items-center gap-2 border-l border-[var(--line)] pl-3">
+                <span className="grid h-8 w-8 place-items-center rounded-full bg-slate-100 text-slate-600"><CircleUserRound size={17} /></span>
+                <div className="hidden leading-tight xl:block"><p className="text-[11px] font-semibold text-[var(--navy)]">Risk Operations</p><p className="text-[10px] text-[var(--muted)]">Analyst workspace</p></div>
+              </div>
+            </div>
+          </header>
+        )}
+
+        <main className={`px-4 pb-24 sm:px-6 lg:px-7 lg:pb-8 ${presentationMode ? 'pt-5' : 'pt-6'}`}>{children}</main>
+
+        {!presentationMode && (
+          <nav className="fixed inset-x-3 bottom-3 z-40 flex overflow-x-auto rounded-lg border border-[var(--line)] bg-white p-1 shadow-lg lg:hidden" aria-label="Mobile navigation">
+            {navigation.map(({ href, label, icon: Icon }) => (
+              <Link key={href} href={href} aria-label={label} aria-current={href === activePath ? 'page' : undefined} className={`flex min-w-[82px] flex-1 flex-col items-center gap-1 rounded-md py-2 text-[9px] font-medium ${href === activePath ? 'bg-blue-50 text-[var(--blue)]' : 'text-slate-500'}`}>
+                <Icon size={15} /><span>{label.split(' ')[0]}</span>
+              </Link>
+            ))}
+          </nav>
+        )}
       </div>
     </div>
   );

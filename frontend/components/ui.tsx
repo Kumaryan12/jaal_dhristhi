@@ -15,13 +15,13 @@ export function PageHeading({
   actions?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
+    <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
       <div>
         <p className="eyebrow">{eyebrow}</p>
-        <h1 className="mt-2 text-[clamp(1.7rem,3vw,2.45rem)] font-bold tracking-[-.035em] text-[var(--navy)]">
+        <h1 className="mt-1.5 text-[28px] font-semibold tracking-[-.03em] text-[var(--navy)]">
           {title}
         </h1>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--muted)]">
+        <p className="mt-1.5 max-w-3xl text-sm leading-6 text-[var(--muted)]">
           {description}
         </p>
       </div>

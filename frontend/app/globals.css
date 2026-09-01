@@ -1,32 +1,33 @@
 @import 'tailwindcss';
 
 :root {
-  --canvas: #f3f6fa;
-  --ink: #172033;
-  --muted: #6f7b8f;
-  --navy: #101c35;
-  --blue: #1b62ff;
-  --aqua: #47d7c7;
-  --green: #0fb283;
-  --red: #ed4b5f;
-  --amber: #f3a62b;
-  --line: #e1e7ef;
+  --canvas: #f7f8fa;
+  --subtle: #f7f8fa;
+  --ink: #111827;
+  --muted: #6b7280;
+  --navy: #0b1f3a;
+  --blue: #0057a8;
+  --aqua: #0057a8;
+  --green: #00843d;
+  --red: #dc2626;
+  --amber: #d97706;
+  --line: #e5e7eb;
 }
 
 @theme inline {
   --color-background: var(--canvas);
   --color-foreground: var(--ink);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 * { box-sizing: border-box; }
 html { background: var(--canvas); }
 body {
   margin: 0;
-  background: radial-gradient(circle at 95% 0%, rgba(27, 98, 255, .045), transparent 28rem), var(--canvas);
+  background: var(--canvas);
   color: var(--ink);
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter), Inter, Arial, Helvetica, sans-serif;
 }
 button, a { -webkit-tap-highlight-color: transparent; }
 button:focus-visible, a:focus-visible, input:focus-visible {
@@ -36,22 +37,12 @@ button:focus-visible, a:focus-visible, input:focus-visible {
 .metric-card {
   position: relative;
   overflow: hidden;
-  min-height: 175px;
+  min-height: 142px;
   border: 1px solid var(--line);
-  border-radius: 18px;
-  background: rgba(255,255,255,.92);
-  padding: 18px;
-  box-shadow: 0 5px 22px rgba(22, 38, 66, .035);
-}
-.metric-card::after {
-  content: '';
-  position: absolute;
-  width: 72px;
-  height: 72px;
-  right: -26px;
-  top: -26px;
-  border-radius: 999px;
-  background: rgba(27, 98, 255, .04);
+  border-radius: 8px;
+  background: #fff;
+  padding: 16px;
+  box-shadow: none;
 }
 .metric-icon { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 11px; }
 .metric-icon-blue { color: #1b62ff; background: #eaf0ff; }
@@ -60,13 +51,13 @@ button:focus-visible, a:focus-visible, input:focus-visible {
 .metric-icon-green { color: #078b67; background: #e2f7f0; }
 .panel {
   border: 1px solid var(--line);
-  border-radius: 20px;
-  background: rgba(255,255,255,.94);
-  padding: clamp(18px, 2.2vw, 26px);
-  box-shadow: 0 6px 25px rgba(22, 38, 66, .04);
+  border-radius: 8px;
+  background: #fff;
+  padding: clamp(16px, 2vw, 22px);
+  box-shadow: none;
 }
-.eyebrow { font-size: 10px; font-weight: 750; letter-spacing: .14em; text-transform: uppercase; color: var(--blue); }
-.panel-title { margin-top: 4px; font-size: 16px; font-weight: 720; letter-spacing: -.015em; color: var(--navy); }
+.eyebrow { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--blue); }
+.panel-title { margin-top: 4px; font-size: 18px; font-weight: 650; letter-spacing: -.015em; color: var(--navy); }
 .risk-label { display: inline-flex; border-radius: 999px; padding: 4px 8px; font-size: 9px; font-weight: 800; letter-spacing: .08em; }
 .risk-low { color: #077c5c; background: #e1f6ef; }
 .risk-medium { color: #9a6510; background: #fff1d9; }
@@ -77,31 +68,21 @@ button:focus-visible, a:focus-visible, input:focus-visible {
 .presentation-hero {
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(255,255,255,.08);
-  border-radius: 26px;
-  background:
-    radial-gradient(circle at 88% 12%, rgba(71, 215, 199, .17), transparent 21rem),
-    radial-gradient(circle at 60% 110%, rgba(27, 98, 255, .24), transparent 26rem),
-    var(--navy);
-  box-shadow: 0 24px 65px rgba(16, 28, 53, .16);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--navy);
+  box-shadow: none;
 }
 .presentation-hero::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image: radial-gradient(rgba(255,255,255,.13) 1px, transparent 1px);
-  background-size: 24px 24px;
-  mask-image: linear-gradient(to left, black, transparent 55%);
+  display: none;
 }
 .story-score-card {
   position: relative;
   z-index: 1;
   border: 1px solid rgba(255,255,255,.12);
-  border-radius: 20px;
-  background: rgba(255,255,255,.075);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
-  backdrop-filter: blur(12px);
+  border-radius: 8px;
+  background: rgba(255,255,255,.06);
+  box-shadow: none;
 }
 .journey-grid {
   display: grid;
@@ -111,10 +92,10 @@ button:focus-visible, a:focus-visible, input:focus-visible {
 .journey-stage {
   min-width: 0;
   border: 1px solid var(--line);
-  border-radius: 16px;
-  background: rgba(255,255,255,.9);
+  border-radius: 8px;
+  background: #fff;
   padding: 15px;
-  box-shadow: 0 4px 18px rgba(22, 38, 66, .035);
+  box-shadow: none;
 }
 .journey-icon {
   display: grid;

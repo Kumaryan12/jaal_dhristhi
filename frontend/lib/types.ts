@@ -11,6 +11,28 @@ export interface DashboardSummary {
   request_id: string;
 }
 
+export interface ActivityEvent {
+  timestamp: string;
+  application_id: string;
+  customer_id: string;
+  dealer_id: string;
+  device_id: string;
+  account_id: string;
+  loan_amount_inr: number;
+  risk_score: number;
+  risk_level: RiskLevel;
+  status: 'Analysed' | 'Relationship Found' | 'Requires Review';
+  primary_signal: string | null;
+}
+
+export interface LiveMonitor {
+  dataset_id: string;
+  events: ActivityEvent[];
+  focus_customer_id: string;
+  data_timestamp: string;
+  request_id: string;
+}
+
 export interface RiskDistributionItem {
   risk_level: RiskLevel;
   count: number;
