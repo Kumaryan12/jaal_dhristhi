@@ -15,7 +15,7 @@ Phase 10 converts the implemented prototype into a reviewable release candidate.
 
 ## Verification status
 
-The backend/cross-layer suite contains 61 passing tests. The frontend suite contains 10 passing tests. Python lint and compilation, frontend lint, the five-route production build, and the dependency audit pass.
+The backend/cross-layer suite contains 61 passing tests. The frontend suite contains 11 passing tests. Python lint and compilation, frontend lint, the five-route production build, and the dependency audit pass.
 
 The standard live dataset contains 5,588 applications. The Phase 9 smoke journey computes Customer A from LOW 0.00 to HIGH 85.43 and leaves the active dashboard summary unchanged.
 

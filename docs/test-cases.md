@@ -30,9 +30,9 @@ Backend/cross-layer count at the Phase 10 candidate: **61 passing tests**.
 | Typed API client | dashboard GET, stable errors, encoded network query, simulation POST | Requests use the configured base URL, bounded parameters, and deterministic seed body |
 | Shared UI | risk labels and metric presentation | Risk semantics and portfolio figures render consistently |
 | Investigation | honest empty state, submit, explanation, action, network handoff | No result is invented before the API responds; evidence and navigation use returned identifiers |
-| Demo mode | explicit initial action, LOW-to-HIGH rendering, evidence, network, isolation notice | One click renders the backend response and never substitutes browser-side scoring |
+| Demo mode | explicit initial action, presentation view, LOW-to-HIGH rendering, process trace, evidence, network, isolation notice | One click renders the backend response, exposes the complete intelligence path, and never substitutes browser-side scoring |
 
-Frontend count at the Phase 10 candidate: **10 passing tests**.
+Frontend count at the Phase 10 candidate: **11 passing tests**.
 
 ## Verification commands
 
@@ -57,7 +57,7 @@ npm audit
 | Investigation | `APP-S-005001` returns profile, HIGH evidence, and an action |
 | Network | `CUS-S-005001` renders a bounded traversable graph |
 | Analytics | Valid date range updates all charts; reversed range produces an actionable error |
-| Demo | One click renders LOW before, HIGH after, network evidence, and isolation notice |
+| Demo | Presentation view hides navigation; one click renders the live process trace, LOW before, HIGH after, network evidence, and isolation notice |
 | Responsive navigation | All five routes remain reachable at desktop and mobile widths |
 | Keyboard | Inputs, buttons, links, and graph controls have visible focus and logical order |
 | Reduced motion | The interface honors `prefers-reduced-motion` |

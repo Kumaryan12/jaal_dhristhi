@@ -108,12 +108,16 @@ Open `http://localhost:3000`. Set `NEXT_PUBLIC_API_BASE_URL` in `frontend/.env.l
 ### One-click emerging ecosystem
 
 1. Open `/demo`.
-2. Select **Simulate Emerging Risk Ecosystem**.
-3. Observe Customer A score LOW as an isolated applicant.
-4. Review the six-applicant shared-device and dealer network.
-5. Observe the recomputed HIGH score, ranked evidence, and enhanced-verification action.
+2. Select **Presentation view** for the distraction-free judge experience.
+3. Follow the problem → detection → decision roadmap and six-stage intelligence path.
+4. Select **Simulate Emerging Risk Ecosystem**.
+5. Observe Customer A score LOW as an isolated applicant.
+6. Review the live processing trace, six-applicant shared-device and dealer network, and temporal burst.
+7. Observe the recomputed HIGH score, ranked evidence, and human-authorized enhanced-verification action.
 
 Each click creates a new in-memory scenario namespace. It does not require, replace, or mutate the active portfolio.
+
+Use the [three-minute judge presentation guide](docs/judge-presentation-guide.md) for the exact talk track, process explanation, and likely Q&A.
 
 ### Portfolio investigation
 
@@ -171,7 +175,7 @@ npm run build
 npm audit
 ```
 
-The Phase 10 release candidate has 61 passing backend/cross-layer tests and 10 passing frontend tests. See the [test-case catalog](docs/test-cases.md) for coverage mapped to product behavior.
+The Phase 10 release candidate has 61 passing backend/cross-layer tests and 11 passing frontend tests. See the [test-case catalog](docs/test-cases.md) for coverage mapped to product behavior.
 
 ## Reproduce the intelligence pipeline directly
 
