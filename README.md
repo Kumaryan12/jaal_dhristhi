@@ -10,7 +10,7 @@ The product is deliberately **not** a generic fraud detector or a banking applic
 
 ## Project status
 
-Phases 0–8 are complete. The repository generates a lending ecosystem, resolves hidden relationships, calculates graph and temporal features, compares three imbalanced-learning models, exposes the structured 0–100 hybrid intelligence through a versioned FastAPI service, and presents it in a responsive enterprise analyst console.
+Phases 0–9 are complete. The repository generates a lending ecosystem, resolves hidden relationships, calculates graph and temporal features, compares three imbalanced-learning models, exposes the structured 0–100 hybrid intelligence through a versioned FastAPI service, presents it in a responsive enterprise analyst console, and demonstrates an isolated computed LOW-to-HIGH emerging-network journey.
 
 - [System architecture](docs/architecture.md)
 - [API contract](docs/api-contract.md)
@@ -24,6 +24,7 @@ Phases 0–8 are complete. The repository generates a lending ecosystem, resolve
 - [Phase 6 implementation report](docs/phase-6-ml-enhancement.md)
 - [Phase 7 implementation report](docs/phase-7-fastapi-backend.md)
 - [Phase 8 implementation report](docs/phase-8-enterprise-dashboard.md)
+- [Phase 9 implementation report](docs/phase-9-demo-mode.md)
 
 ## Proposed technology
 
@@ -126,7 +127,7 @@ docker compose up --build backend
 
 Generate the initial dataset through `POST /api/v1/generate_demo_data`. The database path, trusted model path, and allowed browser origins are configurable through the variables documented in [.env.example](.env.example).
 
-## Run the Phase 8 analyst console
+## Run the analyst console
 
 Start the API first, then run the frontend in a second terminal:
 
@@ -139,14 +140,17 @@ npm run dev
 
 Open `http://localhost:3000`. The console uses `http://127.0.0.1:8000` by default; set `NEXT_PUBLIC_API_BASE_URL` in `frontend/.env.local` when the API is hosted elsewhere.
 
-The four data-backed routes are:
+The five data-backed routes are:
 
 - `/` — executive portfolio overview
 - `/investigate` — application analysis and evidence
 - `/network` — interactive relationship graph
 - `/analytics` — bounded risk, dealer, and temporal analytics
+- `/demo` — one-click isolated emerging-risk simulation
 
 For the standard seed-2026 dataset, `APP-S-005001` and `CUS-S-005001` provide a useful suspicious-ecosystem investigation path.
+
+For the Phase 9 journey, open `/demo` and select **Simulate Emerging Risk Ecosystem**. The backend creates a fresh scenario namespace, computes Customer A as LOW in isolation, introduces five connected applicants around a shared device and concentrated dealer, and recomputes the same application as HIGH with ranked evidence and enhanced verification. The active portfolio remains unchanged.
 
 Frontend verification:
 

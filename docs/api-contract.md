@@ -1,6 +1,6 @@
-# API Contract — Implemented in Phase 7
+# API Contract — Implemented in Phases 7 and 9
 
-The core contract below is implemented by `backend/app/main.py`. Interactive OpenAPI documentation is served at `/docs`; the JSON document is served at `/openapi.json`. `POST /api/v1/demo/simulate` remains assigned to the Phase 9 emerging-risk journey.
+The core contract below is implemented by `backend/app/main.py`. Interactive OpenAPI documentation is served at `/docs`; the JSON document is served at `/openapi.json`. Phase 9 adds the isolated `POST /api/v1/demo/simulate` emerging-risk journey.
 
 ## Conventions
 
@@ -208,7 +208,9 @@ Request:
 }
 ```
 
-Response contains a `scenario_id`, a before snapshot, an after snapshot, newly created entities/edges, ranked explanations, and the computed action. Repeating the same seed creates an isolated scenario namespace; it does not overwrite the baseline dataset.
+Response `201 Created` contains a unique `scenario_id`, a before snapshot, an after snapshot, newly created entities/edges, the scenario network, ranked explanations, and the computed action. The standard seed produces the required Customer A transition from LOW to HIGH as five linked applicants emerge around one shared device and concentrated dealer within two hours.
+
+Repeating the same seed reproduces the same source records, scores, evidence, and network inside a new scenario namespace. The simulation is computed in memory and neither reads nor overwrites the active baseline dataset or stored analyses.
 
 ## Status codes
 

@@ -27,5 +27,5 @@ class APISettings:
     database_path: Path = field(default_factory=_default_database_path)
     model_path: Path = field(default_factory=_default_model_path)
     api_title: str = "TVS JaalDrishti API"
-    api_version: str = "0.7.0"
+    api_version: str = "0.9.0"
     cors_origins: tuple[str, ...] = field(default_factory=_default_cors_origins)
