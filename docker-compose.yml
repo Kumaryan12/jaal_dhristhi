@@ -1,0 +1,17 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    environment:
+      JAALDRISHTI_CORS_ORIGINS: http://localhost:3000,http://localhost:5173
+      JAALDRISHTI_DB_PATH: /state/jaaldrishti.db
+      JAALDRISHTI_MODEL_PATH: /app/models/ecosystem-risk-model.joblib
+    ports:
+      - "8000:8000"
+    volumes:
+      - jaaldrishti_state:/state
+      - ./models:/app/models:ro
+    restart: unless-stopped
+
+volumes:
+  jaaldrishti_state:

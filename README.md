@@ -10,7 +10,7 @@ The product is deliberately **not** a generic fraud detector or a banking applic
 
 ## Project status
 
-Phases 0–6 are complete. The repository generates a lending ecosystem, resolves hidden relationships, calculates graph and temporal features, compares three imbalanced-learning models, and returns a structured 0–100 hybrid ecosystem risk assessment with an analyst action.
+Phases 0–7 are complete. The repository generates a lending ecosystem, resolves hidden relationships, calculates graph and temporal features, compares three imbalanced-learning models, and exposes the structured 0–100 hybrid intelligence through a versioned FastAPI service.
 
 - [System architecture](docs/architecture.md)
 - [API contract](docs/api-contract.md)
@@ -22,6 +22,7 @@ Phases 0–6 are complete. The repository generates a lending ecosystem, resolve
 - [Phase 4 implementation report](docs/phase-4-temporal-intelligence.md)
 - [Phase 5 implementation report](docs/phase-5-risk-intelligence.md)
 - [Phase 6 implementation report](docs/phase-6-ml-enhancement.md)
+- [Phase 7 implementation report](docs/phase-7-fastapi-backend.md)
 
 ## Proposed technology
 
@@ -106,3 +107,20 @@ python3 -m venv .venv
 ```
 
 This trains Random Forest, XGBoost, and normal-only Isolation Forest; tunes classification thresholds on the validation split; reports precision, recall, F1, and PR-AUC on the held-out test split; persists the selected versioned predictor; and injects its probabilities into explainable hybrid risk scoring. Model binaries and bulk assessments remain local, while compact benchmark metadata is versioned.
+
+## Run the Phase 7 API
+
+```bash
+.venv/bin/python -m pip install -e 'backend[ml-xgboost,test]'
+.venv/bin/jaal-api --host 127.0.0.1 --port 8000
+```
+
+OpenAPI documentation is available at `http://127.0.0.1:8000/docs`, with the machine-readable contract at `/openapi.json` and liveness at `/health`.
+
+To run the backend in a container with a persistent SQLite volume:
+
+```bash
+docker compose up --build backend
+```
+
+Generate the initial dataset through `POST /api/v1/generate_demo_data`. The database path, trusted model path, and allowed browser origins are configurable through the variables documented in [.env.example](.env.example).

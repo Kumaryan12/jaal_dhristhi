@@ -1,4 +1,6 @@
-# Phase 0 — API Contract
+# API Contract — Implemented in Phase 7
+
+The core contract below is implemented by `backend/app/main.py`. Interactive OpenAPI documentation is served at `/docs`; the JSON document is served at `/openapi.json`. `POST /api/v1/demo/simulate` remains assigned to the Phase 9 emerging-risk journey.
 
 ## Conventions
 
@@ -94,9 +96,12 @@ Response `200 OK`:
       "code": "SHARED_DEVICE_MANY_APPLICANTS",
       "message": "Device DEV-0102 is linked to 8 applicants.",
       "severity": "HIGH",
+      "category": "graph",
       "entity_ids": ["DEV-0102"],
       "observed_value": 8,
       "threshold": 3,
+      "points": 30.0,
+      "score_floor": 72.0,
       "window": null
     }
   ],
@@ -107,8 +112,9 @@ Response `200 OK`:
   },
   "versions": {
     "feature_schema": "1.0.0",
+    "temporal_feature_schema": "1.0.0",
     "risk_policy": "1.0.0",
-    "model": "rf-1.0.0"
+    "model": "xgboost:1.0.0"
   },
   "analysed_at": "2026-09-01T06:05:00Z",
   "request_id": "req_01..."
