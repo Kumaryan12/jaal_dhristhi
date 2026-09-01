@@ -36,3 +36,17 @@ Use `--replace` to overwrite only the known generated CSV and manifest files. Th
 Normal applications use broadly independent devices and accounts, distributed dealers, varied submission times, and low-rate benign household sharing. Suspicious ecosystems contain 4–8 individually plausible customers linked through shared infrastructure, a concentrated dealer, and a two-hour application burst. Pattern families cover shared devices, shared accounts, dealer bursts, and mixed rings.
 
 All names, identifiers, locations, and financial records are synthetic. No TVS or real customer data is present.
+
+## Resolve relationships
+
+Phase 2 can materialize a complete heterogeneous graph and customer projection:
+
+```bash
+PYTHONPATH=backend python3 -m app.services.entity_resolution.cli \
+  --seed 2026 \
+  --normal-applications 5000 \
+  --suspicious-ecosystems 100 \
+  --graph-output data/processed/relationship-graph.json
+```
+
+The large graph JSON is reproducible and ignored by Git. It includes typed nodes, direct customer–entity edges, aggregated customer connections, per-customer resolution metrics, and any high-cardinality entities suppressed from pairwise projection.
