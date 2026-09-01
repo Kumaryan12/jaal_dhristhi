@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+import tempfile
 import unittest
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -96,6 +97,24 @@ class TemporalIntelligenceEngineTests(unittest.TestCase):
         self.assertEqual(result.summary.application_count, 0)
         self.assertEqual(result.summary.average_network_growth_rate_24h, 0.0)
         self.assertEqual(result.summary.average_recency_score, 0.0)
+
+    def test_exports_versioned_features_and_protects_existing_files(self) -> None:
+        dataset = self._burst_dataset()
+        relationships = EntityResolutionEngine().resolve(dataset)
+        result = TemporalIntelligenceEngine().analyze(dataset, relationships)
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            output_dir = Path(temporary_directory)
+
+            artifacts = result.export_artifacts(output_dir)
+
+            feature_text = artifacts["features"].read_text()
+            self.assertIn("application_id,customer_id,as_of", feature_text)
+            self.assertIn("dealer_2h", feature_text)
+            summary_text = artifacts["summary"].read_text()
+            self.assertIn('"feature_schema_version": "1.0.0"', summary_text)
+            self.assertIn('"feature_row_count": 5', summary_text)
+            with self.assertRaises(FileExistsError):
+                result.export_artifacts(output_dir)
 
     @staticmethod
     def _burst_dataset(*, repeat_customer: bool = False) -> SyntheticDataset:

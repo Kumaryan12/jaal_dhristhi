@@ -13,6 +13,7 @@ dependencies = ["networkx>=3.4,<4"]
 jaal-generate-data = "app.services.synthetic_data.cli:main"
 jaal-resolve-entities = "app.services.entity_resolution.cli:main"
 jaal-analyze-graph = "app.services.graph_intelligence.cli:main"
+jaal-analyze-temporal = "app.services.temporal_intelligence.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
