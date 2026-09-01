@@ -14,6 +14,8 @@ class RiskPolicy:
 
     shared_device_applicant_threshold: int = 3
     shared_account_applicant_threshold: int = 3
+    emerging_application_velocity_threshold: int = 3
+    emerging_linked_applicant_threshold: int = 2
     application_velocity_threshold: int = 5
     linked_applicant_threshold: int = 3
     network_growth_rate_threshold: float = 2.0
@@ -26,6 +28,7 @@ class RiskPolicy:
     shared_account_points: float = 28.0
     rapid_dealer_burst_points: float = 30.0
     rapid_device_burst_points: float = 35.0
+    emerging_concentration_points: float = 20.0
     velocity_points: float = 15.0
     growth_points: float = 12.0
     strong_connection_points: float = 10.0
@@ -37,6 +40,7 @@ class RiskPolicy:
     shared_account_floor: float = 70.0
     rapid_dealer_burst_floor: float = 70.0
     rapid_device_burst_floor: float = 75.0
+    emerging_concentration_floor: float = 40.0
 
     rule_weight_without_ml: float = 0.50
     graph_weight_without_ml: float = 0.30

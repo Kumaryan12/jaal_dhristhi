@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -13,6 +14,7 @@ from app.services.graph_intelligence import GraphIntelligenceEngine
 from app.services.graph_intelligence.models import GraphFeatureVector
 from app.services.risk_intelligence import (
     RiskAnalysisContext,
+    RiskAssessmentBatch,
     RiskIntelligenceEngine,
     RiskPolicy,
 )
@@ -63,6 +65,21 @@ class RiskIntelligenceEngineTests(unittest.TestCase):
         self.assertEqual(result.risk_level, "LOW")
         self.assertEqual(result.recommended_action.code, "STANDARD_PROCESSING")
         self.assertFalse(result.recommended_action.human_review_required)
+
+    def test_emerging_concentration_creates_medium_review_band(self) -> None:
+        result = RiskIntelligenceEngine().score_context(
+            self._context(emerging_concentration=True)
+        )
+
+        signal = next(
+            item
+            for item in result.signals
+            if item.code == "EMERGING_APPLICATION_CONCENTRATION"
+        )
+        self.assertEqual(signal.score_floor, 40.0)
+        self.assertEqual(result.risk_score, 40.0)
+        self.assertEqual(result.risk_level, "MEDIUM")
+        self.assertEqual(result.recommended_action.code, "MANUAL_REVIEW")
 
     def test_optional_ml_probability_uses_versioned_hybrid_weights(self) -> None:
         context = self._context()
@@ -164,12 +181,43 @@ class RiskIntelligenceEngineTests(unittest.TestCase):
                 temporal_result,
             )
 
+    def test_batch_summary_and_artifacts_are_structured_and_protected(self) -> None:
+        low = RiskIntelligenceEngine().score_context(
+            self._context(), analysed_at="2026-09-01T00:00:00Z"
+        )
+        high = RiskIntelligenceEngine().score_context(
+            self._context(shared_device_applicants=5, connection_strength=0.6),
+            analysed_at="2026-09-01T00:00:00Z",
+        )
+        batch = RiskAssessmentBatch.from_assessments((low, high))
+
+        self.assertEqual(
+            batch.summary.risk_distribution, {"LOW": 1, "MEDIUM": 0, "HIGH": 1}
+        )
+        self.assertEqual(batch.summary.high_risk_applications, 1)
+        self.assertEqual(batch.summary.review_required_applications, 1)
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            artifacts = batch.export_artifacts(Path(temporary_directory))
+
+            self.assertIn(
+                "application_id,customer_id,risk_score", artifacts["csv"].read_text()
+            )
+            self.assertIn(
+                "SHARED_DEVICE_MANY_APPLICANTS", artifacts["json"].read_text()
+            )
+            self.assertIn(
+                '"assessment_schema_version": "1.0.0"', artifacts["summary"].read_text()
+            )
+            with self.assertRaises(FileExistsError):
+                batch.export_artifacts(Path(temporary_directory))
+
     @staticmethod
     def _context(
         *,
         shared_device_applicants: int = 0,
         connection_strength: float = 0.0,
         rapid_dealer_burst: bool = False,
+        emerging_concentration: bool = False,
     ) -> RiskAnalysisContext:
         graph = GraphFeatureVector(
             customer_id="CUS-1",
@@ -196,15 +244,27 @@ class RiskIntelligenceEngineTests(unittest.TestCase):
             customer_id="CUS-1",
             as_of="2026-08-01T10:00:00Z",
             applications_same_device_2h=1,
-            applications_same_dealer_2h=5 if rapid_dealer_burst else 1,
+            applications_same_dealer_2h=(
+                5 if rapid_dealer_burst else 3 if emerging_concentration else 1
+            ),
             applications_same_account_24h=1,
             customer_applications_30d=1,
-            application_velocity_2h=5 if rapid_dealer_burst else 1,
-            linked_applicants_24h=4 if rapid_dealer_burst else 0,
+            application_velocity_2h=(
+                5 if rapid_dealer_burst else 3 if emerging_concentration else 1
+            ),
+            linked_applicants_24h=(
+                4 if rapid_dealer_burst else 2 if emerging_concentration else 0
+            ),
             network_prior_applicants_30d=0,
-            network_growth_rate_24h=4.0 if rapid_dealer_burst else 0.0,
-            hours_since_latest_link=0.5 if rapid_dealer_burst else None,
-            recency_score=0.9857 if rapid_dealer_burst else 0.0,
+            network_growth_rate_24h=(
+                4.0 if rapid_dealer_burst else 2.0 if emerging_concentration else 0.0
+            ),
+            hours_since_latest_link=(
+                0.5 if rapid_dealer_burst or emerging_concentration else None
+            ),
+            recency_score=0.9857
+            if rapid_dealer_burst or emerging_concentration
+            else 0.0,
             rapid_burst_detected=rapid_dealer_burst,
             burst_signal_types=("dealer_2h",) if rapid_dealer_burst else (),
         )

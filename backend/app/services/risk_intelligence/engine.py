@@ -41,6 +41,7 @@ class RiskIntelligenceEngine:
         *,
         model_probability: float | None = None,
         model_version: str | None = None,
+        analysed_at: str | None = None,
     ) -> RiskAssessment:
         if model_probability is not None and not 0 <= model_probability <= 1:
             raise ValueError("model_probability must be between 0 and 1")
@@ -94,7 +95,7 @@ class RiskIntelligenceEngine:
                 temporal_feature_schema=TEMPORAL_FEATURE_SCHEMA_VERSION,
                 model=model_version,
             ),
-            analysed_at=datetime.now(UTC).isoformat().replace("+00:00", "Z"),
+            analysed_at=analysed_at or datetime.now(UTC).isoformat().replace("+00:00", "Z"),
         )
 
     def analyze_all(
@@ -111,6 +112,7 @@ class RiskIntelligenceEngine:
         graph_features = {item.customer_id: item for item in graph_result.features}
         temporal_features = {item.application_id: item for item in temporal_result.features}
         evidence_catalog = self._evidence_catalog(relationship_graph)
+        batch_analysed_at = datetime.now(UTC).isoformat().replace("+00:00", "Z")
         assessments = []
         for application in dataset.tables["applications"]:
             application_id = str(application["application_id"])
@@ -135,6 +137,7 @@ class RiskIntelligenceEngine:
                     context,
                     model_probability=probability,
                     model_version=model_version if probability is not None else None,
+                    analysed_at=batch_analysed_at,
                 )
             )
         return tuple(assessments)

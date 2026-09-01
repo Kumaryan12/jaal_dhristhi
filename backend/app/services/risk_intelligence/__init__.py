@@ -5,6 +5,7 @@ from .engine import RiskIntelligenceEngine
 from .models import (
     RecommendedAction,
     RiskAssessment,
+    RiskAssessmentBatch,
     RiskSignal,
     ScoreComponents,
 )
@@ -15,6 +16,7 @@ __all__ = [
     "RecommendedAction",
     "RiskAnalysisContext",
     "RiskAssessment",
+    "RiskAssessmentBatch",
     "RiskIntelligenceEngine",
     "RiskPolicy",
     "RiskSignal",

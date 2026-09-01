@@ -109,6 +109,30 @@ class ExplainableRuleEngine:
                 )
             )
 
+        if (
+            policy.emerging_application_velocity_threshold
+            <= temporal.application_velocity_2h
+            < policy.application_velocity_threshold
+            and temporal.linked_applicants_24h >= policy.emerging_linked_applicant_threshold
+        ):
+            signals.append(
+                RiskSignal(
+                    code="EMERGING_APPLICATION_CONCENTRATION",
+                    category="TEMPORAL",
+                    severity="MEDIUM",
+                    message=(
+                        f"{temporal.application_velocity_2h} linked applications are forming "
+                        "a concentrated network."
+                    ),
+                    observed_value=temporal.application_velocity_2h,
+                    threshold=policy.emerging_application_velocity_threshold,
+                    points=policy.emerging_concentration_points,
+                    score_floor=policy.emerging_concentration_floor,
+                    entity_ids=(dealer_id,),
+                    window="2h",
+                )
+            )
+
         if temporal.application_velocity_2h >= policy.application_velocity_threshold:
             signals.append(
                 RiskSignal(
