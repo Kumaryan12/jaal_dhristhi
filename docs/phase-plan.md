@@ -7,7 +7,7 @@ The project follows the requested phase gate. Each implementation phase begins w
 | 0 | Architecture, contracts, data model, folder plan | Explicit approval | Complete |
 | 1 | Seeded synthetic lending ecosystem generator | 5,000+ normal applications, 100+ suspicious ecosystems, quality tests | Complete |
 | 2 | Entity resolution engine | Typed relationships and connection strength tests | Complete |
-| 3 | NetworkX graph intelligence | Required graph features and community detection | Not started |
+| 3 | NetworkX graph intelligence | Required graph features and community detection | Complete |
 | 4 | Temporal intelligence | Burst, velocity, growth, and recency tests | Not started |
 | 5 | Explainable hybrid risk engine | 0–100 calibrated policy, signal evidence, action mapping | Not started |
 | 6 | ML enhancement and comparison | RF, Isolation Forest, optional XGBoost; precision/recall/F1/PR-AUC | Not started |
@@ -33,5 +33,6 @@ Additional commits may be made when a phase has independently reviewable sub-del
 |---|---|---|
 | 2026-09-01 | Approved | User approved Phase 0 and authorized Phase 1 implementation |
 | 2026-09-01 | Approved | User authorized Phase 2 entity-resolution implementation |
+| 2026-09-01 | Approved | User authorized Phase 3 graph-intelligence implementation |
 
-Phase implementation reports and verification evidence are recorded in `docs/phase-1-synthetic-data.md` and `docs/phase-2-entity-resolution.md`.
+Phase implementation reports and verification evidence are recorded in the numbered phase reports under `docs/`.

@@ -1,0 +1,17 @@
+{
+  "feature_row_count": 5588,
+  "feature_schema_version": "1.0.0",
+  "feature_sha256": "3997e43eea63f77ae429baae07ce4856767b1f089dd60586acd8d1e41a8eed5c",
+  "summary": {
+    "average_connected_applicants": 28.1349,
+    "community_count": 177,
+    "connected_component_count": 98,
+    "customer_edge_count": 78609,
+    "customer_node_count": 5588,
+    "heterogeneous_edge_count": 22352,
+    "heterogeneous_node_count": 16405,
+    "largest_community_size": 54,
+    "largest_component_size": 908,
+    "overall_customer_graph_density": 0.00503579
+  }
+}

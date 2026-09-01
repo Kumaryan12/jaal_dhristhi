@@ -15,6 +15,7 @@ coverage/
 # Generated data and model artifacts
 data/raw/*.csv
 data/processed/*
+!data/processed/graph-intelligence-summary.json
 models/*.joblib
 models/*.json
 *.db

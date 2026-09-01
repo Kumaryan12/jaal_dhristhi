@@ -50,3 +50,20 @@ PYTHONPATH=backend python3 -m app.services.entity_resolution.cli \
 ```
 
 The large graph JSON is reproducible and ignored by Git. It includes typed nodes, direct customer–entity edges, aggregated customer connections, per-customer resolution metrics, and any high-cardinality entities suppressed from pairwise projection.
+
+## Generate graph intelligence features
+
+```bash
+PYTHONPATH=backend python3 -m app.services.graph_intelligence.cli \
+  --seed 2026 \
+  --normal-applications 5000 \
+  --suspicious-ecosystems 100 \
+  --output-dir data/processed
+```
+
+Outputs:
+
+- `graph-features.csv`: one point-in-time-ready feature row per customer;
+- `graph-intelligence-summary.json`: feature schema version, row count, CSV checksum, and graph-level metrics.
+
+The bulk feature CSV is ignored by Git. The compact summary is committed as reproducibility evidence.
