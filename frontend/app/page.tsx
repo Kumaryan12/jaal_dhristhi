@@ -135,7 +135,7 @@ export default function LiveMonitorPage() {
           setSelectedApplicationId(nextEvent.application_id);
         }
       }
-    }, 5_000);
+    }, 30_000);
     return () => window.clearInterval(timer);
   }, [autoFollow, monitor, selectedApplicationId, visibleCount]);
 
@@ -242,7 +242,7 @@ export default function LiveMonitorPage() {
           <div className="flex items-center gap-5">
             <span className="inline-flex items-center gap-2 font-semibold text-[var(--green)]"><span className="h-1.5 w-1.5 rounded-full bg-[var(--green)]" /> Stream operational</span>
             <span>Dataset {monitor?.dataset_id ?? '—'}</span>
-            <span className="hidden sm:inline">Synthetic event replay · 5 second interval</span>
+            <span className="hidden sm:inline">Synthetic event replay · 30 second interval</span>
           </div>
           <span>Last evaluated {monitor ? new Date(monitor.data_timestamp).toLocaleString('en-IN') : '—'}</span>
         </div>
