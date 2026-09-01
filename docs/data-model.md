@@ -27,9 +27,6 @@ The storage model retains source-like normalized records while derived graphs an
 | `loan_type` | enum | Two-wheeler, three-wheeler, used vehicle, consumer durable |
 | `dealer_id` | string | Foreign key to dealers |
 | `submitted_at` | timestamp | Event time used for point-in-time analysis |
-| `scenario_id` | string/null | Synthetic ecosystem provenance; never exposed as a risk feature |
-
-`scenario_id` is ground-truth metadata for generation and evaluation only. It must not enter model features or production analysis.
 
 ### devices
 
@@ -149,7 +146,8 @@ Separate evaluation metadata stores:
 | `scenario_id` | Ring/group used for split isolation |
 | `pattern_types` | Generator patterns that created the label |
 
-Ground truth is inaccessible to scoring services and appears only in training/evaluation code.
+Ground truth is inaccessible to scoring services and appears only in training/evaluation code. No
+scenario or generator-segment column is present in operational-looking source tables.
 
 ## Graph feature contract
 

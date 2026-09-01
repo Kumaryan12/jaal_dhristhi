@@ -4,8 +4,8 @@ The project follows the requested phase gate. Each implementation phase begins w
 
 | Phase | Deliverable | Exit criteria | Status |
 |---|---|---|---|
-| 0 | Architecture, contracts, data model, folder plan | Explicit approval | Awaiting approval |
-| 1 | Seeded synthetic lending ecosystem generator | 5,000+ normal applications, 100+ suspicious ecosystems, quality tests | Not started |
+| 0 | Architecture, contracts, data model, folder plan | Explicit approval | Complete |
+| 1 | Seeded synthetic lending ecosystem generator | 5,000+ normal applications, 100+ suspicious ecosystems, quality tests | Complete |
 | 2 | Entity resolution engine | Typed relationships and connection strength tests | Not started |
 | 3 | NetworkX graph intelligence | Required graph features and community detection | Not started |
 | 4 | Temporal intelligence | Burst, velocity, growth, and recency tests | Not started |
@@ -31,6 +31,6 @@ Additional commits may be made when a phase has independently reviewable sub-del
 
 | Date | Decision | Notes |
 |---|---|---|
-| 2026-09-01 | Pending | Phase 0 submitted for review |
+| 2026-09-01 | Approved | User approved Phase 0 and authorized Phase 1 implementation |
 
-Implementation is intentionally paused until the architecture decisions in `docs/architecture.md` are approved or revised.
+Phase 1 results and verification evidence are recorded in `docs/phase-1-synthetic-data.md`.

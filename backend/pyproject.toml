@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "jaaldrishti-backend"
+version = "0.1.0"
+description = "Explainable lending ecosystem risk intelligence"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+jaal-generate-data = "app.services.synthetic_data.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]

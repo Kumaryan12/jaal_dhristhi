@@ -10,12 +10,13 @@ The product is deliberately **not** a generic fraud detector or a banking applic
 
 ## Project status
 
-Phase 0 (product design and architecture) is ready for review. No application code has been written yet, in accordance with the required approval gate.
+Phase 0 is approved and Phase 1 synthetic data generation is complete. The repository can reproducibly generate and validate a full lending ecosystem with 5,000 normal applications and 100 suspicious networks.
 
 - [System architecture](docs/architecture.md)
 - [API contract](docs/api-contract.md)
 - [Data model](docs/data-model.md)
 - [Phase plan and approval record](docs/phase-plan.md)
+- [Phase 1 implementation report](docs/phase-1-synthetic-data.md)
 
 ## Proposed technology
 
@@ -25,4 +26,14 @@ Phase 0 (product design and architecture) is ready for review. No application co
 - SQLite for portable demo persistence, with generated CSV snapshots for inspection
 - Pytest and Vitest/Testing Library for automated verification
 
-Implementation begins only after Phase 0 is approved.
+## Generate Phase 1 data
+
+```bash
+PYTHONPATH=backend python3 -m app.services.synthetic_data.cli \
+  --output-dir data/raw \
+  --seed 2026 \
+  --normal-applications 5000 \
+  --suspicious-ecosystems 100
+```
+
+See [data/README.md](data/README.md) for the generated table contract and overwrite behavior.

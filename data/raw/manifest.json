@@ -1,0 +1,49 @@
+{
+  "actual": {
+    "normal_applications": 5000,
+    "suspicious_applications": 588,
+    "suspicious_ecosystems": 100
+  },
+  "as_of": "2026-08-31T12:00:00Z",
+  "dataset_id": "jaaldrishti-seed-2026",
+  "ecosystem_pattern_counts": {
+    "dealer_burst": 25,
+    "mixed_ring": 25,
+    "shared_account": 25,
+    "shared_device": 25
+  },
+  "generator_version": "1.0.0",
+  "requested": {
+    "normal_applications": 5000,
+    "suspicious_ecosystems": 100
+  },
+  "seed": 2026,
+  "sha256": {
+    "applications.csv": "930245b6117f1f8e7291846f6871e5551829bb8826b9f5d96fd90dc2eff1b17e",
+    "bank_accounts.csv": "218159558026c4f447dc6442417ce52934522f7364ba3f9fe93cbd74a39a8540",
+    "customer_accounts.csv": "193d8ccb643c82abc7a6c7e22c50ac603f1016fb550261f2cb0f299a71a98fe9",
+    "customer_devices.csv": "a77fb26f67cac5a47ac943f4cbea2aa86165d44f08cbcab6590030a8c95abcd8",
+    "customers.csv": "2fe3a824a9d6414bd159a9f829f0ceddeacd62338483a09de9d513e0bd1a42a2",
+    "dealers.csv": "38df098d6a8976eac01e005f7a6b307d483bad337f4530aacb1cdac504193bef",
+    "devices.csv": "7fe01e1a58b55f678f555ee7bb6f4abd6597aa6dfcb403e8c949ef34b3f16c4c",
+    "ecosystems.csv": "c20c1d509d1dc59a0fcfb2ac28f5824d8e074fb4d3042e128c0d54010a931fe3",
+    "ground_truth.csv": "765c119114b474d9a368e261de29b72548826cfee907c21e5594a384250694ed",
+    "locations.csv": "e6cc684a25f9300756d9e429b3f5dd6dd76b31d8cd4b83249ea5cd2f77a2d495",
+    "repayment_summaries.csv": "45846f05bbaccfb8876f1341ff6270427a47f38be1db184b6970f11339c588f3",
+    "repayments.csv": "45b26e70b5db382dc582bc8323f8c0cd9e29eb1adbb87342c894f1a8fdff78a6"
+  },
+  "table_row_counts": {
+    "applications": 5588,
+    "bank_accounts": 5309,
+    "customer_accounts": 5588,
+    "customer_devices": 5588,
+    "customers": 5588,
+    "dealers": 200,
+    "devices": 5284,
+    "ecosystems": 100,
+    "ground_truth": 5588,
+    "locations": 24,
+    "repayment_summaries": 5588,
+    "repayments": 23987
+  }
+}
