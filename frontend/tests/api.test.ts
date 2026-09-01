@@ -5,6 +5,7 @@ import {
   ApiError,
   getDashboardSummary,
   getNetwork,
+  simulateEmergingRisk,
 } from '../lib/api';
 
 afterEach(() => {
@@ -68,6 +69,22 @@ describe('API client', () => {
     await getNetwork('CUS:SPECIAL', { depth: 3, maxNodes: 25 });
     expect(fetchMock.mock.calls[0][0]).toBe(
       'http://127.0.0.1:8000/api/v1/network/CUS%3ASPECIAL?depth=3&max_nodes=25',
+    );
+  });
+
+  it('starts the isolated demo with the selected deterministic seed', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ scenario_id: 'SIM-17-test' }), { status: 201 }),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    await simulateEmergingRisk(17);
+    expect(fetchMock).toHaveBeenCalledWith(
+      'http://127.0.0.1:8000/api/v1/demo/simulate',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ seed: 17 }),
+      }),
     );
   });
 });

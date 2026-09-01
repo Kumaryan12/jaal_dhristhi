@@ -13,9 +13,21 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://jaal-drishti.nitgoa2023.chatgpt.site'),
   title: 'JaalDrishti | Ecosystem Risk Intelligence',
   description:
     'Explainable network and temporal risk intelligence for lending operations.',
+  openGraph: {
+    title: 'TVS JaalDrishti',
+    description: 'Detect the network before it becomes the loss.',
+    images: [{ url: '/og.png', width: 1736, height: 906 }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'TVS JaalDrishti',
+    description: 'Detect the network before it becomes the loss.',
+    images: ['/og.png'],
+  },
 };
 
 export default function RootLayout({

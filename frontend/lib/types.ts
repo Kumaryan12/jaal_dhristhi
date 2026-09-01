@@ -157,3 +157,55 @@ export interface NetworkGraph {
   }>;
   request_id: string;
 }
+
+export interface DemoRiskSnapshot {
+  risk_score: number;
+  risk_level: RiskLevel;
+  linked_applicant_count: number;
+  cluster_size: number;
+  shared_device_applicant_count: number;
+  application_velocity_2h: number;
+  dealer_applications_2h: number;
+  signals: RiskSignal[];
+  recommended_action: RecommendedAction;
+}
+
+export interface DemoEntity {
+  id: string;
+  type: string;
+  label: string;
+  role: string;
+  is_focus: boolean;
+}
+
+export interface DemoEdge {
+  id: string;
+  source: string;
+  target: string;
+  type: string;
+}
+
+export interface DemoSimulation {
+  scenario_id: string;
+  seed: number;
+  customer_label: 'Customer A';
+  application_id: string;
+  customer_id: string;
+  before: DemoRiskSnapshot;
+  after: DemoRiskSnapshot;
+  created_entities: DemoEntity[];
+  created_edges: DemoEdge[];
+  network: {
+    nodes: DemoEntity[];
+    edges: DemoEdge[];
+    summary: {
+      applicant_count: number;
+      shared_device_id: string;
+      dealer_id: string;
+    };
+  };
+  explanations: RiskSignal[];
+  recommended_action: RecommendedAction;
+  generated_at: string;
+  request_id: string;
+}

@@ -2,6 +2,7 @@ import type {
   Analysis,
   Analytics,
   DashboardSummary,
+  DemoSimulation,
   Explanation,
   NetworkGraph,
 } from './types';
@@ -108,4 +109,8 @@ export function getNetwork(
     `/api/v1/network/${encodeURIComponent(customerId)}?${query.toString()}`,
     signal,
   );
+}
+
+export function simulateEmergingRisk(seed = 2026, signal?: AbortSignal) {
+  return postJson<DemoSimulation>('/api/v1/demo/simulate', { seed }, signal);
 }

@@ -9,6 +9,7 @@ import {
   Network,
   Search,
   ShieldCheck,
+  Sparkles,
 } from 'lucide-react';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
@@ -20,6 +21,7 @@ const navigation = [
   { href: '/investigate', label: 'Investigate', icon: Search },
   { href: '/network', label: 'Network explorer', icon: Network },
   { href: '/analytics', label: 'Analytics', icon: ChartNoAxesCombined },
+  { href: '/demo', label: 'Demo mode', icon: Sparkles },
 ];
 
 interface AppShellProps {
@@ -108,7 +110,7 @@ export function AppShell({ activePath, children }: AppShellProps) {
 
         <main className="px-4 pb-24 pt-7 sm:px-6 lg:px-8 lg:pb-10">{children}</main>
 
-        <nav className="fixed inset-x-3 bottom-3 z-40 grid grid-cols-4 rounded-2xl border border-white/70 bg-[var(--navy)] p-1.5 shadow-2xl lg:hidden" aria-label="Mobile navigation">
+        <nav className="fixed inset-x-3 bottom-3 z-40 grid grid-cols-5 rounded-2xl border border-white/70 bg-[var(--navy)] p-1.5 shadow-2xl lg:hidden" aria-label="Mobile navigation">
           {navigation.map(({ href, label, icon: Icon }) => (
             <Link key={href} href={href} aria-label={label} aria-current={href === activePath ? 'page' : undefined} className={`flex flex-col items-center gap-1 rounded-xl py-2 text-[10px] font-medium ${href === activePath ? 'bg-white/10 text-white' : 'text-slate-400'}`}>
               <Icon size={17} />
