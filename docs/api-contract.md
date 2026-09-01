@@ -1,6 +1,6 @@
-# API Contract — Implemented in Phases 7 and 9
+# API Contract — Implemented in Phases 7, 9, and 10
 
-The core contract below is implemented by `backend/app/main.py`. Interactive OpenAPI documentation is served at `/docs`; the JSON document is served at `/openapi.json`. Phase 9 adds the isolated `POST /api/v1/demo/simulate` emerging-risk journey.
+The core contract below is implemented by `backend/app/main.py`. Interactive OpenAPI documentation is served at `/docs`; the JSON document is served at `/openapi.json`. Phase 9 adds the isolated `POST /api/v1/demo/simulate` journey; Phase 10 adds the scored activity feed used by the Live Monitor.
 
 ## Conventions
 
@@ -31,6 +31,7 @@ The core contract below is implemented by `backend/app/main.py`. Interactive Ope
 | GET | `/api/v1/risk_score/{application_id}` | Retrieve the latest versioned risk result |
 | GET | `/api/v1/network/{customer_id}` | Retrieve a bounded network projection |
 | GET | `/api/v1/explanation/{application_id}` | Retrieve ranked evidence and action |
+| GET | `/api/v1/monitor/activity` | Retrieve recent scored activity for operational monitoring |
 | GET | `/api/v1/dashboard/summary` | Retrieve executive metrics |
 | GET | `/api/v1/analytics` | Retrieve risk, dealer, and temporal series |
 | POST | `/api/v1/demo/simulate` | Materialize and analyse one emerging-risk scenario |
@@ -184,6 +185,36 @@ Response `200 OK`:
 `GET /api/v1/explanation/{application_id}`
 
 Returns the application/customer profile, ranked signal objects, graph and temporal evidence summaries, policy/model versions, and recommended action. Signal text is generated from its evidence object, not stored as an unexplained score label.
+
+## Live monitor activity
+
+`GET /api/v1/monitor/activity?limit=20`
+
+`limit` is constrained to 5–100. The response returns the current `dataset_id`, recent applications in event-time order, and a `focus_customer_id` suitable for the relationship graph. Every event includes its application, customer, dealer, device, and account identifiers; amount; computed score and risk level; operational status; and highest-ranked signal code when one exists.
+
+```json
+{
+  "dataset_id": "jaaldrishti-seed-2026",
+  "events": [
+    {
+      "timestamp": "2026-08-31T10:00:00Z",
+      "application_id": "APP-S-005001",
+      "customer_id": "CUS-S-005001",
+      "dealer_id": "DLR-0181",
+      "device_id": "DEV-0004945",
+      "account_id": "ACC-0005001",
+      "loan_amount_inr": 95000,
+      "risk_score": 82.0,
+      "risk_level": "HIGH",
+      "status": "Requires Review",
+      "primary_signal": "SHARED_DEVICE_MANY_APPLICANTS"
+    }
+  ],
+  "focus_customer_id": "CUS-S-005001",
+  "data_timestamp": "2026-08-31T10:00:00Z",
+  "request_id": "req_01..."
+}
+```
 
 ## Dashboard summary
 

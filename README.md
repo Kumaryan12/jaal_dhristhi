@@ -109,8 +109,8 @@ Open `http://localhost:3000`. Set `NEXT_PUBLIC_API_BASE_URL` in `frontend/.env.l
 
 1. Open `/demo`.
 2. Select **Presentation view** for the distraction-free judge experience.
-3. Follow the problem → detection → decision roadmap and six-stage intelligence path.
-4. Select **Simulate Emerging Risk Ecosystem**.
+3. Follow the five-stage application → relationship → network → risk → action path.
+4. Select **Start Simulation**.
 5. Observe Customer A score LOW as an isolated applicant.
 6. Review the live processing trace, six-applicant shared-device and dealer network, and temporal burst.
 7. Observe the recomputed HIGH score, ranked evidence, and human-authorized enhanced-verification action.
@@ -125,18 +125,20 @@ With the standard seed-2026 portfolio:
 
 - use `APP-S-005001` on `/investigate`;
 - follow `CUS-S-005001` into `/network`;
-- review portfolio metrics on `/`; and
+- review the operational activity stream on `/`;
+- inspect dealer concentration on `/dealers`; and
 - filter risk, dealer, and temporal patterns on `/analytics`.
 
 ## Analyst routes
 
 | Route | Purpose |
 |---|---|
-| `/` | Executive application, network, ecosystem, and exposure metrics |
+| `/` | Live application stream, relationship graph, intelligence queue, and portfolio snapshot |
 | `/investigate` | Borrower profile, score, ranked evidence, and action |
 | `/network` | Bounded interactive customer-device-account-dealer-location graph |
-| `/analytics` | Risk distribution, dealer clusters, and temporal trends |
-| `/demo` | Isolated computed before-and-after ecosystem simulation |
+| `/dealers` | Dealer concentration table, risk indicators, exposure, and selected-dealer detail |
+| `/analytics` | Portfolio risk distribution, dealer clusters, temporal movement, and exposure |
+| `/demo` | Five-stage, isolated before-and-after ecosystem simulation |
 
 ## API summary
 
@@ -148,6 +150,7 @@ With the standard seed-2026 portfolio:
 | GET | `/api/v1/risk_score/{application_id}` | Retrieve the stored score |
 | GET | `/api/v1/network/{customer_id}` | Retrieve a bounded relationship projection |
 | GET | `/api/v1/explanation/{application_id}` | Retrieve profile, evidence, versions, and action |
+| GET | `/api/v1/monitor/activity` | Retrieve recent scored application activity for the live monitor |
 | GET | `/api/v1/dashboard/summary` | Retrieve executive metrics |
 | GET | `/api/v1/analytics` | Retrieve bounded portfolio analytics |
 | POST | `/api/v1/demo/simulate` | Compute an isolated emerging-risk scenario |
@@ -175,7 +178,7 @@ npm run build
 npm audit
 ```
 
-The Phase 10 release candidate has 61 passing backend/cross-layer tests and 11 passing frontend tests. See the [test-case catalog](docs/test-cases.md) for coverage mapped to product behavior.
+The Phase 10 release candidate has 62 passing backend/cross-layer tests and 13 passing frontend tests. See the [test-case catalog](docs/test-cases.md) for coverage mapped to product behavior.
 
 ## Reproduce the intelligence pipeline directly
 

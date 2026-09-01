@@ -66,7 +66,7 @@ The HTTP response travels back through FastAPI to the console; the arrows above 
 
 ### React analyst console
 
-The frontend provides four connected views: executive dashboard, application investigation, network explorer, and analytics. React Flow renders the traversable entity network; charts display risk distribution, temporal trends, and dealer concentration. A fifth demo interaction, “Simulate Emerging Risk Ecosystem,” shows a computed before/after scenario.
+The frontend provides six connected workspaces: Live Monitor, Investigations, Network Intelligence, Dealer Intelligence, Portfolio Insights, and Simulation Lab. React Flow renders operational and investigative entity networks; charts and tables display risk distribution, temporal trends, dealer concentration, and exposure. The Simulation Lab's **Start Simulation** action shows a computed before/after scenario through five visible processing stages.
 
 **Why:** React and TypeScript provide a productive, strongly typed UI stack. Tailwind supports a consistent TVS-inspired blue/green/white system without a large component dependency. The browser never calculates authoritative risk.
 

@@ -14,7 +14,7 @@ The project follows the requested phase gate. Each implementation phase begins w
 | 7 | FastAPI backend | Required routes, OpenAPI, contract/integration tests | Complete |
 | 8 | Enterprise React dashboard | Four data-backed responsive pages | Complete |
 | 9 | One-click emerging-risk demo | Computed before/after journey, end-to-end test | Complete |
-| 10 | Final polish | README, screenshots, diagrams, API docs, full verification | In progress — screenshot capture pending |
+| 10 | Final polish and enterprise workspace redesign | Six operational workspaces, README, diagrams, API docs, full verification, screenshots | In progress — screenshot capture pending |
 
 ## Proposed checkpoint strategy
 

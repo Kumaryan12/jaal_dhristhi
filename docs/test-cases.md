@@ -18,10 +18,11 @@ This catalog maps the automated suite to product behavior and risk controls. Exa
 | Model artifacts | checksum, round trip, schema compatibility, hybrid propagation | Only a compatible versioned artifact enters scoring |
 | SQLite | transactional replace, ordered round trip, scoped analysis upsert | Partial state cannot become active and analyses remain dataset-scoped |
 | API contract | OpenAPI paths, request IDs, validation, stable errors, bounded reads | Invalid input returns safe machine-readable envelopes without echoing sensitive values |
+| Live monitor | bounded event count, scored records, entity identifiers, operational statuses | The activity feed is backend-derived and rejects out-of-range limits |
 | Demo mode | LOW-to-HIGH transition, evidence codes, unique namespaces, active-state isolation | Each run is computed, repeatable by seed, separately namespaced, and non-mutating |
 | End-to-end journey | populated portfolio plus Phase 9 mutation through ASGI | The demo escalates Customer A while portfolio metrics remain unchanged |
 
-Backend/cross-layer count at the Phase 10 candidate: **61 passing tests**.
+Backend/cross-layer count at the Phase 10 candidate: **62 passing tests**.
 
 ## Frontend coverage
 
@@ -29,10 +30,11 @@ Backend/cross-layer count at the Phase 10 candidate: **61 passing tests**.
 |---|---|---|
 | Typed API client | dashboard GET, stable errors, encoded network query, simulation POST | Requests use the configured base URL, bounded parameters, and deterministic seed body |
 | Shared UI | risk labels and metric presentation | Risk semantics and portfolio figures render consistently |
+| Live monitor | activity stream, graph projection, review status, portfolio context, investigation handoff | The operational workspace renders only returned API state and uses the focus customer for network context |
 | Investigation | honest empty state, submit, explanation, action, network handoff | No result is invented before the API responds; evidence and navigation use returned identifiers |
 | Demo mode | explicit initial action, presentation view, LOW-to-HIGH rendering, process trace, evidence, network, isolation notice | One click renders the backend response, exposes the complete intelligence path, and never substitutes browser-side scoring |
 
-Frontend count at the Phase 10 candidate: **11 passing tests**.
+Frontend count at the Phase 10 candidate: **13 passing tests**.
 
 ## Verification commands
 
@@ -53,12 +55,13 @@ npm audit
 
 | Check | Acceptance |
 |---|---|
-| Executive dashboard | Standard portfolio loads with four computed metrics and charts |
+| Live Monitor | Recent applications, relationship graph, intelligence queue, and computed portfolio snapshot load together |
 | Investigation | `APP-S-005001` returns profile, HIGH evidence, and an action |
 | Network | `CUS-S-005001` renders a bounded traversable graph |
+| Dealer Intelligence | Dealer table supports selection and exposes concentration, exposure, and risk context |
 | Analytics | Valid date range updates all charts; reversed range produces an actionable error |
 | Demo | Presentation view hides navigation; one click renders the live process trace, LOW before, HIGH after, network evidence, and isolation notice |
-| Responsive navigation | All five routes remain reachable at desktop and mobile widths |
+| Responsive navigation | All six routes remain reachable at desktop and mobile widths |
 | Keyboard | Inputs, buttons, links, and graph controls have visible focus and logical order |
 | Reduced motion | The interface honors `prefers-reduced-motion` |
 | Social metadata | Root title, description, Open Graph, and X card match TVS JaalDrishti |

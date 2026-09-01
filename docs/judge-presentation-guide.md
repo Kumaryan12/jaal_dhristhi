@@ -10,9 +10,9 @@ Open `http://localhost:3000/demo`, select **Presentation view**, and keep the pa
 
 | Time | Screen | Talk track |
 |---|---|---|
-| 0:00–0:25 | Hero and three-beat roadmap | “Most lending systems assess an application as an individual record. Emerging risk often exists between records—in shared identities, concentrated dealers, and application timing.” |
-| 0:25–0:50 | Six-stage intelligence path | “We observe normal lending events, resolve shared identities, build the relationship graph, detect temporal emergence, calculate an explainable hybrid score, and route evidence to a human decision.” |
-| 0:50–1:05 | Simulation button | “This is a live, isolated backend computation. The score you are about to see is not scripted in the interface.” Select **Simulate Emerging Risk Ecosystem**. |
+| 0:00–0:25 | Scenario context | “Most lending systems assess an application as an individual record. Emerging risk often exists between records—in shared identities, concentrated dealers, and application timing.” |
+| 0:25–0:50 | Five-stage processing path | “We receive the application, discover shared identities, form the relationship network, calculate explainable risk, and route the evidence to a human decision.” |
+| 0:50–1:05 | Simulation button | “This is a live, isolated backend computation. The score you are about to see is not scripted in the interface.” Select **Start Simulation**. |
 | 1:05–1:35 | Live process outputs | “Six applications are created, device and dealer identities are resolved, the graph is assembled, the two-hour burst is evaluated, and evidence is converted into a review action.” |
 | 1:35–2:00 | LOW-to-HIGH comparison | “Customer A looks LOW risk in isolation. The borrower has not changed; the connected context has. Five linked applicants push the ecosystem assessment to HIGH.” |
 | 2:00–2:30 | Evidence cards and graph | “The system can show exactly why: six applicants share one device, they concentrate at one dealer, and the activity occurs inside two hours.” |
