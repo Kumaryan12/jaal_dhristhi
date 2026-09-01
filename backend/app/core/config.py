@@ -8,7 +8,12 @@ from pathlib import Path
 
 
 def _default_database_path() -> Path:
-    return Path(os.environ.get("JAALDRISHTI_DB_PATH", "data/jaaldrishti.db"))
+    configured = os.environ.get("JAALDRISHTI_DB_PATH")
+    if configured:
+        return Path(configured)
+    if os.environ.get("VERCEL"):
+        return Path("/tmp/jaaldrishti.db")
+    return Path("data/jaaldrishti.db")
 
 
 def _default_model_path() -> Path:

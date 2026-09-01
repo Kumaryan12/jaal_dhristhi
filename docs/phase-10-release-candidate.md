@@ -15,7 +15,7 @@ Phase 10 converts the implemented prototype into a reviewable release candidate.
 
 ## Verification status
 
-The backend/cross-layer suite contains 62 passing tests. The frontend suite contains 15 passing tests. Python lint and compilation, frontend lint, the six-route production build, and the dependency audit pass.
+The backend/cross-layer suite contains 64 passing tests. The frontend suite contains 19 passing tests. Python lint and compilation, frontend lint, the eight-route production build, and the dependency audit pass.
 
 The standard live dataset contains 5,588 applications. The Phase 9 smoke journey computes Customer A from LOW 0.00 to HIGH 85.43 and leaves the active portfolio summary unchanged. The release console now provides Live Monitor, Investigations, Network Intelligence, Dealer Intelligence, Portfolio Insights, and Simulation Lab workspaces.
 
@@ -25,4 +25,4 @@ Repository screenshots remain pending because the in-app browser capture surface
 
 ## Production boundary
 
-The private frontend release is deployable independently, but live hosted data requires an externally reachable FastAPI deployment and matching CORS configuration. Enterprise authentication, authorization, privacy controls, audit retention, rate limiting, PostgreSQL, governed model storage, and asynchronous heavy workloads remain production integration work.
+The hosted presentation frontend is independently deployable and includes deterministic same-origin demo handlers for every judge-facing workflow. A configured `NEXT_PUBLIC_API_BASE_URL` can still route the browser to the full FastAPI service. Enterprise authentication, authorization, privacy controls, audit retention, rate limiting, PostgreSQL, governed model storage, and asynchronous heavy workloads remain production integration work.

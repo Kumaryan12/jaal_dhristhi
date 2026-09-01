@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   title: 'JaalDrishti | Ecosystem Risk Intelligence',
   description:
     'Explainable network and temporal risk intelligence for lending operations.',
+  icons: { icon: '/favicon.svg' },
   openGraph: {
     title: 'TVS JaalDrishti',
     description: 'Detect the network before it becomes the loss.',

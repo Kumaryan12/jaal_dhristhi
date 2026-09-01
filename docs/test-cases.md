@@ -17,25 +17,27 @@ This catalog maps the automated suite to product behavior and risk controls. Exa
 | ML training | RF, XGBoost, Isolation Forest, selection, reproducibility | All candidates are evaluated; selection uses validation metrics; probabilities are finite |
 | Model artifacts | checksum, round trip, schema compatibility, hybrid propagation | Only a compatible versioned artifact enters scoring |
 | SQLite | transactional replace, ordered round trip, scoped analysis upsert | Partial state cannot become active and analyses remain dataset-scoped |
+| Deployment configuration | Vercel writable default, explicit database override | Serverless startup uses `/tmp` while operator configuration retains precedence |
 | API contract | OpenAPI paths, request IDs, validation, stable errors, bounded reads | Invalid input returns safe machine-readable envelopes without echoing sensitive values |
 | Live monitor | bounded event count, scored records, entity identifiers, operational statuses | The activity feed is backend-derived and rejects out-of-range limits |
 | Demo mode | LOW-to-HIGH transition, evidence codes, unique namespaces, active-state isolation | Each run is computed, repeatable by seed, separately namespaced, and non-mutating |
 | End-to-end journey | populated portfolio plus Phase 9 mutation through ASGI | The demo escalates Customer A while portfolio metrics remain unchanged |
 
-Backend/cross-layer count at the Phase 10 candidate: **62 passing tests**.
+Backend/cross-layer count at the Phase 10 candidate: **64 passing tests**.
 
 ## Frontend coverage
 
 | Area | Representative cases | Expected behavior |
 |---|---|---|
 | Typed API client | dashboard GET, stable errors, encoded network query, simulation POST | Requests use the configured base URL, bounded parameters, and deterministic seed body |
+| Hosted demo API | dashboard snapshot, bounded monitor validation, simulation, missing application | Production presentation mode remains complete without browser-local or external API dependencies |
 | Shared UI | risk labels and metric presentation | Risk semantics and portfolio figures render consistently |
 | Live monitor | activity stream, selectable customer graph, auto-follow, graph projection, review status, portfolio context, investigation handoff | The workspace renders returned API state, follows new activity, and lets analysts switch the graph to any visible application |
 | Investigation | honest empty state, submit, explanation, action, network handoff | No result is invented before the API responds; evidence and navigation use returned identifiers |
 | Network Intelligence | Signal view, low-specificity noise suppression, evidence narrative, Full graph control | The default graph prioritizes shared device/account/dealer context while preserving access to every returned node |
 | Demo mode | explicit initial action, presentation view, LOW-to-HIGH rendering, process trace, evidence, network, isolation notice | One click renders the backend response, exposes the complete intelligence path, and never substitutes browser-side scoring |
 
-Frontend count at the Phase 10 candidate: **15 passing tests**.
+Frontend count at the Phase 10 candidate: **19 passing tests**.
 
 ## Verification commands
 

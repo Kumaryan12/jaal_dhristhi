@@ -178,7 +178,7 @@ npm run build
 npm audit
 ```
 
-The Phase 10 release candidate has 62 passing backend/cross-layer tests and 15 passing frontend tests. See the [test-case catalog](docs/test-cases.md) for coverage mapped to product behavior.
+The Phase 10 release candidate has 64 passing backend/cross-layer tests and 19 passing frontend tests. See the [test-case catalog](docs/test-cases.md) for coverage mapped to product behavior.
 
 ## Reproduce the intelligence pipeline directly
 
@@ -203,7 +203,9 @@ The backend can run locally or in Docker:
 docker compose up --build backend
 ```
 
-The private frontend release is published at [jaal-drishti.nitgoa2023.chatgpt.site](https://jaal-drishti.nitgoa2023.chatgpt.site). Remote data actions require `NEXT_PUBLIC_API_BASE_URL` to reference an externally reachable API whose `JAALDRISHTI_CORS_ORIGINS` includes the frontend origin.
+The frontend supports both a private Sites release and a Vercel deployment. Hosted presentation builds use deterministic, same-origin `/api/v1` handlers so every judge-facing graph and workflow remains available without a persistent external database. Local development continues to use the full FastAPI intelligence pipeline on port 8000; set `NEXT_PUBLIC_API_BASE_URL` to connect a hosted frontend to an externally reachable API instead.
+
+The FastAPI service can also run on Vercel for contract inspection and lightweight demos. Vercel uses `/tmp` for SQLite because the deployment filesystem is otherwise read-only and ephemeral; use PostgreSQL or another durable service for real hosted state.
 
 For production, replace SQLite with PostgreSQL, move artifacts to governed object storage/model registry, introduce enterprise OIDC/RBAC, mask sensitive attributes, add durable audit retention and rate limiting, and run graph/training workloads asynchronously.
 
