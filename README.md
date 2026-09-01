@@ -203,9 +203,9 @@ The backend can run locally or in Docker:
 docker compose up --build backend
 ```
 
-The frontend supports both a private Sites release and a Vercel deployment. Hosted presentation builds use deterministic, same-origin `/api/v1` handlers so every judge-facing graph and workflow remains available without a persistent external database. Local development continues to use the full FastAPI intelligence pipeline on port 8000; set `NEXT_PUBLIC_API_BASE_URL` to connect a hosted frontend to an externally reachable API instead.
+The public presentation frontend is deployed at [jaal-drishti.vercel.app](https://jaal-drishti.vercel.app), with a private Sites release at [jaal-drishti.nitgoa2023.chatgpt.site](https://jaal-drishti.nitgoa2023.chatgpt.site). Hosted presentation builds use deterministic, same-origin `/api/v1` handlers so every judge-facing graph and workflow remains available without a persistent external database. Local development continues to use the full FastAPI intelligence pipeline on port 8000; set `NEXT_PUBLIC_API_BASE_URL` to connect a hosted frontend to an externally reachable API instead.
 
-The FastAPI service can also run on Vercel for contract inspection and lightweight demos. Vercel uses `/tmp` for SQLite because the deployment filesystem is otherwise read-only and ephemeral; use PostgreSQL or another durable service for real hosted state.
+The FastAPI service is deployed at [backend-fawn-theta-78.vercel.app](https://backend-fawn-theta-78.vercel.app) for contract inspection and lightweight demos. Vercel uses `/tmp` for SQLite because the deployment filesystem is otherwise read-only and ephemeral; use PostgreSQL or another durable service for real hosted state.
 
 For production, replace SQLite with PostgreSQL, move artifacts to governed object storage/model registry, introduce enterprise OIDC/RBAC, mask sensitive attributes, add durable audit retention and rate limiting, and run graph/training workloads asynchronously.
 
