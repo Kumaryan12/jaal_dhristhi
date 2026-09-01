@@ -7,8 +7,21 @@ import unittest
 from pathlib import Path
 
 import httpx
+import joblib
+import numpy as np
 from app.core import APISettings
 from app.main import create_app
+from app.services.ml import MLFeatureMatrixBuilder, VersionedPredictor
+from app.services.ml.config import ML_FEATURE_SCHEMA_VERSION
+
+
+class ConstantProbabilityEstimator:
+    def __init__(self, probability: float) -> None:
+        self.probability = probability
+
+    def predict_proba(self, values: np.ndarray) -> np.ndarray:
+        positive = np.full(len(values), self.probability, dtype=np.float64)
+        return np.column_stack((1.0 - positive, positive))
 
 
 class APIContractTests(unittest.IsolatedAsyncioTestCase):
@@ -220,6 +233,46 @@ class APIContractTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(restored.status_code, 200, restored.text)
             self.assertEqual(
                 restored.json()["analysis_id"], analysed.json()["analysis_id"]
+            )
+
+    async def test_versioned_model_probability_reaches_http_response(self) -> None:
+        model_path = Path(self.temporary_directory.name) / "test-model.joblib"
+        joblib.dump(
+            VersionedPredictor(
+                name="test_supervised",
+                model_version="test-supervised:1.0.0",
+                feature_schema_version=ML_FEATURE_SCHEMA_VERSION,
+                feature_names=MLFeatureMatrixBuilder().feature_names,
+                threshold=0.5,
+                estimator=ConstantProbabilityEstimator(0.8),
+            ),
+            model_path,
+        )
+        model_app = create_app(
+            APISettings(
+                database_path=Path(self.temporary_directory.name) / "model-api.db",
+                model_path=model_path,
+            )
+        )
+        async with httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=model_app), base_url="http://model"
+        ) as client:
+            generated = await client.post(
+                "/api/v1/generate_demo_data",
+                json={
+                    "seed": 17,
+                    "normal_application_count": 20,
+                    "suspicious_ecosystem_count": 4,
+                },
+            )
+            self.assertEqual(generated.status_code, 201, generated.text)
+            analysed = await client.post(
+                "/api/v1/analyse", json={"application_id": "APP-N-000001"}
+            )
+            self.assertEqual(analysed.status_code, 200, analysed.text)
+            self.assertEqual(analysed.json()["score_components"]["ml_score"], 80.0)
+            self.assertEqual(
+                analysed.json()["versions"]["model"], "test-supervised:1.0.0"
             )
 
 

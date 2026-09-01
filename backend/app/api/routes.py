@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import date, datetime
 from typing import Annotated
 
-from fastapi import APIRouter, Query, Request, status
+from fastapi import APIRouter, Path, Query, Request, status
 
 from app.schemas import (
     AnalyseRequest,
@@ -67,7 +67,12 @@ def analyse(payload: AnalyseRequest, request: Request) -> dict[str, object]:
     tags=["risk intelligence"],
     responses=ERROR_RESPONSES,
 )
-def risk_score(application_id: str, request: Request) -> dict[str, object]:
+def risk_score(
+    application_id: Annotated[
+        str, Path(min_length=1, max_length=80, pattern=r"^[A-Za-z0-9_.:-]+$")
+    ],
+    request: Request,
+) -> dict[str, object]:
     stored = _service(request).risk_score(application_id)
     return _service(request).analysis_payload(stored, _request_id(request))
 
@@ -79,7 +84,7 @@ def risk_score(application_id: str, request: Request) -> dict[str, object]:
     responses=ERROR_RESPONSES,
 )
 def network(
-    customer_id: str,
+    customer_id: Annotated[str, Path(min_length=1, max_length=80, pattern=r"^[A-Za-z0-9_.:-]+$")],
     request: Request,
     depth: Annotated[int, Query(ge=1, le=3)] = 2,
     max_nodes: Annotated[int, Query(ge=25, le=500)] = 150,
@@ -100,7 +105,12 @@ def network(
     tags=["risk intelligence"],
     responses=ERROR_RESPONSES,
 )
-def explanation(application_id: str, request: Request) -> dict[str, object]:
+def explanation(
+    application_id: Annotated[
+        str, Path(min_length=1, max_length=80, pattern=r"^[A-Za-z0-9_.:-]+$")
+    ],
+    request: Request,
+) -> dict[str, object]:
     return _service(request).explanation(application_id, _request_id(request))
 
 
