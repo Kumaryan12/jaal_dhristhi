@@ -54,11 +54,11 @@ Response `201 Created`:
 
 ```json
 {
-  "dataset_id": "dataset_2026_001",
+  "dataset_id": "jaaldrishti-seed-2026",
   "seed": 2026,
   "counts": {
-    "customers": 5538,
-    "applications": 5538,
+    "customers": 5588,
+    "applications": 5588,
     "suspicious_ecosystems": 100
   },
   "generated_at": "2026-09-01T06:00:00Z",
@@ -77,7 +77,7 @@ Request:
 
 ```json
 {
-  "application_id": "APP-004281",
+  "application_id": "APP-S-005001",
   "force_refresh": false
 }
 ```
@@ -87,18 +87,18 @@ Response `200 OK`:
 ```json
 {
   "analysis_id": "analysis_01...",
-  "application_id": "APP-004281",
-  "customer_id": "CUS-004281",
-  "risk_score": 87.0,
+  "application_id": "APP-S-005001",
+  "customer_id": "CUS-S-005001",
+  "risk_score": 72.0,
   "risk_level": "HIGH",
   "signals": [
     {
       "code": "SHARED_DEVICE_MANY_APPLICANTS",
-      "message": "Device DEV-0102 is linked to 8 applicants.",
+      "message": "Device DEV-0004945 is linked to 8 applicants.",
       "severity": "HIGH",
       "category": "graph",
-      "entity_ids": ["DEV-0102"],
-      "observed_value": 8,
+      "entity_ids": ["DEV-0004945"],
+      "observed_value": 7,
       "threshold": 3,
       "points": 30.0,
       "score_floor": 72.0,
@@ -108,7 +108,8 @@ Response `200 OK`:
   "recommended_action": {
     "code": "ENHANCED_VERIFICATION",
     "label": "Enhanced verification required",
-    "rationale": "Verify device ownership and dealer-originated application evidence."
+    "rationale": "Validate shared-entity ownership and dealer evidence.",
+    "human_review_required": true
   },
   "versions": {
     "feature_schema": "1.0.0",
@@ -129,7 +130,7 @@ Returns the latest stored analysis using the same score, level, action, version,
 
 ## Get a customer network
 
-`GET /api/v1/network/{customer_id}?depth=2&max_nodes=150&as_of=2026-09-01T06:00:00Z`
+`GET /api/v1/network/{customer_id}?depth=2&max_nodes=150&as_of=2026-08-31T12:00:00Z`
 
 `depth` is limited to 1–3 and `max_nodes` to 25–500. `as_of` defaults to the latest available snapshot.
 
@@ -211,6 +212,36 @@ Request:
 Response `201 Created` contains a unique `scenario_id`, a before snapshot, an after snapshot, newly created entities/edges, the scenario network, ranked explanations, and the computed action. The standard seed produces the required Customer A transition from LOW to HIGH as five linked applicants emerge around one shared device and concentrated dealer within two hours.
 
 Repeating the same seed reproduces the same source records, scores, evidence, and network inside a new scenario namespace. The simulation is computed in memory and neither reads nor overwrites the active baseline dataset or stored analyses.
+
+Abridged standard-seed response:
+
+```json
+{
+  "seed": 2026,
+  "customer_label": "Customer A",
+  "before": {
+    "risk_score": 0.0,
+    "risk_level": "LOW",
+    "linked_applicant_count": 0,
+    "shared_device_applicant_count": 1,
+    "dealer_applications_2h": 1
+  },
+  "after": {
+    "risk_score": 85.43,
+    "risk_level": "HIGH",
+    "linked_applicant_count": 5,
+    "shared_device_applicant_count": 6,
+    "dealer_applications_2h": 6
+  },
+  "recommended_action": {
+    "code": "ENHANCED_VERIFICATION",
+    "label": "Enhanced verification required",
+    "human_review_required": true
+  }
+}
+```
+
+The complete response additionally includes a unique `scenario_id`, source identifiers, the full renderable network, created entities and edges, ranked signal objects, rationale, generation timestamp, and request ID.
 
 ## Status codes
 

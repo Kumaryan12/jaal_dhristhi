@@ -2,134 +2,97 @@
 
 > Detect the network before it becomes the loss.
 
-TVS JaalDrishti is an explainable risk-intelligence layer for lending teams. It augments an existing loan-origination or loan-management system by turning application ecosystem data into a temporal relationship graph, detecting emerging risky networks, and explaining the recommended action to an analyst.
+TVS JaalDrishti is an explainable ecosystem-risk intelligence layer for lending teams. It complements an existing loan-origination or loan-management system by resolving relationships between applicants, devices, accounts, dealers, and locations; measuring how those networks change over time; and returning a transparent risk score with evidence and a recommended human-review action.
 
-The product is deliberately **not** a generic fraud detector or a banking application. Its core proposition is:
+The core proposition is simple:
 
 > Individual Risk != Ecosystem Risk
 
-## Project status
+## Problem
 
-Phases 0–9 are complete. The repository generates a lending ecosystem, resolves hidden relationships, calculates graph and temporal features, compares three imbalanced-learning models, exposes the structured 0–100 hybrid intelligence through a versioned FastAPI service, presents it in a responsive enterprise analyst console, and demonstrates an isolated computed LOW-to-HIGH emerging-network journey.
+Traditional application checks evaluate one borrower at a time. Individually plausible applicants can therefore appear low risk while collectively sharing devices, repayment accounts, dealers, locations, and tightly concentrated submission windows. By the time repayment performance exposes the pattern, the loss may already be distributed across a connected ecosystem.
 
-- [System architecture](docs/architecture.md)
-- [API contract](docs/api-contract.md)
-- [Data model](docs/data-model.md)
-- [Phase plan and approval record](docs/phase-plan.md)
-- [Phase 1 implementation report](docs/phase-1-synthetic-data.md)
-- [Phase 2 implementation report](docs/phase-2-entity-resolution.md)
-- [Phase 3 implementation report](docs/phase-3-graph-intelligence.md)
-- [Phase 4 implementation report](docs/phase-4-temporal-intelligence.md)
-- [Phase 5 implementation report](docs/phase-5-risk-intelligence.md)
-- [Phase 6 implementation report](docs/phase-6-ml-enhancement.md)
-- [Phase 7 implementation report](docs/phase-7-fastapi-backend.md)
-- [Phase 8 implementation report](docs/phase-8-enterprise-dashboard.md)
-- [Phase 9 implementation report](docs/phase-9-demo-mode.md)
+## Solution
 
-## Proposed technology
+JaalDrishti turns normalized application records into a temporal relationship graph and combines four evidence sources:
 
-- React, TypeScript, Tailwind CSS, React Flow, and Recharts for the analyst console
-- FastAPI and Pydantic for the HTTP API and typed contracts
-- Python, pandas, NetworkX, scikit-learn, and optional XGBoost for intelligence modules
-- SQLite for portable demo persistence, with generated CSV snapshots for inspection
-- Pytest and Vitest/Testing Library for automated verification
+- deterministic entity resolution across customers, devices, accounts, dealers, and locations;
+- graph intelligence such as linked applicants, component size, density, centrality, and communities;
+- point-in-time temporal intelligence for velocity, bursts, growth, and recency; and
+- versioned explainable rules with optional supervised-model probability.
 
-## Generate Phase 1 data
+The result is a bounded `0–100` ecosystem score, ranked evidence objects, and one of three analyst actions: standard processing, manual review, or enhanced verification. JaalDrishti is decision support; it does not execute a lending decision.
 
-```bash
-PYTHONPATH=backend python3 -m app.services.synthetic_data.cli \
-  --output-dir data/raw \
-  --seed 2026 \
-  --normal-applications 5000 \
-  --suspicious-ecosystems 100
+## What is included
+
+- seeded synthetic generation with 5,000 normal applications and 100 suspicious ecosystems;
+- exact relationship resolution and weighted customer projection;
+- NetworkX graph features and deterministic community detection;
+- leakage-safe rolling temporal features;
+- explainable hybrid risk scoring;
+- Random Forest, XGBoost, and Isolation Forest comparison;
+- versioned FastAPI contracts with SQLite demo persistence;
+- a responsive React, TypeScript, Tailwind, React Flow, and Recharts analyst console; and
+- an isolated one-click LOW-to-HIGH emerging-risk demonstration.
+
+Phases 0–9 are complete. Phase 10 release documentation, CI, and regression verification are complete; repository screenshots await an available in-app browser capture session.
+
+## Architecture
+
+```mermaid
+flowchart LR
+    analyst["Risk analyst"] -->|"Uses"| console["React analyst console"]
+    console -->|"HTTPS JSON"| api["FastAPI API"]
+    api -->|"Orchestrates"| intelligence["Generation, resolution, graph, temporal, risk, explanation"]
+    intelligence -->|"Reads and writes"| sqlite["SQLite demo store"]
+    intelligence -->|"Loads trusted"| model["Versioned model artifact"]
+    intelligence -->|"Exports"| snapshots["Inspectable CSV and JSON artifacts"]
+    cli["Engineering CLI"] -->|"Generates and trains"| intelligence
+    los["Future LOS or LMS"] -.->|"Application and repayment data"| intelligence
 ```
 
-See [data/README.md](data/README.md) for the generated table contract and overwrite behavior.
+Authoritative risk calculations stay in the backend. The browser is a typed visualization client and never reconstructs a score. See [System architecture](docs/architecture.md), [data model](docs/data-model.md), and [API contract](docs/api-contract.md).
 
-## Resolve the relationship graph
+## Quick start
 
-```bash
-PYTHONPATH=backend python3 -m app.services.entity_resolution.cli \
-  --seed 2026 \
-  --normal-applications 5000 \
-  --suspicious-ecosystems 100 \
-  --graph-output data/processed/relationship-graph.json
-```
+### Prerequisites
 
-Omit `--graph-output` to calculate and print only the graph summary.
+- Python 3.11+
+- Node.js 22.13+
+- npm
 
-## Generate graph intelligence features
-
-```bash
-PYTHONPATH=backend python3 -m app.services.graph_intelligence.cli \
-  --seed 2026 \
-  --normal-applications 5000 \
-  --suspicious-ecosystems 100 \
-  --output-dir data/processed
-```
-
-This writes a versioned customer feature table and compact checksum summary. The engine calculates graph features only; final risk scoring begins in Phase 5.
-
-## Generate temporal intelligence features
-
-```bash
-PYTHONPATH=backend python3 -m app.services.temporal_intelligence.cli \
-  --seed 2026 \
-  --normal-applications 5000 \
-  --suspicious-ecosystems 100 \
-  --output-dir data/processed
-```
-
-Each row is calculated as of its application submission timestamp. Later applications never contribute to earlier feature rows.
-
-## Generate explainable risk assessments
-
-```bash
-PYTHONPATH=backend python3 -m app.services.risk_intelligence.cli \
-  --seed 2026 \
-  --normal-applications 5000 \
-  --suspicious-ecosystems 100 \
-  --output-dir data/processed
-```
-
-The Phase 5-only CLI deliberately runs without an ML probability. Use the Phase 6 pipeline below for the trained hybrid path.
-
-## Train and integrate the Phase 6 models
+### 1. Install and start the API
 
 ```bash
 python3 -m venv .venv
-.venv/bin/python -m pip install -e 'backend[ml-xgboost]'
-.venv/bin/jaal-train-ml \
-  --seed 2026 \
-  --normal-applications 5000 \
-  --suspicious-ecosystems 100 \
-  --output-dir models \
-  --risk-output-dir data/processed \
-  --replace
-```
-
-This trains Random Forest, XGBoost, and normal-only Isolation Forest; tunes classification thresholds on the validation split; reports precision, recall, F1, and PR-AUC on the held-out test split; persists the selected versioned predictor; and injects its probabilities into explainable hybrid risk scoring. Model binaries and bulk assessments remain local, while compact benchmark metadata is versioned.
-
-## Run the Phase 7 API
-
-```bash
 .venv/bin/python -m pip install -e 'backend[ml-xgboost,test]'
 .venv/bin/jaal-api --host 127.0.0.1 --port 8000
 ```
 
-OpenAPI documentation is available at `http://127.0.0.1:8000/docs`, with the machine-readable contract at `/openapi.json` and liveness at `/health`.
+The service exposes:
 
-To run the backend in a container with a persistent SQLite volume:
+- health: `http://127.0.0.1:8000/health`
+- interactive OpenAPI: `http://127.0.0.1:8000/docs`
+- OpenAPI JSON: `http://127.0.0.1:8000/openapi.json`
+
+### 2. Populate the standard demo portfolio
+
+In another terminal:
 
 ```bash
-docker compose up --build backend
+curl -X POST http://127.0.0.1:8000/api/v1/generate_demo_data \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "seed": 2026,
+    "normal_application_count": 5000,
+    "suspicious_ecosystem_count": 100,
+    "replace_existing": true
+  }'
 ```
 
-Generate the initial dataset through `POST /api/v1/generate_demo_data`. The database path, trusted model path, and allowed browser origins are configurable through the variables documented in [.env.example](.env.example).
+The standard seed currently produces 5,588 applications. Counts are derived from generated ecosystem sizes rather than hardcoded in the product.
 
-## Run the analyst console
-
-Start the API first, then run the frontend in a second terminal:
+### 3. Start the analyst console
 
 ```bash
 cd frontend
@@ -138,21 +101,67 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:3000`. The console uses `http://127.0.0.1:8000` by default; set `NEXT_PUBLIC_API_BASE_URL` in `frontend/.env.local` when the API is hosted elsewhere.
+Open `http://localhost:3000`. Set `NEXT_PUBLIC_API_BASE_URL` in `frontend/.env.local` when the API is hosted elsewhere.
 
-The five data-backed routes are:
+## Demo walkthrough
 
-- `/` — executive portfolio overview
-- `/investigate` — application analysis and evidence
-- `/network` — interactive relationship graph
-- `/analytics` — bounded risk, dealer, and temporal analytics
-- `/demo` — one-click isolated emerging-risk simulation
+### One-click emerging ecosystem
 
-For the standard seed-2026 dataset, `APP-S-005001` and `CUS-S-005001` provide a useful suspicious-ecosystem investigation path.
+1. Open `/demo`.
+2. Select **Simulate Emerging Risk Ecosystem**.
+3. Observe Customer A score LOW as an isolated applicant.
+4. Review the six-applicant shared-device and dealer network.
+5. Observe the recomputed HIGH score, ranked evidence, and enhanced-verification action.
 
-For the Phase 9 journey, open `/demo` and select **Simulate Emerging Risk Ecosystem**. The backend creates a fresh scenario namespace, computes Customer A as LOW in isolation, introduces five connected applicants around a shared device and concentrated dealer, and recomputes the same application as HIGH with ranked evidence and enhanced verification. The active portfolio remains unchanged.
+Each click creates a new in-memory scenario namespace. It does not require, replace, or mutate the active portfolio.
 
-Frontend verification:
+### Portfolio investigation
+
+With the standard seed-2026 portfolio:
+
+- use `APP-S-005001` on `/investigate`;
+- follow `CUS-S-005001` into `/network`;
+- review portfolio metrics on `/`; and
+- filter risk, dealer, and temporal patterns on `/analytics`.
+
+## Analyst routes
+
+| Route | Purpose |
+|---|---|
+| `/` | Executive application, network, ecosystem, and exposure metrics |
+| `/investigate` | Borrower profile, score, ranked evidence, and action |
+| `/network` | Bounded interactive customer-device-account-dealer-location graph |
+| `/analytics` | Risk distribution, dealer clusters, and temporal trends |
+| `/demo` | Isolated computed before-and-after ecosystem simulation |
+
+## API summary
+
+| Method | Path | Purpose |
+|---|---|---|
+| GET | `/health` | Liveness, version, and dataset readiness |
+| POST | `/api/v1/generate_demo_data` | Generate and persist a seeded portfolio |
+| POST | `/api/v1/analyse` | Analyse or refresh one application |
+| GET | `/api/v1/risk_score/{application_id}` | Retrieve the stored score |
+| GET | `/api/v1/network/{customer_id}` | Retrieve a bounded relationship projection |
+| GET | `/api/v1/explanation/{application_id}` | Retrieve profile, evidence, versions, and action |
+| GET | `/api/v1/dashboard/summary` | Retrieve executive metrics |
+| GET | `/api/v1/analytics` | Retrieve bounded portfolio analytics |
+| POST | `/api/v1/demo/simulate` | Compute an isolated emerging-risk scenario |
+
+See [API contract](docs/api-contract.md) for request/response examples and error semantics.
+
+## Verification
+
+Backend and cross-layer suite:
+
+```bash
+PYTHONPATH=backend .venv/bin/ruff check backend tests
+PYTHONPATH=backend .venv/bin/python -m compileall -q backend/app tests
+PYTHONPATH=backend .venv/bin/python -W error::ResourceWarning \
+  -m unittest discover -s tests -v
+```
+
+Frontend suite:
 
 ```bash
 cd frontend
@@ -161,3 +170,54 @@ npm test
 npm run build
 npm audit
 ```
+
+The Phase 10 release candidate has 61 passing backend/cross-layer tests and 10 passing frontend tests. See the [test-case catalog](docs/test-cases.md) for coverage mapped to product behavior.
+
+## Reproduce the intelligence pipeline directly
+
+The HTTP API is the normal demo path. Engineering CLIs are also available:
+
+```bash
+PYTHONPATH=backend .venv/bin/python -m app.services.synthetic_data.cli --help
+PYTHONPATH=backend .venv/bin/python -m app.services.entity_resolution.cli --help
+PYTHONPATH=backend .venv/bin/python -m app.services.graph_intelligence.cli --help
+PYTHONPATH=backend .venv/bin/python -m app.services.temporal_intelligence.cli --help
+PYTHONPATH=backend .venv/bin/python -m app.services.risk_intelligence.cli --help
+.venv/bin/jaal-train-ml --help
+```
+
+Generated databases, bulk datasets, model binaries, caches, local environment files, and secrets remain untracked. Compact deterministic manifests and benchmark summaries are versioned for review.
+
+## Deployment
+
+The backend can run locally or in Docker:
+
+```bash
+docker compose up --build backend
+```
+
+The private frontend release is published at [jaal-drishti.nitgoa2023.chatgpt.site](https://jaal-drishti.nitgoa2023.chatgpt.site). Remote data actions require `NEXT_PUBLIC_API_BASE_URL` to reference an externally reachable API whose `JAALDRISHTI_CORS_ORIGINS` includes the frontend origin.
+
+For production, replace SQLite with PostgreSQL, move artifacts to governed object storage/model registry, introduce enterprise OIDC/RBAC, mask sensitive attributes, add durable audit retention and rate limiting, and run graph/training workloads asynchronously.
+
+## Documentation
+
+- [Architecture](docs/architecture.md)
+- [Data model and feature contract](docs/data-model.md)
+- [API contract](docs/api-contract.md)
+- [Test-case catalog](docs/test-cases.md)
+- [Phase plan and approval record](docs/phase-plan.md)
+- [Phase 1: synthetic data](docs/phase-1-synthetic-data.md)
+- [Phase 2: entity resolution](docs/phase-2-entity-resolution.md)
+- [Phase 3: graph intelligence](docs/phase-3-graph-intelligence.md)
+- [Phase 4: temporal intelligence](docs/phase-4-temporal-intelligence.md)
+- [Phase 5: explainable risk](docs/phase-5-risk-intelligence.md)
+- [Phase 6: ML enhancement](docs/phase-6-ml-enhancement.md)
+- [Phase 7: FastAPI backend](docs/phase-7-fastapi-backend.md)
+- [Phase 8: analyst dashboard](docs/phase-8-enterprise-dashboard.md)
+- [Phase 9: demo mode](docs/phase-9-demo-mode.md)
+- [Phase 10: release candidate](docs/phase-10-release-candidate.md)
+
+## Responsible-use boundary
+
+All bundled records are synthetic. The prototype is not a fraud verdict, credit-decision engine, or system of record. A production implementation requires legal, model-risk, privacy, security, fairness, and human-oversight review before any customer-impacting use.

@@ -1,4 +1,4 @@
-# Phase 0 — Product and System Architecture
+# Product and System Architecture
 
 ## Objective
 
@@ -16,26 +16,23 @@ JaalDrishti accepts lending-ecosystem records, resolves shared identities, build
 - **Deterministic demo:** seeded generation and versioned scoring configuration make judging and tests repeatable.
 - **No hardcoded outcomes:** the dashboard renders API results derived from stored records and computed features.
 - **Modular monolith for the prototype:** one deployable backend reduces operational overhead while strict domain boundaries preserve a path to services.
-- **Privacy by design:** use synthetic data now; expose masked identifiers in UI responses and avoid logging raw sensitive attributes.
+- **Privacy by design:** use synthetic records and opaque identifiers now; require masking and field-level authorization before real-data integration.
 
-## System context
+## Implemented system context
 
 ```mermaid
 flowchart LR
-    subgraph client ["Analyst Experience"]
+    subgraph client ["User and Engineering Clients"]
         dashboard["React Analyst Console"]
+        engineeringCli["Engineering CLI"]
     end
-    subgraph gateway ["API Layer"]
+    subgraph gateway ["Application Entry Points"]
         api["FastAPI API"]
+        commandLine["Versioned Python Entry Points"]
     end
-    subgraph service ["Risk Intelligence"]
-        ingestion["Data Generation and Ingestion"]
-        resolution["Entity Resolution"]
-        graphEngine["Graph Intelligence"]
-        temporal["Temporal Intelligence"]
-        scoring["Hybrid Risk Scoring"]
-        explanation["Explainability"]
-        training["ML Training and Evaluation"]
+    subgraph service ["Backend Services"]
+        intelligence["Generation, resolution, graph, temporal, risk, explanation"]
+        training["Offline ML training and evaluation"]
     end
     subgraph datastore ["Persistence"]
         sqlite["SQLite Demo Store"]
@@ -49,23 +46,18 @@ flowchart LR
     end
 
     dashboard -->|"HTTPS JSON"| api
-    api -->|"Generate or ingest"| ingestion
-    api -->|"Analyse application"| resolution
-    resolution -->|"Resolved links"| graphEngine
-    graphEngine -->|"Graph features"| temporal
-    temporal -->|"Temporal features"| scoring
-    training -->|"Calibrated probability"| scoring
-    scoring -->|"Evidence bundle"| explanation
-    ingestion -->|"Writes records"| sqlite
-    ingestion -->|"Exports inspectable data"| snapshots
-    resolution -->|"Reads entities"| sqlite
-    temporal -->|"Reads applications"| sqlite
+    engineeringCli -->|"Local commands"| commandLine
+    api -->|"Orchestrates requests"| intelligence
+    commandLine -->|"Runs pipelines"| intelligence
+    commandLine -->|"Trains candidates"| training
+    intelligence -->|"Reads and writes state"| sqlite
+    intelligence -->|"Exports inspectable data"| snapshots
+    intelligence -->|"Loads trusted predictor"| artifacts
     training -->|"Reads features"| sqlite
-    training -->|"Writes models"| artifacts
-    explanation -->|"Reads evidence"| sqlite
-    ingestion -.->|"LOS: application data"| los
-    ingestion -.->|"LMS: repayment data"| lms
-    ingestion -.->|"Bureau: enrichment"| bureau
+    training -->|"Writes selected predictor"| artifacts
+    intelligence -.->|"LOS: future ingestion"| los
+    intelligence -.->|"LMS: future repayment history"| lms
+    intelligence -.->|"Bureau: future enrichment"| bureau
 ```
 
 The HTTP response travels back through FastAPI to the console; the arrows above focus on the forward processing and persistence paths.
@@ -145,28 +137,25 @@ Training reads a point-in-time feature table to avoid future leakage. Stratified
 
 All feature queries use the application timestamp as their cutoff during training and historical analysis to prevent look-ahead leakage.
 
-## Proposed repository structure
+## Implemented repository structure
 
 ```text
 TVS-JaalDrishti/
 ├── backend/
 │   ├── app/
-│   │   ├── api/routes/          # Thin HTTP route handlers
-│   │   ├── core/                # Settings, logging, errors
-│   │   ├── domain/              # Domain entities and value objects
-│   │   ├── repositories/        # Persistence interfaces/adapters
+│   │   ├── api/                 # Thin HTTP routes and orchestration
+│   │   ├── core/                # Settings, errors, request IDs
+│   │   ├── repositories/        # SQLite persistence adapter
 │   │   ├── schemas/             # Pydantic API contracts
-│   │   └── services/            # Generation, graph, temporal, risk, ML
+│   │   └── services/            # Generation, resolution, graph, temporal, risk, ML, demo
 │   ├── scripts/                 # Generation/training entry points
 │   └── pyproject.toml
 ├── frontend/
-│   ├── src/
-│   │   ├── api/                 # Typed API client
-│   │   ├── components/          # Reusable UI and graph components
-│   │   ├── features/            # Dashboard, investigation, network, analytics
-│   │   ├── hooks/
-│   │   ├── routes/
-│   │   └── styles/
+│   ├── app/                     # Five Vinext/React routes and metadata
+│   ├── components/              # Shell, shared UI, network explorer
+│   ├── lib/                     # Typed API client and contracts
+│   ├── tests/                   # Vitest and Testing Library tests
+│   ├── public/                  # Favicon and social preview
 │   └── package.json
 ├── data/
 │   ├── raw/                     # Generated normalized CSV snapshots
@@ -186,7 +175,7 @@ Generated databases, bulk CSV rows, model binaries, caches, and secrets will not
 
 ## Deployment topology
 
-The prototype runs as three containers: static frontend, FastAPI backend, and a persistent SQLite volume. A Docker Compose profile provides one-command startup. CI runs linting, type checks, unit/integration tests, and a production build.
+Locally, the Vinext frontend runs on port 3000 and calls the FastAPI service on port 8000. Docker Compose packages the backend with a persistent SQLite volume and a read-only model mount. The frontend is built as a Cloudflare Worker-compatible Sites deployment. GitHub Actions runs Python lint/compilation/tests plus frontend lint/tests/build/audit on every push and pull request.
 
 For an enterprise deployment, use separate frontend and API workloads, PostgreSQL for transactional data, object storage for snapshots/artifacts, Redis for caching, and background workers for ingestion/training. Authentication can be delegated to corporate OIDC, with role-based analyst/auditor/admin access.
 
@@ -207,7 +196,7 @@ Repository and service interfaces keep these replacements outside scoring and AP
 
 - Synthetic-only demo data is clearly labelled in every generated manifest.
 - Input schemas reject unknown or malformed identifiers and bound graph traversal depth.
-- Logs use correlation IDs and masked entity identifiers; secrets come from environment configuration.
+- Requests use correlation IDs; logs avoid raw payloads and exception details; secrets come from environment configuration.
 - Each analysis records data snapshot, feature schema, model version, rule-policy version, and timestamp.
 - Recommendations remain decision support: the response states that final credit action requires authorized human or policy review.
 
