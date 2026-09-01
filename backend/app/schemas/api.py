@@ -229,3 +229,63 @@ class AnalyticsResponse(ContractModel):
     top_dealer_clusters: list[DealerClusterItem]
     daily_activity: list[DailyRiskItem]
     request_id: str
+
+
+class DemoSimulationRequest(ContractModel):
+    seed: int = Field(default=2026, ge=0, le=2_147_483_647)
+
+
+class DemoRiskSnapshotResponse(ContractModel):
+    risk_score: float = Field(ge=0, le=100)
+    risk_level: RiskLevel
+    linked_applicant_count: int = Field(ge=0)
+    cluster_size: int = Field(ge=1)
+    shared_device_applicant_count: int = Field(ge=1)
+    application_velocity_2h: int = Field(ge=1)
+    dealer_applications_2h: int = Field(ge=1)
+    signals: list[SignalResponse]
+    recommended_action: RecommendedActionResponse
+
+
+class DemoEntityResponse(ContractModel):
+    id: Identifier
+    type: str
+    label: str
+    role: str
+    is_focus: bool
+
+
+class DemoEdgeResponse(ContractModel):
+    id: Identifier
+    source: Identifier
+    target: Identifier
+    type: str
+
+
+class DemoNetworkSummaryResponse(ContractModel):
+    applicant_count: int = Field(ge=1)
+    shared_device_id: Identifier
+    dealer_id: Identifier
+
+
+class DemoNetworkResponse(ContractModel):
+    nodes: list[DemoEntityResponse]
+    edges: list[DemoEdgeResponse]
+    summary: DemoNetworkSummaryResponse
+
+
+class DemoSimulationResponse(ContractModel):
+    scenario_id: Identifier
+    seed: int
+    customer_label: Literal["Customer A"]
+    application_id: Identifier
+    customer_id: Identifier
+    before: DemoRiskSnapshotResponse
+    after: DemoRiskSnapshotResponse
+    created_entities: list[DemoEntityResponse]
+    created_edges: list[DemoEdgeResponse]
+    network: DemoNetworkResponse
+    explanations: list[SignalResponse]
+    recommended_action: RecommendedActionResponse
+    generated_at: str
+    request_id: str

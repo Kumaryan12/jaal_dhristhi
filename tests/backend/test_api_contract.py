@@ -68,6 +68,7 @@ class APIContractTests(unittest.IsolatedAsyncioTestCase):
             "/api/v1/explanation/{application_id}",
             "/api/v1/dashboard/summary",
             "/api/v1/analytics",
+            "/api/v1/demo/simulate",
         }
         self.assertTrue(expected.issubset(openapi["paths"]))
         analyse_responses = openapi["paths"]["/api/v1/analyse"]["post"]["responses"]
@@ -234,6 +235,54 @@ class APIContractTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(
                 restored.json()["analysis_id"], analysed.json()["analysis_id"]
             )
+
+    async def test_emerging_risk_demo_is_computed_and_repeatably_isolated(self) -> None:
+        first = await self.client.post("/api/v1/demo/simulate", json={"seed": 2026})
+        self.assertEqual(first.status_code, 201, first.text)
+        body = first.json()
+        self.assertEqual(body["customer_label"], "Customer A")
+        self.assertEqual(body["before"]["risk_level"], "LOW")
+        self.assertEqual(body["after"]["risk_level"], "HIGH")
+        self.assertGreater(body["after"]["risk_score"], body["before"]["risk_score"])
+        self.assertEqual(body["after"]["linked_applicant_count"], 5)
+        self.assertEqual(body["after"]["shared_device_applicant_count"], 6)
+        self.assertEqual(body["after"]["dealer_applications_2h"], 6)
+        self.assertEqual(body["network"]["summary"]["applicant_count"], 6)
+        self.assertEqual(len(body["created_entities"]), 5)
+        self.assertEqual(len(body["created_edges"]), 10)
+        codes = {item["code"] for item in body["explanations"]}
+        self.assertTrue(
+            {
+                "SHARED_DEVICE_MANY_APPLICANTS",
+                "RAPID_DEALER_APPLICATION_BURST",
+                "RAPID_DEVICE_APPLICATION_BURST",
+            }.issubset(codes)
+        )
+        self.assertEqual(
+            body["recommended_action"]["code"], "ENHANCED_VERIFICATION"
+        )
+
+        repeated = await self.client.post("/api/v1/demo/simulate", json={"seed": 2026})
+        repeated_body = repeated.json()
+        self.assertNotEqual(repeated_body["scenario_id"], body["scenario_id"])
+        self.assertEqual(repeated_body["before"], body["before"])
+        self.assertEqual(repeated_body["after"], body["after"])
+        self.assertEqual(repeated_body["network"], body["network"])
+
+        invalid = await self.client.post("/api/v1/demo/simulate", json={"seed": -1})
+        self.assertEqual(invalid.status_code, 422)
+        self.assertEqual(invalid.json()["error"]["code"], "VALIDATION_ERROR")
+
+    async def test_emerging_risk_demo_does_not_replace_active_dataset(self) -> None:
+        generated = await self._generate()
+        before = (await self.client.get("/api/v1/dashboard/summary")).json()
+        simulated = await self.client.post("/api/v1/demo/simulate", json={"seed": 17})
+        self.assertEqual(simulated.status_code, 201, simulated.text)
+        after = (await self.client.get("/api/v1/dashboard/summary")).json()
+        self.assertEqual(after["total_applications"], generated["counts"]["applications"])
+        self.assertEqual(after["total_applications"], before["total_applications"])
+        self.assertEqual(after["detected_networks"], before["detected_networks"])
+        self.assertEqual(after["potential_exposure"], before["potential_exposure"])
 
     async def test_versioned_model_probability_reaches_http_response(self) -> None:
         model_path = Path(self.temporary_directory.name) / "test-model.joblib"

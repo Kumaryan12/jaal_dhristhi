@@ -12,6 +12,7 @@ from typing import Any
 
 from app.core import APIError
 from app.repositories import SQLiteDemoStore, StoredAnalysis
+from app.services.demo_simulation import EmergingRiskSimulationService
 from app.services.entity_resolution import EntityResolutionEngine, RelationshipGraph
 from app.services.graph_intelligence import GraphIntelligenceEngine
 from app.services.graph_intelligence.models import GraphIntelligenceResult
@@ -88,6 +89,11 @@ class APIApplicationService:
             "generated_at": generated_at,
             "generator_version": GENERATOR_VERSION,
         }
+
+    def simulate_emerging_risk(self, seed: int) -> dict[str, Any]:
+        """Run an isolated scenario without reading or mutating the active dataset."""
+
+        return EmergingRiskSimulationService().simulate(seed)
 
     def analyse(self, application_id: str, *, force_refresh: bool) -> StoredAnalysis:
         snapshot = self._require_snapshot()

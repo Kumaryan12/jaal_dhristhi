@@ -12,6 +12,8 @@ from app.schemas import (
     AnalysisResponse,
     AnalyticsResponse,
     DashboardSummaryResponse,
+    DemoSimulationRequest,
+    DemoSimulationResponse,
     ErrorResponse,
     ExplanationResponse,
     GenerateDemoDataRequest,
@@ -47,6 +49,20 @@ def _request_id(request: Request) -> str:
 )
 def generate_demo_data(payload: GenerateDemoDataRequest, request: Request) -> dict[str, object]:
     result = _service(request).generate_demo_data(**payload.model_dump())
+    return {**result, "request_id": _request_id(request)}
+
+
+@router.post(
+    "/demo/simulate",
+    response_model=DemoSimulationResponse,
+    status_code=status.HTTP_201_CREATED,
+    tags=["demo mode"],
+    responses=ERROR_RESPONSES,
+)
+def simulate_emerging_risk(
+    payload: DemoSimulationRequest, request: Request
+) -> dict[str, object]:
+    result = _service(request).simulate_emerging_risk(payload.seed)
     return {**result, "request_id": _request_id(request)}
 
 
