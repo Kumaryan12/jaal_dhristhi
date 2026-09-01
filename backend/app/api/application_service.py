@@ -313,6 +313,66 @@ class APIApplicationService:
             "request_id": request_id,
         }
 
+    def live_monitor(self, *, limit: int, request_id: str) -> dict[str, Any]:
+        """Return recent, scored application events for the analyst monitor."""
+
+        snapshot = self._require_snapshot()
+        assessments = self._all_assessments(snapshot)
+        devices = {
+            str(row["customer_id"]): str(row["device_id"])
+            for row in snapshot.dataset.tables["customer_devices"]
+        }
+        accounts = {
+            str(row["customer_id"]): str(row["account_id"])
+            for row in snapshot.dataset.tables["customer_accounts"]
+        }
+        applications = sorted(
+            snapshot.dataset.tables["applications"],
+            key=lambda row: str(row["submitted_at"]),
+            reverse=True,
+        )[:limit]
+        events: list[dict[str, Any]] = []
+        for application in applications:
+            application_id = str(application["application_id"])
+            customer_id = str(application["customer_id"])
+            assessment = assessments[application_id]
+            graph = snapshot.graph.feature_for(customer_id)
+            status = (
+                "Requires Review"
+                if assessment.risk_level == "HIGH"
+                else "Relationship Found"
+                if graph.connected_applicant_count > 0
+                else "Analysed"
+            )
+            events.append(
+                {
+                    "timestamp": str(application["submitted_at"]),
+                    "application_id": application_id,
+                    "customer_id": customer_id,
+                    "dealer_id": str(application["dealer_id"]),
+                    "device_id": devices[customer_id],
+                    "account_id": accounts[customer_id],
+                    "loan_amount_inr": int(application["loan_amount_inr"]),
+                    "risk_score": assessment.risk_score,
+                    "risk_level": assessment.risk_level,
+                    "status": status,
+                    "primary_signal": (
+                        assessment.signals[0].code if assessment.signals else None
+                    ),
+                }
+            )
+        focus = next(
+            (item for item in events if item["risk_level"] == "HIGH"),
+            events[0],
+        )
+        return {
+            "dataset_id": snapshot.dataset.dataset_id,
+            "events": events,
+            "focus_customer_id": focus["customer_id"],
+            "data_timestamp": snapshot.dataset.config.as_of.isoformat().replace("+00:00", "Z"),
+            "request_id": request_id,
+        }
+
     def analytics(
         self, from_date: date | None, to_date: date | None, request_id: str
     ) -> dict[str, Any]:

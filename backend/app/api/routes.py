@@ -18,6 +18,7 @@ from app.schemas import (
     ExplanationResponse,
     GenerateDemoDataRequest,
     GenerateDemoDataResponse,
+    LiveMonitorResponse,
     NetworkResponse,
 )
 
@@ -138,6 +139,19 @@ def explanation(
 )
 def dashboard_summary(request: Request, as_of: datetime | None = None) -> dict[str, object]:
     return _service(request).dashboard_summary(_request_id(request), as_of)
+
+
+@router.get(
+    "/monitor/activity",
+    response_model=LiveMonitorResponse,
+    tags=["dashboard"],
+    responses=ERROR_RESPONSES,
+)
+def live_monitor(
+    request: Request,
+    limit: Annotated[int, Query(ge=5, le=50)] = 20,
+) -> dict[str, object]:
+    return _service(request).live_monitor(limit=limit, request_id=_request_id(request))
 
 
 @router.get(

@@ -204,6 +204,28 @@ class DashboardSummaryResponse(ContractModel):
     request_id: str
 
 
+class ActivityEventResponse(ContractModel):
+    timestamp: str
+    application_id: Identifier
+    customer_id: Identifier
+    dealer_id: Identifier
+    device_id: Identifier
+    account_id: Identifier
+    loan_amount_inr: int = Field(ge=0)
+    risk_score: float = Field(ge=0, le=100)
+    risk_level: RiskLevel
+    status: Literal["Analysed", "Relationship Found", "Requires Review"]
+    primary_signal: str | None
+
+
+class LiveMonitorResponse(ContractModel):
+    dataset_id: Identifier
+    events: list[ActivityEventResponse]
+    focus_customer_id: Identifier
+    data_timestamp: str
+    request_id: str
+
+
 class RiskDistributionItem(ContractModel):
     risk_level: RiskLevel
     count: int

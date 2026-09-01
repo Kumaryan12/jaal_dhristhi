@@ -67,6 +67,7 @@ class APIContractTests(unittest.IsolatedAsyncioTestCase):
             "/api/v1/network/{customer_id}",
             "/api/v1/explanation/{application_id}",
             "/api/v1/dashboard/summary",
+            "/api/v1/monitor/activity",
             "/api/v1/analytics",
             "/api/v1/demo/simulate",
         }
@@ -218,6 +219,29 @@ class APIContractTests(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(reversed_range.status_code, 400)
         self.assertEqual(reversed_range.json()["error"]["code"], "INVALID_DATE_RANGE")
+
+    async def test_live_monitor_returns_scored_backend_events(self) -> None:
+        await self._generate()
+        response = await self.client.get("/api/v1/monitor/activity", params={"limit": 8})
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertEqual(len(body["events"]), 8)
+        self.assertTrue(body["focus_customer_id"])
+        self.assertTrue(body["dataset_id"])
+        self.assertTrue(all(item["application_id"] for item in body["events"]))
+        self.assertTrue(all(item["device_id"] for item in body["events"]))
+        self.assertTrue(all(0 <= item["risk_score"] <= 100 for item in body["events"]))
+        self.assertTrue(
+            all(
+                item["status"]
+                in {"Analysed", "Relationship Found", "Requires Review"}
+                for item in body["events"]
+            )
+        )
+
+        invalid = await self.client.get("/api/v1/monitor/activity", params={"limit": 2})
+        self.assertEqual(invalid.status_code, 422)
+        self.assertEqual(invalid.json()["error"]["code"], "VALIDATION_ERROR")
 
     async def test_dataset_and_analysis_survive_application_restart(self) -> None:
         await self._generate()
