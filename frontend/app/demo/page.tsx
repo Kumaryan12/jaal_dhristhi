@@ -15,7 +15,6 @@ import {
   BrainCircuit,
   Building2,
   CheckCircle2,
-  Clock3,
   Database,
   Fingerprint,
   GitCompareArrows,
@@ -27,23 +26,21 @@ import {
   RefreshCw,
   ShieldAlert,
   Smartphone,
-  Sparkles,
   UserCheck,
   Users,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 import { AppShell } from '../../components/app-shell';
-import { IntelligenceJourney } from '../../components/intelligence-journey';
 import { ErrorPanel, LoadingPanel, PageHeading, RiskBadge } from '../../components/ui';
 import { simulateEmergingRisk } from '../../lib/api';
 import type { DemoSimulation, DemoRiskSnapshot } from '../../lib/types';
 
 const nodeStyle: Record<string, { background: string; border: string; color: string }> = {
-  focus_customer: { background: '#1b62ff', border: '#1b62ff', color: '#fff' },
-  applicant: { background: '#eaf0ff', border: '#1b62ff', color: '#174cb8' },
-  shared_device: { background: '#f0ecff', border: '#7656df', color: '#6544ca' },
-  dealer: { background: '#fff1d9', border: '#f3a62b', color: '#9a6510' },
+  focus_customer: { background: '#0057a8', border: '#0057a8', color: '#fff' },
+  applicant: { background: '#eff6ff', border: '#0057a8', color: '#0b1f3a' },
+  shared_device: { background: '#f3f4f6', border: '#0b1f3a', color: '#0b1f3a' },
+  dealer: { background: '#fffbeb', border: '#d97706', color: '#92400e' },
 };
 
 export default function DemoPage() {
@@ -69,15 +66,15 @@ export default function DemoPage() {
     <AppShell activePath="/demo" presentationMode={presentationMode}>
       <div className="mx-auto max-w-[1500px]">
         <PageHeading
-          eyebrow="Judge walkthrough · 3 minutes"
-          title="Watch the decision change as hidden context appears."
-          description="One live scenario explains the problem, the intelligence pipeline, the evidence, and the human action—without relying on a scripted score."
+          eyebrow="Controlled scenario"
+          title="Ecosystem Simulation"
+          description="Watch how isolated applications evolve into connected risk patterns and an explainable review action."
           actions={
             <div className="flex flex-wrap justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setPresentationMode((value) => !value)}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-[var(--line)] bg-white px-4 text-xs font-bold text-[var(--navy)] shadow-sm"
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-[var(--line)] bg-white px-4 text-xs font-semibold text-[var(--navy)]"
               >
                 {presentationMode ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
                 {presentationMode ? 'Exit presentation view' : 'Presentation view'}
@@ -86,10 +83,10 @@ export default function DemoPage() {
                 type="button"
                 onClick={runSimulation}
                 disabled={loading}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[var(--blue)] px-6 text-sm font-bold text-white shadow-[0_10px_30px_rgba(27,98,255,.25)] disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-[var(--blue)] px-5 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {simulation ? <RefreshCw size={16} /> : <Play size={16} />}
-                {simulation ? 'Run a fresh scenario' : 'Simulate Emerging Risk Ecosystem'}
+                {simulation ? 'Run a fresh scenario' : 'Start Simulation'}
               </button>
             </div>
           }
@@ -97,25 +94,9 @@ export default function DemoPage() {
 
         <PresentationCompass complete={Boolean(simulation)} />
 
-        <section className="presentation-hero mt-5 px-6 py-7 text-white sm:px-8">
-          <div className="grid gap-7 lg:grid-cols-[1.15fr_.85fr] lg:items-center">
-            <div>
-              <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.16em] text-[var(--aqua)]">
-                <Sparkles size={14} /> Computed—not scripted
-              </div>
-              <h2 className="mt-4 max-w-xl text-2xl font-bold tracking-[-.035em] sm:text-3xl">
-                The borrower does not change. Our visibility does.
-              </h2>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300">
-                First we see an individually plausible application. Then five connected applicants appear around the same device and dealer in under two hours. The platform recomputes the decision from that evidence.
-              </p>
-            </div>
-            <div className="grid grid-cols-3 gap-2">
-              <HeroFact label="Baseline" value="1 applicant" />
-              <HeroFact label="Emerges" value="6 applicants" />
-              <HeroFact label="Window" value="Under 2h" />
-            </div>
-          </div>
+        <section className="mt-4 grid gap-4 rounded-lg border border-[var(--line)] bg-white p-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+          <div><p className="text-[10px] font-semibold uppercase tracking-[.1em] text-[var(--blue)]">Computed backend scenario</p><h2 className="mt-1.5 text-base font-semibold text-[var(--navy)]">The borrower stays the same. The relationship context changes.</h2><p className="mt-1 text-xs leading-5 text-[var(--muted)]">Five connected applicants emerge around one shared device and dealer inside two hours.</p></div>
+          <div className="grid grid-cols-3 divide-x divide-[var(--line)] rounded-md border border-[var(--line)] bg-[var(--subtle)] py-2.5 text-center"><ScenarioFact label="Baseline" value="1 applicant" /><ScenarioFact label="Network" value="6 applicants" /><ScenarioFact label="Window" value="Under 2h" /></div>
         </section>
 
         <div className="mt-6">
@@ -124,18 +105,8 @@ export default function DemoPage() {
           ) : error ? (
             <ErrorPanel message={error} />
           ) : !simulation ? (
-            <section className="panel">
-              <div className="grid gap-5 border-b border-[var(--line)] pb-5 lg:grid-cols-[minmax(0,1fr)_minmax(300px,.55fr)] lg:items-end">
-                <div>
-                  <div className="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[.14em] text-[var(--blue)]">
-                    <GitCompareArrows size={15} /> What the click will prove
-                  </div>
-                  <h2 className="mt-3 text-xl font-bold tracking-[-.025em] text-[var(--navy)]">One application. Six intelligence stages. One explainable decision.</h2>
-                  <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">Every stage below runs on the backend. The interface reveals the outputs in the same order an analyst would reason through them.</p>
-                </div>
-                <PresenterCue text="Ask the judges: would an individual credit score reveal coordinated behaviour that has not happened yet?" />
-              </div>
-              <div className="mt-5"><IntelligenceJourney /></div>
+            <section className="panel grid min-h-[240px] place-items-center text-center">
+              <div className="max-w-xl"><span className="mx-auto grid h-11 w-11 place-items-center rounded-md bg-blue-50 text-[var(--blue)]"><GitCompareArrows size={19} /></span><h2 className="mt-4 text-lg font-semibold text-[var(--navy)]">Simulation ready</h2><p className="mt-2 text-sm leading-6 text-[var(--muted)]">Start the scenario to generate applications, resolve relationships, assemble the graph, evaluate temporal behaviour, and calculate the recommended action.</p></div>
             </section>
           ) : (
             <SimulationResult simulation={simulation} />
@@ -178,9 +149,9 @@ function SimulationResult({ simulation }: { simulation: DemoSimulation }) {
                 <h2 className="panel-title">The relationships behind the transition</h2>
               </div>
               <div className="flex flex-wrap gap-3 text-[9px] font-bold uppercase tracking-wider text-[var(--muted)]">
-                <GraphLegend color="#1b62ff" label="Applicants" />
-                <GraphLegend color="#7656df" label="Shared device" />
-                <GraphLegend color="#f3a62b" label="Dealer" />
+                <GraphLegend color="#0057a8" label="Applicants" />
+                <GraphLegend color="#0b1f3a" label="Shared device" />
+                <GraphLegend color="#d97706" label="Dealer" />
               </div>
             </div>
           </div>
@@ -214,7 +185,7 @@ function SimulationResult({ simulation }: { simulation: DemoSimulation }) {
           <div className="mt-6 divide-y divide-white/10">
             {simulation.explanations.slice(0, 5).map((signal, index) => (
               <div key={signal.code} className="flex gap-3 py-4 first:pt-0">
-                <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-white/10 text-[10px] font-bold text-[var(--aqua)]">
+                <span className="grid h-7 w-7 shrink-0 place-items-center rounded bg-white/10 text-[10px] font-bold text-blue-200">
                   {index + 1}
                 </span>
                 <div>
@@ -224,22 +195,22 @@ function SimulationResult({ simulation }: { simulation: DemoSimulation }) {
               </div>
             ))}
           </div>
-          <div className="mt-5 flex gap-2 rounded-xl bg-emerald-400/10 p-3 text-[11px] leading-5 text-emerald-100">
+          <div className="mt-5 flex gap-2 rounded-md bg-emerald-400/10 p-3 text-[11px] leading-5 text-emerald-100">
             <CheckCircle2 className="mt-0.5 shrink-0" size={15} />
             Scenario {simulation.scenario_id} is isolated from portfolio state.
           </div>
         </aside>
       </section>
 
-      <section className="overflow-hidden rounded-[22px] border border-blue-200 bg-gradient-to-r from-blue-50 via-white to-emerald-50 p-6 sm:p-7">
+      <section className="overflow-hidden rounded-lg border border-blue-200 bg-blue-50 p-5">
         <div className="grid gap-5 lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:items-center">
-          <span className="grid h-12 w-12 place-items-center rounded-2xl bg-[var(--blue)] text-white shadow-[0_10px_26px_rgba(27,98,255,.22)]"><Lightbulb size={21} /></span>
+          <span className="grid h-10 w-10 place-items-center rounded-md bg-[var(--blue)] text-white"><Lightbulb size={18} /></span>
           <div>
-            <p className="text-[10px] font-extrabold uppercase tracking-[.15em] text-[var(--blue)]">The conclusion for judges</p>
-            <h2 className="mt-2 text-xl font-bold tracking-[-.025em] text-[var(--navy)]">JaalDrishti does not replace lending decisions—it reveals the ecosystem those decisions were missing.</h2>
+            <p className="text-[10px] font-semibold uppercase tracking-[.12em] text-[var(--blue)]">Decision support outcome</p>
+            <h2 className="mt-2 text-base font-semibold text-[var(--navy)]">JaalDrishti reveals the ecosystem context missing from the individual application.</h2>
             <p className="mt-2 text-sm leading-6 text-[var(--muted)]">The score moved because verifiable network and temporal evidence appeared. The analyst can inspect every signal, understand the threshold, and authorize the final action.</p>
           </div>
-          <div className="rounded-2xl border border-emerald-200 bg-white/80 px-5 py-4 text-center">
+          <div className="rounded-md border border-emerald-200 bg-white px-5 py-4 text-center">
             <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--muted)]">Outcome</p>
             <p className="mt-1 text-sm font-bold text-[var(--green)]">Earlier intervention</p>
           </div>
@@ -251,55 +222,44 @@ function SimulationResult({ simulation }: { simulation: DemoSimulation }) {
 
 function PresentationCompass({ complete }: { complete: boolean }) {
   const beats = [
-    { label: 'Problem', detail: 'Individual checks miss coordination' },
-    { label: 'Detection', detail: 'Graph + time expose emergence' },
-    { label: 'Decision', detail: 'Evidence leads to human action' },
+    { label: 'Application received', detail: 'Individual profile appears normal' },
+    { label: 'Relationship discovered', detail: 'Shared identity evidence appears' },
+    { label: 'Network formed', detail: 'Connected ecosystem becomes visible' },
+    { label: 'Risk increased', detail: 'Graph and time cross thresholds' },
+    { label: 'Action recommended', detail: 'Human review is requested' },
   ];
   return (
-    <section className="mt-6 grid gap-3 rounded-2xl border border-[var(--line)] bg-white/80 p-3 sm:grid-cols-3" aria-label="Presentation roadmap">
+    <section className="mt-5 grid gap-px overflow-hidden rounded-lg border border-[var(--line)] bg-[var(--line)] sm:grid-cols-5" aria-label="Simulation stages">
       {beats.map((beat, index) => (
-        <div key={beat.label} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 ${complete || index === 0 ? 'bg-blue-50' : 'bg-slate-50'}`}>
+        <div key={beat.label} className={`flex items-center gap-3 px-3 py-3 ${complete || index === 0 ? 'bg-blue-50' : 'bg-white'}`}>
           <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-full text-[10px] font-extrabold ${complete ? 'bg-[var(--green)] text-white' : index === 0 ? 'bg-[var(--blue)] text-white' : 'bg-white text-slate-400'}`}>{complete ? '✓' : index + 1}</span>
-          <div><p className="text-[10px] font-extrabold uppercase tracking-wider text-[var(--navy)]">{beat.label}</p><p className="mt-0.5 text-[10px] text-[var(--muted)]">{beat.detail}</p></div>
+          <div><p className="text-[9px] font-semibold uppercase tracking-[.06em] text-[var(--navy)]">{beat.label}</p><p className="mt-0.5 text-[9px] leading-4 text-[var(--muted)]">{beat.detail}</p></div>
         </div>
       ))}
     </section>
   );
 }
 
-function PresenterCue({ text }: { text: string }) {
-  return (
-    <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
-      <p className="text-[9px] font-extrabold uppercase tracking-[.14em] text-amber-700">Presenter cue</p>
-      <p className="mt-2 text-xs font-semibold leading-5 text-amber-950">“{text}”</p>
-    </div>
-  );
-}
-
 function ProcessReveal({ simulation }: { simulation: DemoSimulation }) {
   const stages = [
-    { icon: Database, label: 'Records created', value: `${simulation.network.summary.applicant_count} applications`, note: 'Synthetic, isolated scenario' },
-    { icon: Fingerprint, label: 'Identity resolved', value: '2 shared entities', note: 'Device and dealer evidence' },
-    { icon: Network, label: 'Graph assembled', value: `${simulation.network.nodes.length} nodes`, note: `${simulation.network.edges.length} evidence links` },
-    { icon: Clock3, label: 'Time evaluated', value: `${simulation.after.application_velocity_2h} in 2h`, note: 'Rapid coordinated burst' },
-    { icon: BrainCircuit, label: 'Risk explained', value: `${simulation.explanations.length} signals`, note: `Final score ${simulation.after.risk_score.toFixed(2)}` },
-    { icon: UserCheck, label: 'Action routed', value: 'Human review', note: simulation.recommended_action.label },
+    { icon: Database, label: 'Applications received', value: `${simulation.network.summary.applicant_count} applications`, note: 'Synthetic, isolated scenario' },
+    { icon: Fingerprint, label: 'Relationship discovered', value: '2 shared entities', note: 'Device and dealer evidence' },
+    { icon: Network, label: 'Network formed', value: `${simulation.network.nodes.length} nodes`, note: `${simulation.network.edges.length} evidence links` },
+    { icon: BrainCircuit, label: 'Risk increased', value: `${simulation.after.risk_score.toFixed(2)} / 100`, note: `${simulation.explanations.length} explainable signals` },
+    { icon: UserCheck, label: 'Action recommended', value: 'Human review', note: simulation.recommended_action.label },
   ];
   return (
     <section className="panel">
-      <div className="grid gap-4 border-b border-[var(--line)] pb-5 lg:grid-cols-[minmax(0,1fr)_minmax(300px,.5fr)] lg:items-end">
-        <div>
+      <div className="border-b border-[var(--line)] pb-4">
           <p className="eyebrow">What the system just computed</p>
-          <h2 className="mt-2 text-xl font-bold tracking-[-.025em] text-[var(--navy)]">The complete intelligence path, with live outputs</h2>
+          <h2 className="mt-1.5 text-base font-semibold text-[var(--navy)]">Simulation processing trace</h2>
           <p className="mt-2 text-sm leading-6 text-[var(--muted)]">No UI score is hardcoded. Each result below comes from the isolated backend scenario.</p>
-        </div>
-        <PresenterCue text="The borrower stayed the same. Only the network and time context became visible." />
       </div>
-      <div className="mt-5 grid gap-2 sm:grid-cols-2 xl:grid-cols-6">
+      <div className="mt-4 grid gap-px overflow-hidden rounded-md border border-[var(--line)] bg-[var(--line)] sm:grid-cols-2 xl:grid-cols-5">
         {stages.map(({ icon: Icon, label, value, note }, index) => (
-          <article key={label} className="relative rounded-2xl border border-[var(--line)] bg-slate-50/70 p-4">
-            <div className="flex items-center justify-between"><span className="grid h-9 w-9 place-items-center rounded-xl bg-white text-[var(--blue)] shadow-sm"><Icon size={17} /></span><span className="text-[9px] font-extrabold text-slate-400">0{index + 1}</span></div>
-            <p className="mt-4 text-[9px] font-extrabold uppercase tracking-wider text-[var(--muted)]">{label}</p>
+          <article key={label} className="relative bg-white p-4">
+            <div className="flex items-center justify-between"><span className="grid h-8 w-8 place-items-center rounded-md bg-blue-50 text-[var(--blue)]"><Icon size={15} /></span><span className="text-[9px] font-semibold text-slate-400">0{index + 1}</span></div>
+            <p className="mt-3 text-[9px] font-semibold uppercase tracking-wider text-[var(--muted)]">{label}</p>
             <p className="mt-1 text-sm font-bold text-[var(--navy)]">{value}</p>
             <p className="mt-1 text-[10px] leading-4 text-[var(--muted)]">{note}</p>
           </article>
@@ -335,16 +295,16 @@ function RiskStateCard({ stage, context, snapshot, customer }: { stage: string; 
   );
 }
 
-function HeroFact({ label, value }: { label: string; value: string }) {
-  return <div className="rounded-xl border border-white/10 bg-white/[.055] p-3"><p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">{label}</p><p className="mt-1 text-xs font-bold text-white">{value}</p></div>;
+function ScenarioFact({ label, value }: { label: string; value: string }) {
+  return <div className="min-w-[110px] px-4"><p className="text-[9px] font-semibold uppercase tracking-wider text-[var(--muted)]">{label}</p><p className="mt-1 text-[11px] font-semibold text-[var(--navy)]">{value}</p></div>;
 }
 
 function StateFact({ label, value }: { label: string; value: number }) {
-  return <div className="rounded-xl bg-white/70 p-3"><p className="text-[9px] font-bold uppercase tracking-wider text-[var(--muted)]">{label}</p><p className="mt-1 text-base font-bold text-[var(--navy)]">{value}</p></div>;
+  return <div className="rounded-md border border-[var(--line)] bg-white p-3"><p className="text-[9px] font-bold uppercase tracking-wider text-[var(--muted)]">{label}</p><p className="mt-1 text-base font-bold text-[var(--navy)]">{value}</p></div>;
 }
 
 function EvidenceCard({ icon: Icon, label, value, detail, why }: { icon: typeof Smartphone; label: string; value: string; detail: string; why: string }) {
-  return <article className="panel"><div className="flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-xl bg-blue-50 text-[var(--blue)]"><Icon size={18} /></span><div><p className="text-[10px] font-bold uppercase tracking-wider text-[var(--muted)]">{label}</p><p className="mt-1 text-base font-bold text-[var(--navy)]">{value}</p></div></div><p className="mt-4 text-xs leading-5 text-[var(--ink)]">{why}</p><p className="mt-3 truncate border-t border-[var(--line)] pt-3 font-mono text-[10px] text-[var(--muted)]" title={detail}>{detail}</p></article>;
+  return <article className="panel"><div className="flex items-center gap-3"><span className="grid h-9 w-9 place-items-center rounded-md bg-blue-50 text-[var(--blue)]"><Icon size={16} /></span><div><p className="text-[10px] font-bold uppercase tracking-wider text-[var(--muted)]">{label}</p><p className="mt-1 text-base font-bold text-[var(--navy)]">{value}</p></div></div><p className="mt-4 text-xs leading-5 text-[var(--ink)]">{why}</p><p className="mt-3 truncate border-t border-[var(--line)] pt-3 font-mono text-[10px] text-[var(--muted)]" title={detail}>{detail}</p></article>;
 }
 
 function GraphLegend({ color, label }: { color: string; label: string }) {
@@ -367,13 +327,13 @@ function mapDemoGraph(simulation: DemoSimulation): { nodes: Node[]; edges: Edge[
       style: {
         width: 168,
         minHeight: 44,
-        borderRadius: 13,
-        border: `${item.is_focus ? 3 : 1.5}px solid ${style.border}`,
+        borderRadius: item.type === 'customer' ? 999 : 6,
+        border: `${item.is_focus ? 2 : 1}px solid ${style.border}`,
         background: style.background,
         color: style.color,
         fontSize: 11,
         fontWeight: 750,
-        boxShadow: item.is_focus ? '0 12px 30px rgba(27,98,255,.22)' : '0 5px 16px rgba(17,31,55,.07)',
+        boxShadow: 'none',
       },
     } satisfies Node;
   });
@@ -383,7 +343,7 @@ function mapDemoGraph(simulation: DemoSimulation): { nodes: Node[]; edges: Edge[
     target: item.target,
     label: item.type === 'uses_device' ? 'shared device' : 'same dealer',
     labelStyle: { fontSize: 8, fill: '#6f7b8f', fontWeight: 600 },
-    style: { stroke: item.type === 'uses_device' ? '#7656df' : '#f3a62b', strokeWidth: 1.6 },
+    style: { stroke: item.type === 'uses_device' ? '#0b1f3a' : '#d97706', strokeWidth: 1.4 },
   } satisfies Edge));
   return { nodes, edges };
 }

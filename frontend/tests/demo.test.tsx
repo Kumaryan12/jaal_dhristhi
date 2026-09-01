@@ -126,13 +126,11 @@ describe('emerging-risk demo', () => {
   it('starts with one explicit simulation action and no invented result', () => {
     render(<DemoPage />);
     expect(
-      screen.getByRole('button', { name: 'Simulate Emerging Risk Ecosystem' }),
+      screen.getByRole('button', { name: 'Start Simulation' }),
     ).toBeInTheDocument();
-    expect(
-      screen.getByText('One application. Six intelligence stages. One explainable decision.'),
-    ).toBeInTheDocument();
-    expect(screen.getByText('Application events')).toBeInTheDocument();
-    expect(screen.getByText('Human action')).toBeInTheDocument();
+    expect(screen.getByText('Simulation ready')).toBeInTheDocument();
+    expect(screen.getByText('Application received')).toBeInTheDocument();
+    expect(screen.getByText('Action recommended')).toBeInTheDocument();
     expect(screen.queryByText('Enhanced verification required')).not.toBeInTheDocument();
   });
 
@@ -151,7 +149,7 @@ describe('emerging-risk demo', () => {
     render(<DemoPage />);
 
     await user.click(
-      screen.getByRole('button', { name: 'Simulate Emerging Risk Ecosystem' }),
+      screen.getByRole('button', { name: 'Start Simulation' }),
     );
 
     await waitFor(() => {
@@ -168,7 +166,7 @@ describe('emerging-risk demo', () => {
     expect(screen.getByText(sharedDeviceSignal.message)).toBeInTheDocument();
     expect(screen.getByTestId('demo-network')).toBeInTheDocument();
     expect(screen.getByText(/SIM-2026-test is isolated/)).toBeInTheDocument();
-    expect(screen.getByText('The complete intelligence path, with live outputs')).toBeInTheDocument();
-    expect(screen.getByText('The conclusion for judges')).toBeInTheDocument();
+    expect(screen.getByText('Simulation processing trace')).toBeInTheDocument();
+    expect(screen.getByText('Decision support outcome')).toBeInTheDocument();
   });
 });

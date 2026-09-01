@@ -81,7 +81,7 @@ export function EmptyPanel({
   return (
     <div className="panel grid min-h-[300px] place-items-center text-center">
       <div className="max-w-sm">
-        <span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-slate-100 text-slate-500">
+        <span className="mx-auto grid h-12 w-12 place-items-center rounded-md bg-slate-100 text-slate-500">
           <SearchX size={21} />
         </span>
         <h2 className="mt-4 text-base font-bold text-[var(--navy)]">{title}</h2>

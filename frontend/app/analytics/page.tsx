@@ -22,7 +22,7 @@ import { ErrorPanel, LoadingPanel, PageHeading } from '../../components/ui';
 import { getAnalytics } from '../../lib/api';
 import type { Analytics } from '../../lib/types';
 
-const riskColors = { LOW: '#0fb283', MEDIUM: '#f3a62b', HIGH: '#ed4b5f' };
+const riskColors = { LOW: '#16a34a', MEDIUM: '#d97706', HIGH: '#dc2626' };
 const inr = new Intl.NumberFormat('en-IN', {
   style: 'currency',
   currency: 'INR',
@@ -86,14 +86,14 @@ export default function AnalyticsPage() {
 
   return (
     <AppShell activePath="/analytics">
-      <div className="mx-auto max-w-[1500px]">
+      <div className="mx-auto max-w-[1600px]">
         <PageHeading
-          eyebrow="Portfolio analytics"
-          title="Concentration, movement, and exposure."
-          description="Compare review bands, dealer clusters, and temporal activity using bounded server-side data."
+          eyebrow="Portfolio analysis"
+          title="Portfolio Insights"
+          description="Review risk distribution, dealer concentration, temporal movement, and exposure using bounded server-side data."
           actions={
             analytics && (
-              <span className="inline-flex items-center gap-2 rounded-xl border border-[var(--line)] bg-white px-3 py-2 text-xs font-semibold text-[var(--muted)]">
+              <span className="inline-flex items-center gap-2 rounded-md border border-[var(--line)] bg-white px-3 py-2 text-xs font-medium text-[var(--muted)]">
                 <CalendarRange size={14} /> {analytics.from_date} — {analytics.to_date}
               </span>
             )
@@ -102,7 +102,7 @@ export default function AnalyticsPage() {
 
         <form
           onSubmit={applyFilters}
-          className="panel mt-7 flex flex-col gap-3 p-3 sm:flex-row sm:items-end"
+          className="mt-5 flex flex-col gap-3 rounded-lg border border-[var(--line)] bg-white p-3 sm:flex-row sm:items-end"
         >
           <label className="flex-1 text-[10px] font-bold uppercase tracking-wider text-[var(--muted)]">
             From
@@ -110,7 +110,7 @@ export default function AnalyticsPage() {
               type="date"
               value={fromDate}
               onChange={(event) => setFromDate(event.target.value)}
-              className="mt-1.5 h-11 w-full rounded-xl border border-transparent bg-slate-50 px-3 text-sm font-semibold normal-case tracking-normal focus:border-blue-200 focus:bg-white"
+              className="mt-1.5 h-10 w-full rounded-md border border-[var(--line)] bg-[var(--subtle)] px-3 text-xs font-medium normal-case tracking-normal focus:border-blue-300 focus:bg-white"
             />
           </label>
           <label className="flex-1 text-[10px] font-bold uppercase tracking-wider text-[var(--muted)]">
@@ -119,13 +119,13 @@ export default function AnalyticsPage() {
               type="date"
               value={toDate}
               onChange={(event) => setToDate(event.target.value)}
-              className="mt-1.5 h-11 w-full rounded-xl border border-transparent bg-slate-50 px-3 text-sm font-semibold normal-case tracking-normal focus:border-blue-200 focus:bg-white"
+              className="mt-1.5 h-10 w-full rounded-md border border-[var(--line)] bg-[var(--subtle)] px-3 text-xs font-medium normal-case tracking-normal focus:border-blue-300 focus:bg-white"
             />
           </label>
           <button
             type="submit"
             disabled={loading}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[var(--navy)] px-5 text-xs font-semibold text-white disabled:opacity-50"
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-[var(--navy)] px-5 text-xs font-semibold text-white disabled:opacity-50"
           >
             <Filter size={14} /> Apply range
           </button>
@@ -174,7 +174,7 @@ export default function AnalyticsPage() {
                   </div>
                   <div className="mt-2 grid grid-cols-3 gap-2">
                     {analytics.risk_distribution.map((item) => (
-                      <div key={item.risk_level} className="rounded-xl bg-slate-50 p-2.5 text-center">
+                      <div key={item.risk_level} className="rounded-md border border-[var(--line)] bg-[var(--subtle)] p-2.5 text-center">
                         <span className="mx-auto block h-2 w-2 rounded-full" style={{ background: riskColors[item.risk_level] }} />
                         <p className="mt-2 text-[9px] font-bold text-[var(--muted)]">{item.risk_level}</p>
                         <p className="mt-0.5 text-sm font-bold text-[var(--navy)]">{item.count.toLocaleString('en-IN')}</p>
@@ -193,8 +193,8 @@ export default function AnalyticsPage() {
                         <XAxis type="number" axisLine={false} tickLine={false} tick={{ fill: '#7c8799', fontSize: 10 }} />
                         <YAxis type="category" dataKey="dealer_id" axisLine={false} tickLine={false} width={78} tick={{ fill: '#536176', fontSize: 10, fontWeight: 600 }} />
                         <Tooltip cursor={{ fill: '#f5f7fa' }} />
-                        <Bar dataKey="application_count" name="Applications" fill="#cfd9e9" radius={[0, 5, 5, 0]} />
-                        <Bar dataKey="high_risk_count" name="High risk" fill="#ed4b5f" radius={[0, 5, 5, 0]} />
+                        <Bar dataKey="application_count" name="Applications" fill="#cfd9e9" radius={[0, 2, 2, 0]} />
+                        <Bar dataKey="high_risk_count" name="High risk" fill="#dc2626" radius={[0, 2, 2, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
@@ -215,18 +215,12 @@ export default function AnalyticsPage() {
                 <div className="mt-6 h-[310px]" aria-label="Daily portfolio activity chart">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={daily} margin={{ left: -20, right: 5 }}>
-                      <defs>
-                        <linearGradient id="analyticsFill" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#1b62ff" stopOpacity={0.22} />
-                          <stop offset="100%" stopColor="#1b62ff" stopOpacity={0.01} />
-                        </linearGradient>
-                      </defs>
                       <CartesianGrid stroke="#e8edf4" strokeDasharray="3 5" vertical={false} />
                       <XAxis dataKey="label" axisLine={false} tickLine={false} minTickGap={45} tick={{ fill: '#7c8799', fontSize: 9 }} />
                       <YAxis axisLine={false} tickLine={false} tick={{ fill: '#7c8799', fontSize: 10 }} />
                       <Tooltip />
-                      <Area type="monotone" dataKey="application_count" name="Applications" stroke="#1b62ff" fill="url(#analyticsFill)" strokeWidth={2} />
-                      <Area type="monotone" dataKey="high_risk_count" name="High risk" stroke="#ed4b5f" fill="transparent" strokeWidth={2} />
+                      <Area type="monotone" dataKey="application_count" name="Applications" stroke="#0057a8" fill="#dbeafe" fillOpacity={0.7} strokeWidth={2} />
+                      <Area type="monotone" dataKey="high_risk_count" name="High risk" stroke="#dc2626" fill="transparent" strokeWidth={2} />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
