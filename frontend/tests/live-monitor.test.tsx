@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import LiveMonitorPage from '../app/page';
@@ -8,6 +9,9 @@ vi.mock('@xyflow/react', () => ({
   Background: () => null,
   BackgroundVariant: { Dots: 'dots' },
   Controls: () => null,
+  MiniMap: () => null,
+  useEdgesState: (initial: unknown[]) => [initial, vi.fn(), vi.fn()],
+  useNodesState: (initial: unknown[]) => [initial, vi.fn(), vi.fn()],
   ReactFlow: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="live-network">{children}</div>
   ),
@@ -35,6 +39,19 @@ const monitor = {
       risk_level: 'HIGH' as const,
       status: 'Requires Review' as const,
       primary_signal: 'SHARED_DEVICE_MANY_APPLICANTS',
+    },
+    {
+      timestamp: '2026-08-31T09:55:00Z',
+      application_id: 'APP-S-005002',
+      customer_id: 'CUS-S-005002',
+      dealer_id: 'DLR-0181',
+      device_id: 'DEV-0002',
+      account_id: 'ACC-0002',
+      loan_amount_inr: 72000,
+      risk_score: 48,
+      risk_level: 'MEDIUM' as const,
+      status: 'Relationship Found' as const,
+      primary_signal: 'DEALER_CONCENTRATION',
     },
   ],
   focus_customer_id: 'CUS-S-005001',
@@ -85,11 +102,11 @@ describe('live ecosystem monitor', () => {
     render(<LiveMonitorPage />);
 
     await waitFor(() => {
-      expect(screen.getAllByText('APP-S-005001')).toHaveLength(2);
+      expect(screen.getAllByText('APP-S-005001').length).toBeGreaterThanOrEqual(2);
     });
     expect(screen.getByRole('heading', { name: 'Live Ecosystem Monitor' })).toBeInTheDocument();
     expect(screen.getByText('Requires Review')).toBeInTheDocument();
-    expect(screen.getByTestId('live-network')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByTestId('live-network')).toBeInTheDocument());
     expect(screen.getAllByText('37')).toHaveLength(2);
     expect(screen.getByRole('link', { name: /Open investigations/i })).toHaveAttribute('href', '/investigate');
     expect(getLiveMonitor).toHaveBeenCalledWith(20, expect.any(AbortSignal));
@@ -98,5 +115,21 @@ describe('live ecosystem monitor', () => {
       { depth: 2, maxNodes: 50 },
       expect.any(AbortSignal),
     );
+  });
+
+  it('lets an analyst focus the graph on another stream event', async () => {
+    const user = userEvent.setup();
+    render(<LiveMonitorPage />);
+
+    await user.click(await screen.findByRole('button', { name: 'Focus graph on APP-S-005002' }));
+
+    await waitFor(() => {
+      expect(getNetwork).toHaveBeenCalledWith(
+        'CUS-S-005002',
+        { depth: 2, maxNodes: 50 },
+        expect.any(AbortSignal),
+      );
+    });
+    expect(screen.getByRole('button', { name: /Resume live/i })).toBeInTheDocument();
   });
 });

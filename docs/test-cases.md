@@ -30,12 +30,12 @@ Backend/cross-layer count at the Phase 10 candidate: **62 passing tests**.
 |---|---|---|
 | Typed API client | dashboard GET, stable errors, encoded network query, simulation POST | Requests use the configured base URL, bounded parameters, and deterministic seed body |
 | Shared UI | risk labels and metric presentation | Risk semantics and portfolio figures render consistently |
-| Live monitor | activity stream, graph projection, review status, portfolio context, investigation handoff | The operational workspace renders only returned API state and uses the focus customer for network context |
+| Live monitor | activity stream, selectable customer graph, auto-follow, graph projection, review status, portfolio context, investigation handoff | The workspace renders returned API state, follows new activity, and lets analysts switch the graph to any visible application |
 | Investigation | honest empty state, submit, explanation, action, network handoff | No result is invented before the API responds; evidence and navigation use returned identifiers |
 | Network Intelligence | Signal view, low-specificity noise suppression, evidence narrative, Full graph control | The default graph prioritizes shared device/account/dealer context while preserving access to every returned node |
 | Demo mode | explicit initial action, presentation view, LOW-to-HIGH rendering, process trace, evidence, network, isolation notice | One click renders the backend response, exposes the complete intelligence path, and never substitutes browser-side scoring |
 
-Frontend count at the Phase 10 candidate: **14 passing tests**.
+Frontend count at the Phase 10 candidate: **15 passing tests**.
 
 ## Verification commands
 
