@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+
+# Node
+node_modules/
+dist/
+coverage/
+
+# Generated data and model artifacts
+data/raw/*.csv
+data/processed/*
+models/*.joblib
+models/*.json
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment and IDE
+.env
+.env.*
+!.env.example
+.DS_Store
+.idea/
+.vscode/
