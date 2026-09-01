@@ -34,18 +34,18 @@ import { AppShell } from './app-shell';
 import { EmptyPanel, ErrorPanel, LoadingPanel, PageHeading } from './ui';
 
 const typeStyle = {
-  customer: { color: '#1b62ff', background: '#eaf0ff', icon: Users },
-  device: { color: '#7656df', background: '#f0ecff', icon: Smartphone },
-  account: { color: '#078b67', background: '#e2f7f0', icon: Landmark },
-  dealer: { color: '#c26d0a', background: '#fff1d9', icon: Building2 },
-  location: { color: '#617087', background: '#eef2f6', icon: LocateFixed },
+  customer: { color: '#0057a8', background: '#eff6ff', icon: Users },
+  device: { color: '#0b1f3a', background: '#f3f4f6', icon: Smartphone },
+  account: { color: '#00843d', background: '#f0fdf4', icon: Landmark },
+  dealer: { color: '#d97706', background: '#fffbeb', icon: Building2 },
+  location: { color: '#6b7280', background: '#f9fafb', icon: LocateFixed },
 };
 
 const edgeColors: Record<string, string> = {
-  uses_device: '#7656df',
-  linked_account: '#0fb283',
-  applied_via: '#f3a62b',
-  located_in: '#8d99aa',
+  uses_device: '#0b1f3a',
+  linked_account: '#00843d',
+  applied_via: '#d97706',
+  located_in: '#9ca3af',
 };
 
 export function NetworkExplorer() {
@@ -57,6 +57,7 @@ export function NetworkExplorer() {
   const [network, setNetwork] = useState<NetworkGraph | null>(null);
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -72,11 +73,13 @@ export function NetworkExplorer() {
       setNetwork(result);
       setNodes(mapped.nodes);
       setEdges(mapped.edges);
+      setSelectedNodeId(result.customer_id);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : 'Unable to load network.');
       setNetwork(null);
       setNodes([]);
       setEdges([]);
+      setSelectedNodeId(null);
     } finally {
       setLoading(false);
     }
@@ -86,14 +89,14 @@ export function NetworkExplorer() {
     <AppShell activePath="/network">
       <div className="mx-auto max-w-[1500px]">
         <PageHeading
-          eyebrow="Network explorer"
-          title="Follow every relationship."
-          description="Traverse a bounded customer ecosystem across devices, accounts, dealers, and locations. Drag nodes, zoom, and inspect the evidence topology."
+          eyebrow="Relationship analysis"
+          title="Network Intelligence"
+          description="Investigate meaningful links across customers, devices, accounts, dealers, and locations. Select any entity to inspect its evidence."
         />
 
         <form
           onSubmit={explore}
-          className="panel mt-7 grid gap-3 p-3 sm:grid-cols-[minmax(0,1fr)_150px_auto]"
+          className="mt-5 grid gap-3 rounded-lg border border-[var(--line)] bg-white p-3 sm:grid-cols-[minmax(0,1fr)_150px_auto]"
         >
           <label htmlFor="customer-id" className="relative">
             <span className="sr-only">Customer ID</span>
@@ -106,7 +109,7 @@ export function NetworkExplorer() {
               value={customerId}
               onChange={(event) => setCustomerId(event.target.value)}
               placeholder="Customer ID, e.g. CUS-S-005001"
-              className="h-12 w-full rounded-xl border border-transparent bg-slate-50 pl-11 pr-4 text-sm font-medium focus:border-blue-200 focus:bg-white"
+              className="h-10 w-full rounded-md border border-[var(--line)] bg-[var(--subtle)] pl-10 pr-3 text-xs font-medium focus:border-blue-300 focus:bg-white"
             />
           </label>
           <label htmlFor="network-depth" className="relative">
@@ -117,7 +120,7 @@ export function NetworkExplorer() {
               id="network-depth"
               value={depth}
               onChange={(event) => setDepth(Number(event.target.value))}
-              className="h-12 w-full appearance-none rounded-xl border border-transparent bg-slate-50 px-3 pt-3 text-sm font-semibold focus:border-blue-200 focus:bg-white"
+              className="h-10 w-full appearance-none rounded-md border border-[var(--line)] bg-[var(--subtle)] px-3 pt-3 text-xs font-semibold focus:border-blue-300 focus:bg-white"
             >
               <option value={1}>1 hop</option>
               <option value={2}>2 hops</option>
@@ -127,7 +130,7 @@ export function NetworkExplorer() {
           <button
             type="submit"
             disabled={loading || !customerId.trim()}
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[var(--blue)] px-6 text-sm font-semibold text-white disabled:opacity-50"
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-[var(--blue)] px-5 text-xs font-semibold text-white disabled:opacity-50"
           >
             <Network size={16} /> Explore network
           </button>
@@ -154,11 +157,11 @@ export function NetworkExplorer() {
               description="Enter a customer ID to request a bounded graph from the entity-resolution API."
             />
           ) : (
-            <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_310px]">
-              <section className="panel relative h-[640px] overflow-hidden p-0" aria-label="Interactive customer ecosystem graph">
+            <div className="grid gap-4 xl:grid-cols-[minmax(0,2.2fr)_minmax(320px,.8fr)]">
+              <section className="relative h-[660px] overflow-hidden rounded-lg border border-[var(--line)] bg-white" aria-label="Interactive customer ecosystem graph">
                 <div className="absolute left-4 top-4 z-10 flex flex-wrap gap-2">
                   {Object.entries(typeStyle).map(([type, style]) => (
-                    <span key={type} className="flex items-center gap-1.5 rounded-full border border-[var(--line)] bg-white/90 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider shadow-sm backdrop-blur">
+                    <span key={type} className="flex items-center gap-1.5 rounded border border-[var(--line)] bg-white px-2.5 py-1 text-[9px] font-semibold uppercase tracking-wider">
                       <span className="h-2 w-2 rounded-full" style={{ background: style.color }} />
                       {type}
                     </span>
@@ -169,6 +172,7 @@ export function NetworkExplorer() {
                   edges={edges}
                   onNodesChange={onNodesChange}
                   onEdgesChange={onEdgesChange}
+                  onNodeClick={(_, node) => setSelectedNodeId(node.id)}
                   fitView
                   minZoom={0.2}
                   maxZoom={2}
@@ -180,28 +184,17 @@ export function NetworkExplorer() {
                     pannable
                     zoomable
                     nodeColor={(node) => String(node.style?.borderColor ?? '#8d99aa')}
-                    maskColor="rgba(243,246,250,.75)"
+                    maskColor="rgba(247,248,250,.8)"
                   />
                 </ReactFlow>
               </section>
 
               <aside className="space-y-4">
+                <EntityDetails network={network} selectedNodeId={selectedNodeId} />
+
                 <article className="panel">
-                  <div className="flex items-center gap-2">
-                    <span className="grid h-9 w-9 place-items-center rounded-xl bg-blue-50 text-[var(--blue)]">
-                      <Focus size={17} />
-                    </span>
-                    <div>
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--muted)]">Focus customer</p>
-                      <p className="text-sm font-bold text-[var(--navy)]">{network.customer_id}</p>
-                    </div>
-                  </div>
-                  <dl className="mt-5 space-y-3">
-                    <GraphFact label="Visible nodes" value={network.summary.node_count} />
-                    <GraphFact label="Visible edges" value={network.summary.edge_count} />
-                    <GraphFact label="Linked applicants" value={network.summary.linked_applicant_count} />
-                    <GraphFact label="Component density" value={network.summary.component_density.toFixed(3)} />
-                  </dl>
+                  <div className="flex items-center gap-2"><span className="grid h-8 w-8 place-items-center rounded-md bg-blue-50 text-[var(--blue)]"><Focus size={15} /></span><div><p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">Network summary</p><p className="text-xs font-semibold text-[var(--navy)]">{network.summary.community_id}</p></div></div>
+                  <dl className="mt-4 space-y-3"><GraphFact label="Visible nodes" value={network.summary.node_count} /><GraphFact label="Visible edges" value={network.summary.edge_count} /><GraphFact label="Linked applicants" value={network.summary.linked_applicant_count} /><GraphFact label="Component density" value={network.summary.component_density.toFixed(3)} /></dl>
                   {network.summary.truncated && (
                     <div className="mt-4 flex gap-2 rounded-xl bg-amber-50 p-3 text-[11px] leading-5 text-amber-900">
                       <AlertTriangle className="mt-0.5 shrink-0" size={14} />
@@ -211,8 +204,8 @@ export function NetworkExplorer() {
                 </article>
 
                 <article className="panel">
-                  <p className="eyebrow">Graph context</p>
-                  <h2 className="panel-title">{network.summary.community_id}</h2>
+                  <p className="eyebrow">Evidence boundary</p>
+                  <h2 className="panel-title">Observed relationships</h2>
                   <p className="mt-3 text-xs leading-5 text-[var(--muted)]">
                     Relationships shown are direct observed entity links, filtered as of{' '}
                     {new Date(network.as_of).toLocaleString('en-IN')}.
@@ -227,6 +220,26 @@ export function NetworkExplorer() {
         </div>
       </div>
     </AppShell>
+  );
+}
+
+function EntityDetails({ network, selectedNodeId }: { network: NetworkGraph; selectedNodeId: string | null }) {
+  const selected = network.nodes.find((node) => node.id === selectedNodeId) ?? network.nodes[0];
+  const related = network.edges.filter((edge) => edge.source === selected.id || edge.target === selected.id);
+  const firstObserved = related.length
+    ? related.map((edge) => edge.first_seen).sort()[0]
+    : network.as_of;
+  const style = typeStyle[selected.type as keyof typeof typeStyle] ?? typeStyle.location;
+  const Icon = style.icon;
+  return (
+    <article className="panel">
+      <div className="flex items-center gap-3">
+        <span className="grid h-9 w-9 place-items-center rounded-md" style={{ background: style.background, color: style.color }}><Icon size={17} /></span>
+        <div className="min-w-0"><p className="text-[9px] font-semibold uppercase tracking-[.1em] text-[var(--muted)]">Selected {selected.type}</p><h2 className="mt-0.5 truncate font-mono text-sm font-semibold text-[var(--navy)]">{selected.id}</h2></div>
+      </div>
+      <dl className="mt-5 space-y-3"><GraphFact label="Direct connections" value={related.length} /><GraphFact label="First observed" value={new Date(firstObserved).toLocaleDateString('en-IN')} /><GraphFact label="Risk classification" value={selected.risk_level ?? 'Evidence only'} /><GraphFact label="Focus entity" value={selected.is_focus ? 'Yes' : 'No'} /></dl>
+      <div className="mt-5 border-t border-[var(--line)] pt-4"><p className="text-[9px] font-semibold uppercase tracking-[.1em] text-[var(--muted)]">Relationship evidence</p><div className="mt-3 space-y-2">{related.slice(0, 4).map((edge) => <div key={edge.id} className="rounded-md bg-[var(--subtle)] px-3 py-2"><p className="text-[10px] font-semibold text-[var(--navy)]">{edge.type.replaceAll('_', ' ')}</p><p className="mt-1 truncate font-mono text-[9px] text-[var(--muted)]">{edge.source === selected.id ? edge.target : edge.source}</p></div>)}{related.length === 0 && <p className="text-[11px] text-[var(--muted)]">No direct relationship is visible at this depth.</p>}</div></div>
+    </article>
   );
 }
 
@@ -250,15 +263,13 @@ function mapGraph(graph: NetworkGraph): { nodes: Node[]; edges: Edge[] } {
       style: {
         width: 176,
         minHeight: 48,
-        borderRadius: 13,
-        border: `${item.is_focus ? 3 : 1.5}px solid ${style.color}`,
+        borderRadius: item.type === 'customer' ? 999 : 6,
+        border: `${item.is_focus ? 2 : 1}px solid ${style.color}`,
         background: item.is_focus ? style.color : style.background,
         color: item.is_focus ? '#fff' : style.color,
         fontSize: 11,
         fontWeight: 700,
-        boxShadow: item.is_focus
-          ? '0 12px 32px rgba(27,98,255,.22)'
-          : '0 5px 16px rgba(17,31,55,.07)',
+        boxShadow: 'none',
       },
     } satisfies Node;
   });
