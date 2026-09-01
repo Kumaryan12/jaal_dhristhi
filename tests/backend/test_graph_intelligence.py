@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -15,6 +16,7 @@ from app.services.entity_resolution import (
 )
 from app.services.entity_resolution.models import SharedEntityEvidence
 from app.services.graph_intelligence import GraphIntelligenceEngine
+from app.services.graph_intelligence.config import GraphIntelligenceConfig
 
 
 class GraphIntelligenceEngineTests(unittest.TestCase):
@@ -71,6 +73,31 @@ class GraphIntelligenceEngineTests(unittest.TestCase):
         self.assertEqual(first.summary.connected_component_count, 2)
         self.assertGreaterEqual(first.summary.community_count, 2)
         self.assertEqual(len(first.features), 4)
+
+    def test_minimum_strength_filters_weak_projection_edges(self) -> None:
+        result = GraphIntelligenceEngine(
+            GraphIntelligenceConfig(minimum_connection_strength=0.4)
+        ).analyze(self._relationship_graph())
+
+        self.assertEqual(result.summary.customer_edge_count, 1)
+        self.assertEqual(result.feature_for("CUS-B").connected_applicant_count, 1)
+        self.assertEqual(result.feature_for("CUS-C").connected_applicant_count, 0)
+
+    def test_exports_versioned_features_and_protects_existing_files(self) -> None:
+        result = GraphIntelligenceEngine().analyze(self._relationship_graph())
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            output_dir = Path(temporary_directory)
+
+            artifacts = result.export_artifacts(output_dir)
+
+            self.assertIn(
+                "customer_id,degree_centrality", artifacts["features"].read_text()
+            )
+            summary = artifacts["summary"].read_text()
+            self.assertIn('"feature_schema_version": "1.0.0"', summary)
+            self.assertIn('"feature_row_count": 4', summary)
+            with self.assertRaises(FileExistsError):
+                result.export_artifacts(output_dir)
 
     @staticmethod
     def _relationship_graph() -> RelationshipGraph:
