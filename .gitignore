@@ -20,6 +20,7 @@ data/processed/*
 !data/processed/risk-intelligence-summary.json
 models/*.joblib
 models/*.json
+!models/ml-training-summary.json
 *.db
 *.sqlite
 *.sqlite3

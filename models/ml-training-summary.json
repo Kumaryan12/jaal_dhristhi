@@ -1,0 +1,224 @@
+{
+  "benchmarks": [
+    {
+      "feature_importance": [
+        [
+          "temporal_hours_since_latest_link",
+          0.16311997293935657
+        ],
+        [
+          "temporal_recency_score",
+          0.13317553566899798
+        ],
+        [
+          "graph_max_connection_strength",
+          0.1148322118208805
+        ],
+        [
+          "temporal_application_velocity_2h",
+          0.10338356887003765
+        ],
+        [
+          "graph_mean_connection_strength",
+          0.0886946618295149
+        ],
+        [
+          "temporal_applications_same_dealer_2h",
+          0.07893777159664252
+        ],
+        [
+          "graph_cluster_size",
+          0.06616073950975078
+        ],
+        [
+          "graph_shared_identity_signal_count",
+          0.044369370529159194
+        ],
+        [
+          "temporal_linked_applicants_24h",
+          0.03361088230652718
+        ],
+        [
+          "graph_shared_account_applicant_count_max",
+          0.02494344649314758
+        ]
+      ],
+      "model_version": "random_forest:1.0.0",
+      "name": "random_forest",
+      "test": {
+        "f1": 0.961832,
+        "false_negatives": 3,
+        "false_positives": 7,
+        "pr_auc": 0.986646,
+        "precision": 0.947368,
+        "recall": 0.976744,
+        "threshold": 0.19776661,
+        "true_negatives": 993,
+        "true_positives": 126
+      },
+      "training_positive_rows": 347,
+      "training_rows": 3347,
+      "validation": {
+        "f1": 0.977578,
+        "false_negatives": 3,
+        "false_positives": 2,
+        "pr_auc": 0.984274,
+        "precision": 0.981982,
+        "recall": 0.973214,
+        "threshold": 0.19776661,
+        "true_negatives": 998,
+        "true_positives": 109
+      }
+    },
+    {
+      "feature_importance": [
+        [
+          "temporal_hours_since_latest_link",
+          0.4399408996105194
+        ],
+        [
+          "graph_max_connection_strength",
+          0.20016680657863617
+        ],
+        [
+          "temporal_recency_score",
+          0.12243984639644623
+        ],
+        [
+          "graph_network_density",
+          0.07021164149045944
+        ],
+        [
+          "graph_shared_identity_signal_count",
+          0.030454637482762337
+        ],
+        [
+          "graph_cluster_size",
+          0.028236402198672295
+        ],
+        [
+          "graph_mean_connection_strength",
+          0.028219668194651604
+        ],
+        [
+          "temporal_network_prior_applicants_30d",
+          0.014259660616517067
+        ],
+        [
+          "graph_degree_centrality",
+          0.013949771411716938
+        ],
+        [
+          "graph_connected_applicant_count",
+          0.010504176840186119
+        ]
+      ],
+      "model_version": "xgboost:1.0.0",
+      "name": "xgboost",
+      "test": {
+        "f1": 0.976562,
+        "false_negatives": 4,
+        "false_positives": 2,
+        "pr_auc": 0.994932,
+        "precision": 0.984252,
+        "recall": 0.968992,
+        "threshold": 0.59238714,
+        "true_negatives": 998,
+        "true_positives": 125
+      },
+      "training_positive_rows": 347,
+      "training_rows": 3347,
+      "validation": {
+        "f1": 0.972727,
+        "false_negatives": 5,
+        "false_positives": 1,
+        "pr_auc": 0.990774,
+        "precision": 0.990741,
+        "recall": 0.955357,
+        "threshold": 0.59238714,
+        "true_negatives": 999,
+        "true_positives": 107
+      }
+    },
+    {
+      "feature_importance": [],
+      "model_version": "isolation_forest:1.0.0",
+      "name": "isolation_forest",
+      "test": {
+        "f1": 0.792208,
+        "false_negatives": 7,
+        "false_positives": 57,
+        "pr_auc": 0.850725,
+        "precision": 0.681564,
+        "recall": 0.945736,
+        "threshold": 0.72354747,
+        "true_negatives": 943,
+        "true_positives": 122
+      },
+      "training_positive_rows": 0,
+      "training_rows": 3000,
+      "validation": {
+        "f1": 0.823529,
+        "false_negatives": 7,
+        "false_positives": 38,
+        "pr_auc": 0.837211,
+        "precision": 0.734266,
+        "recall": 0.9375,
+        "threshold": 0.72354747,
+        "true_negatives": 962,
+        "true_positives": 105
+      }
+    }
+  ],
+  "dataset_id": "jaaldrishti-seed-2026",
+  "dataset_rows": 5588,
+  "evaluation_scope": "deterministic synthetic benchmark; not production validation",
+  "feature_count": 38,
+  "feature_schema_version": "1.0.0",
+  "hybrid_risk_summary": {
+    "average_risk_score": 9.2204,
+    "high_risk_applications": 488,
+    "potential_exposure_inr": 111700000,
+    "review_required_applications": 539,
+    "risk_distribution": {
+      "HIGH": 488,
+      "LOW": 5049,
+      "MEDIUM": 51
+    },
+    "top_signal_counts": {
+      "EMERGING_APPLICATION_CONCENTRATION": 201,
+      "HIGH_APPLICATION_VELOCITY": 188,
+      "HIGH_LOAN_TO_INCOME": 981,
+      "MULTIPLE_SHARED_IDENTITY_SIGNALS": 140,
+      "RAPID_DEALER_APPLICATION_BURST": 188,
+      "RAPID_DEVICE_APPLICATION_BURST": 98,
+      "RAPID_NETWORK_GROWTH": 106,
+      "SHARED_ACCOUNT_MANY_APPLICANTS": 282,
+      "SHARED_DEVICE_MANY_APPLICANTS": 298,
+      "STRONG_MULTI_ENTITY_CONNECTION": 440
+    },
+    "total_applications": 5588
+  },
+  "model_artifact": "ecosystem-risk-model.joblib",
+  "model_sha256": "50be1cafd531de2575f3458c7357059bd0e5f17c084a8a2f427a9533f6db5247",
+  "selected_model": "xgboost",
+  "selected_model_version": "xgboost:1.0.0",
+  "selection_rule": "highest validation PR-AUC, then validation F1, then model name",
+  "split_counts": {
+    "test": {
+      "normal": 1000,
+      "rows": 1129,
+      "suspicious": 129
+    },
+    "train": {
+      "normal": 3000,
+      "rows": 3347,
+      "suspicious": 347
+    },
+    "validation": {
+      "normal": 1000,
+      "rows": 1112,
+      "suspicious": 112
+    }
+  }
+}

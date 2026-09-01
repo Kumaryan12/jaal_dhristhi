@@ -10,7 +10,7 @@ The project follows the requested phase gate. Each implementation phase begins w
 | 3 | NetworkX graph intelligence | Required graph features and community detection | Complete |
 | 4 | Temporal intelligence | Burst, velocity, growth, and recency tests | Complete |
 | 5 | Explainable hybrid risk engine | 0–100 calibrated policy, signal evidence, action mapping | Complete |
-| 6 | ML enhancement and comparison | RF, Isolation Forest, optional XGBoost; precision/recall/F1/PR-AUC | Not started |
+| 6 | ML enhancement and comparison | RF, Isolation Forest, optional XGBoost; precision/recall/F1/PR-AUC | Complete |
 | 7 | FastAPI backend | Required routes, OpenAPI, contract/integration tests | Not started |
 | 8 | Enterprise React dashboard | Four data-backed responsive pages | Not started |
 | 9 | One-click emerging-risk demo | Computed before/after journey, end-to-end test | Not started |
@@ -36,5 +36,6 @@ Additional commits may be made when a phase has independently reviewable sub-del
 | 2026-09-01 | Approved | User authorized Phase 3 graph-intelligence implementation |
 | 2026-09-01 | Approved | User authorized Phase 4 temporal-intelligence implementation |
 | 2026-09-01 | Approved | User authorized Phase 5 explainable-risk implementation |
+| 2026-09-01 | Approved | User authorized Phase 6 ML enhancement and model comparison |
 
 Phase implementation reports and verification evidence are recorded in the numbered phase reports under `docs/`.

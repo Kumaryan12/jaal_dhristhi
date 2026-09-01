@@ -102,3 +102,18 @@ Outputs:
 - `risk-intelligence-summary.json`: risk distribution, exposure, signal counts, and both artifact checksums.
 
 Bulk assessment files are ignored by Git; the compact checksum summary is committed.
+
+## Train the ML enhancement
+
+```bash
+.venv/bin/python -m pip install -e 'backend[ml-xgboost]'
+.venv/bin/jaal-train-ml \
+  --seed 2026 \
+  --normal-applications 5000 \
+  --suspicious-ecosystems 100 \
+  --output-dir models \
+  --risk-output-dir data/processed \
+  --replace
+```
+
+The training command rebuilds the approved 38-feature matrix, creates deterministic ecosystem-grouped train/validation/test splits, compares all three Phase 6 candidates, persists the selected local model, and regenerates risk assessments with versioned ML probabilities. See `models/README.md` for the artifact contract.

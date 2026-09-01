@@ -1,10 +1,10 @@
 {
   "assessment_count": 5588,
   "assessment_schema_version": "1.0.0",
-  "csv_sha256": "126f2a8da9d29b8ba800dbace6b334b6d327174ca0889e68cff6cbea158194e2",
-  "json_sha256": "252a131294ad15fe8c05d3d892e853749381097cd321fdf86b1803fde2a840f3",
+  "csv_sha256": "37df630899f746160fba5c576e65ff766deec3bf657c41ec476752279431578a",
+  "json_sha256": "ad93932fe0b61face1b2f0b46afa68c783d91c1e52be728bc733e4bdbeae125c",
   "summary": {
-    "average_risk_score": 9.3977,
+    "average_risk_score": 9.2204,
     "high_risk_applications": 488,
     "potential_exposure_inr": 111700000,
     "review_required_applications": 539,

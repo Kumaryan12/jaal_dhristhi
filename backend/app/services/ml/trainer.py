@@ -64,7 +64,7 @@ class MLModelTrainer:
             min_samples_leaf=2,
             class_weight="balanced_subsample",
             random_state=self.config.random_seed,
-            n_jobs=-1,
+            n_jobs=1,
         )
         return self._fit_supervised("random_forest", estimator, dataset, split)
 
@@ -150,7 +150,7 @@ class MLModelTrainer:
                 n_estimators=240,
                 contamination="auto",
                 random_state=self.config.random_seed,
-                n_jobs=-1,
+                n_jobs=1,
             ),
         )
         normal_train_x = dataset.values[normal_indices]
