@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+
+logger = logging.getLogger("jaaldrishti.api")
 
 
 class APIError(Exception):
@@ -64,7 +67,13 @@ def install_error_handlers(app: FastAPI) -> None:
 
     @app.exception_handler(Exception)
     async def handle_unexpected_error(request: Request, error: Exception) -> JSONResponse:
-        del error
+        logger.error(
+            "Unhandled API error request_id=%s method=%s path=%s error_type=%s",
+            _request_id(request),
+            request.method,
+            request.url.path,
+            type(error).__name__,
+        )
         return JSONResponse(
             status_code=500,
             content=_payload(

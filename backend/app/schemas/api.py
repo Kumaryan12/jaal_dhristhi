@@ -14,6 +14,17 @@ class ContractModel(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
 
+class ErrorDetail(ContractModel):
+    code: str
+    message: str
+    request_id: str
+    details: dict[str, Any] | None = None
+
+
+class ErrorResponse(ContractModel):
+    error: ErrorDetail
+
+
 class HealthResponse(ContractModel):
     status: Literal["ok"] = "ok"
     service: str
