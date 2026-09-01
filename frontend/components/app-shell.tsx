@@ -13,6 +13,8 @@ import {
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 
+import { API_BASE_URL } from '../lib/api';
+
 const navigation = [
   { href: '/', label: 'Executive overview', icon: LayoutDashboard },
   { href: '/investigate', label: 'Investigate', icon: Search },
@@ -84,12 +86,18 @@ export function AppShell({ activePath, children }: AppShellProps) {
           </div>
           <div className="hidden items-center gap-2 text-xs text-[var(--muted)] lg:flex">
             <span className="h-2 w-2 rounded-full bg-[var(--green)] shadow-[0_0_0_4px_rgba(15,178,131,.12)]" />
-            Intelligence API connected
+            Synthetic intelligence workspace
           </div>
           <div className="flex items-center gap-3">
-            <button type="button" className="grid h-9 w-9 place-items-center rounded-xl border border-[var(--line)] text-[var(--muted)]" aria-label="Open help">
+            <a
+              href={`${API_BASE_URL}/docs`}
+              target="_blank"
+              rel="noreferrer"
+              className="grid h-9 w-9 place-items-center rounded-xl border border-[var(--line)] text-[var(--muted)]"
+              aria-label="Open API documentation"
+            >
               <CircleHelp size={17} />
-            </button>
+            </a>
             <div className="hidden text-right sm:block">
               <p className="text-xs font-semibold">Risk Operations</p>
               <p className="text-[11px] text-[var(--muted)]">Analyst workspace</p>

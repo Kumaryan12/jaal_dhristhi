@@ -42,7 +42,7 @@ export default function ExecutiveDashboard() {
     const controller = new AbortController();
     Promise.all([
       getDashboardSummary(controller.signal),
-      getAnalytics(controller.signal),
+      getAnalytics(undefined, controller.signal),
     ])
       .then(([nextSummary, nextAnalytics]) => {
         setSummary(nextSummary);
