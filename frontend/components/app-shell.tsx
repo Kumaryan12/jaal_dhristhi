@@ -21,7 +21,7 @@ const navigation = [
   { href: '/investigate', label: 'Investigate', icon: Search },
   { href: '/network', label: 'Network explorer', icon: Network },
   { href: '/analytics', label: 'Analytics', icon: ChartNoAxesCombined },
-  { href: '/demo', label: 'Demo mode', icon: Sparkles },
+  { href: '/demo', label: 'Judge walkthrough', icon: Sparkles },
 ];
 
 interface AppShellProps {
@@ -88,7 +88,7 @@ export function AppShell({ activePath, children }: AppShellProps) {
           </div>
           <div className="hidden items-center gap-2 text-xs text-[var(--muted)] lg:flex">
             <span className="h-2 w-2 rounded-full bg-[var(--green)] shadow-[0_0_0_4px_rgba(15,178,131,.12)]" />
-            Synthetic intelligence workspace
+            Live synthetic intelligence · Explainable by design
           </div>
           <div className="flex items-center gap-3">
             <a

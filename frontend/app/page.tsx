@@ -2,6 +2,7 @@
 
 import {
   AlertTriangle,
+  ArrowRight,
   ArrowUpRight,
   IndianRupee,
   Network,
@@ -21,6 +22,7 @@ import {
 } from 'recharts';
 
 import { AppShell } from '../components/app-shell';
+import { IntelligenceJourney } from '../components/intelligence-journey';
 import { getAnalytics, getDashboardSummary } from '../lib/api';
 import type { Analytics, DashboardSummary } from '../lib/types';
 
@@ -105,39 +107,76 @@ export default function ExecutiveDashboard() {
   return (
     <AppShell activePath="/">
       <div className="mx-auto max-w-[1500px]">
-        <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
-          <div>
-            <div className="mb-2 flex items-center gap-2 text-[11px] font-bold uppercase tracking-[.16em] text-[var(--blue)]">
-              <span className="h-px w-7 bg-[var(--blue)]" /> Portfolio
-              intelligence
+        <section className="presentation-hero px-6 py-7 text-white sm:px-8 sm:py-9 lg:px-10">
+          <div className="relative z-10 grid gap-8 xl:grid-cols-[minmax(0,1.25fr)_minmax(390px,.75fr)] xl:items-center">
+            <div>
+              <div className="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[.17em] text-[var(--aqua)]">
+                <span className="h-px w-7 bg-[var(--aqua)]" /> The judge takeaway
+              </div>
+              <h1 className="mt-4 max-w-3xl text-[clamp(2rem,4vw,3.4rem)] font-bold leading-[1.04] tracking-[-.055em]">
+                A safe-looking borrower can hide inside a risky network.
+              </h1>
+              <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-300 sm:text-base sm:leading-7">
+                JaalDrishti connects fragmented lending events, detects fast-emerging ecosystems, and explains the evidence before exposure becomes loss.
+              </p>
+              <div className="mt-7 flex flex-wrap items-center gap-3">
+                <Link
+                  href="/demo"
+                  className="inline-flex h-11 items-center gap-2 rounded-xl bg-[var(--blue)] px-5 text-xs font-bold text-white shadow-[0_10px_30px_rgba(27,98,255,.34)]"
+                >
+                  Start the 3-minute walkthrough <ArrowRight size={15} />
+                </Link>
+                <a href="#how-it-works" className="inline-flex h-11 items-center rounded-xl border border-white/15 bg-white/[.06] px-5 text-xs font-bold text-slate-100">
+                  See how detection works
+                </a>
+              </div>
             </div>
-            <h1 className="text-[clamp(1.75rem,3vw,2.65rem)] font-bold tracking-[-.035em] text-[var(--navy)]">
-              See the network before the loss.
-            </h1>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--muted)]">
-              A live view of connected lending activity, emerging ecosystems,
-              and review exposure.
-            </p>
+            <div className="story-score-card p-5 sm:p-6" aria-label="Illustrative risk transition">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-bold uppercase tracking-[.14em] text-slate-400">Same borrower · richer context</span>
+                <span className="rounded-full bg-emerald-400/10 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-emerald-200">Computed live</span>
+              </div>
+              <div className="mt-6 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Individual view</p>
+                  <p className="mt-1 text-4xl font-bold tracking-[-.06em] text-emerald-300">0</p>
+                  <p className="mt-1 text-xs font-bold text-emerald-200">LOW risk</p>
+                </div>
+                <ArrowRight className="text-[var(--aqua)]" size={20} />
+                <div className="text-right">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Ecosystem view</p>
+                  <p className="mt-1 text-4xl font-bold tracking-[-.06em] text-red-300">85</p>
+                  <p className="mt-1 text-xs font-bold text-red-200">HIGH risk</p>
+                </div>
+              </div>
+              <div className="mt-5 grid grid-cols-3 gap-2 border-t border-white/10 pt-4 text-center">
+                {['6 applicants', '1 shared device', '< 2 hour burst'].map((fact) => (
+                  <span key={fact} className="rounded-lg bg-white/[.055] px-2 py-2 text-[10px] font-semibold text-slate-300">{fact}</span>
+                ))}
+              </div>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
+        </section>
+
+        <section id="how-it-works" className="mt-5 panel scroll-mt-24">
+          <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+            <div>
+              <p className="eyebrow">How the intelligence works</p>
+              <h2 className="panel-title">From raw lending events to an explainable human decision</h2>
+            </div>
             <button
               type="button"
               onClick={() => {
                 setError(null);
                 setRefreshKey((value) => value + 1);
               }}
-              className="inline-flex h-10 items-center gap-2 rounded-xl border border-[var(--line)] bg-white px-4 text-xs font-semibold shadow-sm"
+              className="inline-flex h-9 items-center gap-2 self-start rounded-xl border border-[var(--line)] bg-white px-3 text-[11px] font-semibold shadow-sm sm:self-auto"
             >
               <RefreshCw size={14} /> Refresh data
             </button>
-            <Link
-              href="/investigate"
-              className="inline-flex h-10 items-center gap-2 rounded-xl bg-[var(--blue)] px-4 text-xs font-semibold text-white shadow-[0_9px_24px_rgba(27,98,255,.22)]"
-            >
-              Investigate <ArrowUpRight size={14} />
-            </Link>
           </div>
-        </div>
+          <div className="mt-5"><IntelligenceJourney compact /></div>
+        </section>
 
         {error && (
           <div
