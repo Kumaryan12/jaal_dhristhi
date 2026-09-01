@@ -128,8 +128,22 @@ describe('emerging-risk demo', () => {
     expect(
       screen.getByRole('button', { name: 'Simulate Emerging Risk Ecosystem' }),
     ).toBeInTheDocument();
-    expect(screen.getByText('Ready for the before-and-after journey')).toBeInTheDocument();
+    expect(
+      screen.getByText('One application. Six intelligence stages. One explainable decision.'),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Application events')).toBeInTheDocument();
+    expect(screen.getByText('Human action')).toBeInTheDocument();
     expect(screen.queryByText('Enhanced verification required')).not.toBeInTheDocument();
+  });
+
+  it('offers a distraction-free presentation view', async () => {
+    const user = userEvent.setup();
+    render(<DemoPage />);
+
+    await user.click(screen.getByRole('button', { name: 'Presentation view' }));
+
+    expect(screen.getByRole('button', { name: 'Exit presentation view' })).toBeInTheDocument();
+    expect(screen.queryByRole('navigation', { name: 'Primary navigation' })).not.toBeInTheDocument();
   });
 
   it('renders the computed low-to-high journey and explanation', async () => {
@@ -141,16 +155,20 @@ describe('emerging-risk demo', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText('Enhanced verification required')).toBeInTheDocument();
+      expect(
+        screen.getByRole('heading', { name: 'Enhanced verification required' }),
+      ).toBeInTheDocument();
     });
     expect(simulateEmergingRisk).toHaveBeenCalledWith();
     expect(screen.getByText('Before')).toBeInTheDocument();
     expect(screen.getByText('After network analysis')).toBeInTheDocument();
     expect(screen.getAllByText('6 applicants')).toHaveLength(2);
     expect(screen.getByText('5 connected')).toBeInTheDocument();
-    expect(screen.getByText('6 applications')).toBeInTheDocument();
+    expect(screen.getAllByText('6 applications')).toHaveLength(2);
     expect(screen.getByText(sharedDeviceSignal.message)).toBeInTheDocument();
     expect(screen.getByTestId('demo-network')).toBeInTheDocument();
     expect(screen.getByText(/SIM-2026-test is isolated/)).toBeInTheDocument();
+    expect(screen.getByText('The complete intelligence path, with live outputs')).toBeInTheDocument();
+    expect(screen.getByText('The conclusion for judges')).toBeInTheDocument();
   });
 });

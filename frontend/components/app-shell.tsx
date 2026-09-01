@@ -27,12 +27,13 @@ const navigation = [
 interface AppShellProps {
   activePath: string;
   children: ReactNode;
+  presentationMode?: boolean;
 }
 
-export function AppShell({ activePath, children }: AppShellProps) {
+export function AppShell({ activePath, children, presentationMode = false }: AppShellProps) {
   return (
     <div className="min-h-screen bg-[var(--canvas)] text-[var(--ink)]">
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[248px] flex-col bg-[var(--navy)] px-4 py-5 text-white lg:flex">
+      {!presentationMode && <aside className="fixed inset-y-0 left-0 z-40 hidden w-[248px] flex-col bg-[var(--navy)] px-4 py-5 text-white lg:flex">
         <Link href="/" className="flex items-center gap-3 px-2" aria-label="JaalDrishti home">
           <span className="grid h-10 w-10 place-items-center rounded-xl bg-[var(--blue)] shadow-[0_8px_28px_rgba(27,98,255,.35)]">
             <ShieldCheck size={22} strokeWidth={2.2} />
@@ -76,10 +77,10 @@ export function AppShell({ activePath, children }: AppShellProps) {
             Network evidence supports analyst review. Final credit action remains human-authorized.
           </p>
         </div>
-      </aside>
+      </aside>}
 
-      <div className="lg:pl-[248px]">
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-[var(--line)] bg-white/90 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
+      <div className={presentationMode ? '' : 'lg:pl-[248px]'}>
+        {!presentationMode && <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-[var(--line)] bg-white/90 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
           <div className="flex items-center gap-3 lg:hidden">
             <span className="grid h-9 w-9 place-items-center rounded-xl bg-[var(--navy)] text-white">
               <ShieldCheck size={20} />
@@ -106,18 +107,18 @@ export function AppShell({ activePath, children }: AppShellProps) {
             </div>
             <span className="grid h-9 w-9 place-items-center rounded-xl bg-[var(--navy)] text-xs font-bold text-white">RO</span>
           </div>
-        </header>
+        </header>}
 
-        <main className="px-4 pb-24 pt-7 sm:px-6 lg:px-8 lg:pb-10">{children}</main>
+        <main className={`px-4 pb-24 sm:px-6 lg:px-8 lg:pb-10 ${presentationMode ? 'pt-5' : 'pt-7'}`}>{children}</main>
 
-        <nav className="fixed inset-x-3 bottom-3 z-40 grid grid-cols-5 rounded-2xl border border-white/70 bg-[var(--navy)] p-1.5 shadow-2xl lg:hidden" aria-label="Mobile navigation">
+        {!presentationMode && <nav className="fixed inset-x-3 bottom-3 z-40 grid grid-cols-5 rounded-2xl border border-white/70 bg-[var(--navy)] p-1.5 shadow-2xl lg:hidden" aria-label="Mobile navigation">
           {navigation.map(({ href, label, icon: Icon }) => (
             <Link key={href} href={href} aria-label={label} aria-current={href === activePath ? 'page' : undefined} className={`flex flex-col items-center gap-1 rounded-xl py-2 text-[10px] font-medium ${href === activePath ? 'bg-white/10 text-white' : 'text-slate-400'}`}>
               <Icon size={17} />
               <span>{label.split(' ')[0]}</span>
             </Link>
           ))}
-        </nav>
+        </nav>}
       </div>
     </div>
   );
