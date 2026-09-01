@@ -9,7 +9,7 @@ The project follows the requested phase gate. Each implementation phase begins w
 | 2 | Entity resolution engine | Typed relationships and connection strength tests | Complete |
 | 3 | NetworkX graph intelligence | Required graph features and community detection | Complete |
 | 4 | Temporal intelligence | Burst, velocity, growth, and recency tests | Complete |
-| 5 | Explainable hybrid risk engine | 0–100 calibrated policy, signal evidence, action mapping | Not started |
+| 5 | Explainable hybrid risk engine | 0–100 calibrated policy, signal evidence, action mapping | Complete |
 | 6 | ML enhancement and comparison | RF, Isolation Forest, optional XGBoost; precision/recall/F1/PR-AUC | Not started |
 | 7 | FastAPI backend | Required routes, OpenAPI, contract/integration tests | Not started |
 | 8 | Enterprise React dashboard | Four data-backed responsive pages | Not started |
@@ -35,5 +35,6 @@ Additional commits may be made when a phase has independently reviewable sub-del
 | 2026-09-01 | Approved | User authorized Phase 2 entity-resolution implementation |
 | 2026-09-01 | Approved | User authorized Phase 3 graph-intelligence implementation |
 | 2026-09-01 | Approved | User authorized Phase 4 temporal-intelligence implementation |
+| 2026-09-01 | Approved | User authorized Phase 5 explainable-risk implementation |
 
 Phase implementation reports and verification evidence are recorded in the numbered phase reports under `docs/`.

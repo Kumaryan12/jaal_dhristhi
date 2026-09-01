@@ -17,6 +17,7 @@ data/raw/*.csv
 data/processed/*
 !data/processed/graph-intelligence-summary.json
 !data/processed/temporal-intelligence-summary.json
+!data/processed/risk-intelligence-summary.json
 models/*.joblib
 models/*.json
 *.db

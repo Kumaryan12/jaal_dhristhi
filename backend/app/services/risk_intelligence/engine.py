@@ -25,6 +25,7 @@ from .models import (
     RecommendedAction,
     RiskAssessment,
     RiskAssessmentVersions,
+    RiskSignal,
     ScoreComponents,
 )
 from .rules import ExplainableRuleEngine, RiskAnalysisContext
@@ -234,7 +235,7 @@ class RiskIntelligenceEngine:
         return round(min(100.0, score), 4)
 
     @staticmethod
-    def _recommended_action(risk_level: str, signals: tuple) -> RecommendedAction:
+    def _recommended_action(risk_level: str, signals: tuple[RiskSignal, ...]) -> RecommendedAction:
         top_codes = ", ".join(signal.code for signal in signals[:2])
         if risk_level == "HIGH":
             return RecommendedAction(

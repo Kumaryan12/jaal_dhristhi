@@ -84,3 +84,21 @@ Outputs:
 - `temporal-intelligence-summary.json`: schema version, row count, checksum, and aggregate burst/velocity/growth metrics.
 
 Bulk temporal features are ignored by Git; the compact checksum summary is committed.
+
+## Generate explainable risk assessments
+
+```bash
+PYTHONPATH=backend python3 -m app.services.risk_intelligence.cli \
+  --seed 2026 \
+  --normal-applications 5000 \
+  --suspicious-ecosystems 100 \
+  --output-dir data/processed
+```
+
+Outputs:
+
+- `risk-assessments.csv`: concise score/action/component rows;
+- `risk-assessments.json`: complete structured evidence, borrower snapshots, actions, and versions;
+- `risk-intelligence-summary.json`: risk distribution, exposure, signal counts, and both artifact checksums.
+
+Bulk assessment files are ignored by Git; the compact checksum summary is committed.

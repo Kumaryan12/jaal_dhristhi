@@ -1,0 +1,30 @@
+{
+  "assessment_count": 5588,
+  "assessment_schema_version": "1.0.0",
+  "csv_sha256": "126f2a8da9d29b8ba800dbace6b334b6d327174ca0889e68cff6cbea158194e2",
+  "json_sha256": "252a131294ad15fe8c05d3d892e853749381097cd321fdf86b1803fde2a840f3",
+  "summary": {
+    "average_risk_score": 9.3977,
+    "high_risk_applications": 488,
+    "potential_exposure_inr": 111700000,
+    "review_required_applications": 539,
+    "risk_distribution": {
+      "HIGH": 488,
+      "LOW": 5049,
+      "MEDIUM": 51
+    },
+    "top_signal_counts": {
+      "EMERGING_APPLICATION_CONCENTRATION": 201,
+      "HIGH_APPLICATION_VELOCITY": 188,
+      "HIGH_LOAN_TO_INCOME": 981,
+      "MULTIPLE_SHARED_IDENTITY_SIGNALS": 140,
+      "RAPID_DEALER_APPLICATION_BURST": 188,
+      "RAPID_DEVICE_APPLICATION_BURST": 98,
+      "RAPID_NETWORK_GROWTH": 106,
+      "SHARED_ACCOUNT_MANY_APPLICANTS": 282,
+      "SHARED_DEVICE_MANY_APPLICANTS": 298,
+      "STRONG_MULTI_ENTITY_CONNECTION": 440
+    },
+    "total_applications": 5588
+  }
+}
