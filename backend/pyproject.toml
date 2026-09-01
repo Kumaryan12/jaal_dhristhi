@@ -7,7 +7,15 @@ name = "jaaldrishti-backend"
 version = "0.1.0"
 description = "Explainable lending ecosystem risk intelligence"
 requires-python = ">=3.11"
-dependencies = ["networkx>=3.4,<4"]
+dependencies = [
+  "joblib>=1.4,<2",
+  "networkx>=3.4,<4",
+  "numpy>=2.0,<3",
+  "scikit-learn>=1.6,<2",
+]
+
+[project.optional-dependencies]
+ml-xgboost = ["xgboost>=3.0,<4"]
 
 [project.scripts]
 jaal-generate-data = "app.services.synthetic_data.cli:main"
