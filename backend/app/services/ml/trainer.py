@@ -12,7 +12,6 @@ from sklearn.metrics import (
 )
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
-from xgboost import XGBClassifier
 
 from .config import MLTrainingConfig
 from .feature_builder import MLFeatureDataset
@@ -72,6 +71,14 @@ class MLModelTrainer:
     def _train_xgboost(
         self, dataset: MLFeatureDataset, split: DatasetSplit
     ) -> tuple[VersionedPredictor, ModelBenchmark]:
+        try:
+            from xgboost import XGBClassifier
+        except ImportError as error:
+            raise RuntimeError(
+                "XGBoost is required for the Phase 6 comparison; "
+                "install the backend[ml-xgboost] extra"
+            ) from error
+
         train_labels = dataset.labels[split.train_indices]
         positives = max(1, int(train_labels.sum()))
         negatives = max(1, len(train_labels) - positives)
@@ -94,15 +101,15 @@ class MLModelTrainer:
     def _fit_supervised(
         self,
         name: str,
-        estimator: RandomForestClassifier | XGBClassifier,
+        estimator: object,
         dataset: MLFeatureDataset,
         split: DatasetSplit,
     ) -> tuple[VersionedPredictor, ModelBenchmark]:
         train_x = dataset.values[split.train_indices]
         train_y = dataset.labels[split.train_indices]
-        estimator.fit(train_x, train_y)
+        estimator.fit(train_x, train_y)  # type: ignore[attr-defined]
         validation_scores = np.asarray(
-            estimator.predict_proba(dataset.values[split.validation_indices])[:, 1],
+            estimator.predict_proba(dataset.values[split.validation_indices])[:, 1],  # type: ignore[attr-defined]
             dtype=np.float64,
         )
         threshold = self._select_threshold(
@@ -117,8 +124,9 @@ class MLModelTrainer:
             estimator=estimator,
         )
         importance = tuple(
-            sorted(
-                zip(dataset.feature_names, estimator.feature_importances_, strict=True),
+            (name, float(value))
+            for name, value in sorted(
+                zip(dataset.feature_names, estimator.feature_importances_, strict=True),  # type: ignore[attr-defined]
                 key=lambda item: (-float(item[1]), item[0]),
             )[:10]
         )

@@ -1,5 +1,6 @@
 """Machine-learning feature construction, evaluation, and model artifacts."""
 
+from .artifacts import MLArtifactStore
 from .config import MLTrainingConfig
 from .feature_builder import MLFeatureDataset, MLFeatureMatrixBuilder
 from .models import (
@@ -16,6 +17,7 @@ __all__ = [
     "EcosystemGroupedSplitter",
     "MLFeatureDataset",
     "MLFeatureMatrixBuilder",
+    "MLArtifactStore",
     "ClassificationMetrics",
     "MLModelTrainer",
     "MLTrainingResult",
