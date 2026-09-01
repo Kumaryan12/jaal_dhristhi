@@ -1,0 +1,79 @@
+@import 'tailwindcss';
+
+:root {
+  --canvas: #f3f6fa;
+  --ink: #172033;
+  --muted: #6f7b8f;
+  --navy: #101c35;
+  --blue: #1b62ff;
+  --aqua: #47d7c7;
+  --green: #0fb283;
+  --red: #ed4b5f;
+  --amber: #f3a62b;
+  --line: #e1e7ef;
+}
+
+@theme inline {
+  --color-background: var(--canvas);
+  --color-foreground: var(--ink);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* { box-sizing: border-box; }
+html { background: var(--canvas); }
+body {
+  margin: 0;
+  background: radial-gradient(circle at 95% 0%, rgba(27, 98, 255, .045), transparent 28rem), var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+button, a { -webkit-tap-highlight-color: transparent; }
+button:focus-visible, a:focus-visible, input:focus-visible {
+  outline: 3px solid rgba(27, 98, 255, .25);
+  outline-offset: 2px;
+}
+.metric-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 175px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255,255,255,.92);
+  padding: 18px;
+  box-shadow: 0 5px 22px rgba(22, 38, 66, .035);
+}
+.metric-card::after {
+  content: '';
+  position: absolute;
+  width: 72px;
+  height: 72px;
+  right: -26px;
+  top: -26px;
+  border-radius: 999px;
+  background: rgba(27, 98, 255, .04);
+}
+.metric-icon { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 11px; }
+.metric-icon-blue { color: #1b62ff; background: #eaf0ff; }
+.metric-icon-violet { color: #7656df; background: #f0ecff; }
+.metric-icon-red { color: #d93a50; background: #ffeaed; }
+.metric-icon-green { color: #078b67; background: #e2f7f0; }
+.panel {
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: rgba(255,255,255,.94);
+  padding: clamp(18px, 2.2vw, 26px);
+  box-shadow: 0 6px 25px rgba(22, 38, 66, .04);
+}
+.eyebrow { font-size: 10px; font-weight: 750; letter-spacing: .14em; text-transform: uppercase; color: var(--blue); }
+.panel-title { margin-top: 4px; font-size: 16px; font-weight: 720; letter-spacing: -.015em; color: var(--navy); }
+.risk-label { display: inline-flex; border-radius: 999px; padding: 4px 8px; font-size: 9px; font-weight: 800; letter-spacing: .08em; }
+.risk-low { color: #077c5c; background: #e1f6ef; }
+.risk-medium { color: #9a6510; background: #fff1d9; }
+.risk-high { color: #b72d40; background: #ffe4e8; }
+.risk-bar-low { background: var(--green); }
+.risk-bar-medium { background: var(--amber); }
+.risk-bar-high { background: var(--red); }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+}
