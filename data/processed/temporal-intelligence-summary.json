@@ -1,0 +1,16 @@
+{
+  "feature_row_count": 5588,
+  "feature_schema_version": "1.0.0",
+  "feature_sha256": "156eeb5f0c20b86caef7a746766f4fa1dc959f2da0fdc3da0b4487988a35d03f",
+  "summary": {
+    "application_count": 5588,
+    "average_network_growth_rate_24h": 0.1825,
+    "average_recency_score": 0.183474,
+    "peak_account_applications_24h": 8,
+    "peak_application_velocity_2h": 8,
+    "peak_dealer_applications_2h": 8,
+    "peak_device_applications_2h": 8,
+    "rapid_burst_application_count": 188,
+    "rapid_burst_rate": 0.033644
+  }
+}

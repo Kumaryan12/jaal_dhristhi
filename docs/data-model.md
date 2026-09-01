@@ -171,10 +171,14 @@ Each application gets point-in-time features calculated with `event_time <= subm
 - `applications_same_dealer_2h`
 - `applications_same_account_24h`
 - `customer_applications_30d`
-- `component_new_nodes_24h`
-- `component_growth_rate_7d`
+- `application_velocity_2h`
+- `linked_applicants_24h`
+- `network_prior_applicants_30d`
+- `network_growth_rate_24h`
 - `hours_since_latest_link`
 - `recency_score`
+- `rapid_burst_detected`
+- `burst_signal_types`
 
 Window durations will live in versioned configuration and appear in explanation evidence.
 

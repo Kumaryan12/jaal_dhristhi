@@ -194,13 +194,20 @@ class TemporalIntelligenceEngine:
             device_index=device_index,
             account_index=account_index,
         )
+        recency_events = self._linked_events(
+            event,
+            start=event.submitted_at - timedelta(hours=self.config.recency_horizon_hours),
+            dealer_index=dealer_index,
+            device_index=device_index,
+            account_index=account_index,
+        )
         recent_applicants = {
             item.customer_id for item in linked_events if item.submitted_at >= recent_start
         }
         prior_applicants = {
             item.customer_id for item in linked_events if item.submitted_at < recent_start
         }
-        latest_link = max((item.submitted_at for item in linked_events), default=None)
+        latest_link = max((item.submitted_at for item in recency_events), default=None)
         if latest_link is None:
             hours_since_latest_link = None
             recency_score = 0.0

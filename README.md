@@ -10,7 +10,7 @@ The product is deliberately **not** a generic fraud detector or a banking applic
 
 ## Project status
 
-Phases 0–3 are complete. The repository can reproducibly generate a lending ecosystem, resolve isolated records into hidden relationships, and calculate versioned NetworkX graph-risk features and communities.
+Phases 0–4 are complete. The repository can generate a lending ecosystem, resolve hidden relationships, calculate NetworkX graph features, and detect emerging time-aware application patterns without reading future events.
 
 - [System architecture](docs/architecture.md)
 - [API contract](docs/api-contract.md)
@@ -19,6 +19,7 @@ Phases 0–3 are complete. The repository can reproducibly generate a lending ec
 - [Phase 1 implementation report](docs/phase-1-synthetic-data.md)
 - [Phase 2 implementation report](docs/phase-2-entity-resolution.md)
 - [Phase 3 implementation report](docs/phase-3-graph-intelligence.md)
+- [Phase 4 implementation report](docs/phase-4-temporal-intelligence.md)
 
 ## Proposed technology
 
@@ -63,3 +64,15 @@ PYTHONPATH=backend python3 -m app.services.graph_intelligence.cli \
 ```
 
 This writes a versioned customer feature table and compact checksum summary. The engine calculates graph features only; final risk scoring begins in Phase 5.
+
+## Generate temporal intelligence features
+
+```bash
+PYTHONPATH=backend python3 -m app.services.temporal_intelligence.cli \
+  --seed 2026 \
+  --normal-applications 5000 \
+  --suspicious-ecosystems 100 \
+  --output-dir data/processed
+```
+
+Each row is calculated as of its application submission timestamp. Later applications never contribute to earlier feature rows.

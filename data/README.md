@@ -67,3 +67,20 @@ Outputs:
 - `graph-intelligence-summary.json`: feature schema version, row count, CSV checksum, and graph-level metrics.
 
 The bulk feature CSV is ignored by Git. The compact summary is committed as reproducibility evidence.
+
+## Generate temporal intelligence features
+
+```bash
+PYTHONPATH=backend python3 -m app.services.temporal_intelligence.cli \
+  --seed 2026 \
+  --normal-applications 5000 \
+  --suspicious-ecosystems 100 \
+  --output-dir data/processed
+```
+
+Outputs:
+
+- `temporal-features.csv`: one leakage-safe feature row per application;
+- `temporal-intelligence-summary.json`: schema version, row count, checksum, and aggregate burst/velocity/growth metrics.
+
+Bulk temporal features are ignored by Git; the compact checksum summary is committed.
