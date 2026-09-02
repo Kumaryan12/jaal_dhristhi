@@ -1,59 +1,161 @@
 # TVS JaalDrishti
 
-> Detect the network before it becomes the loss.
+> **Detect the network before it becomes the loss.**
 
-TVS JaalDrishti is an explainable ecosystem-risk intelligence layer for lending teams. It complements an existing loan-origination or loan-management system by resolving relationships between applicants, devices, accounts, dealers, and locations; measuring how those networks change over time; and returning a transparent risk score with evidence and a recommended human-review action.
+**TVS Credit EPIC 8 · Process E — Swarm Intelligence Lending Network**
 
-The core proposition is simple:
+[![Live Demo](https://img.shields.io/badge/LIVE_DEMO-OPEN-178944?style=for-the-badge)](https://jaal-drishti.vercel.app/demo)
+[![Release Checks](https://github.com/Kumaryan12/jaal_dhristhi/actions/workflows/ci.yml/badge.svg)](https://github.com/Kumaryan12/jaal_dhristhi/actions/workflows/ci.yml)
 
-> Individual Risk != Ecosystem Risk
+<p align="center">
+  <img src="output/imagegen/jaal-drishti-slide-1.png" alt="TVS JaalDrishti — individual risk is not ecosystem risk" width="100%" />
+</p>
 
-## Problem
+JaalDrishti is an AI-assisted, explainable ecosystem-risk intelligence layer for digital lending. It reveals relationships that an application-by-application assessment cannot see—across customers, devices, bank accounts, dealers, locations, and time—then gives a risk analyst traceable evidence and a responsible next action.
 
-Traditional application checks evaluate one borrower at a time. Individually plausible applicants can therefore appear low risk while collectively sharing devices, repayment accounts, dealers, locations, and tightly concentrated submission windows. By the time repayment performance exposes the pattern, the loss may already be distributed across a connected ecosystem.
+> **Individual risk ≠ ecosystem risk.** A borrower can look genuine in isolation and still belong to a coordinated, rapidly emerging network.
 
-## Solution
+## Judge this project in 90 seconds
 
-JaalDrishti turns normalized application records into a temporal relationship graph and combines four evidence sources:
+1. Open the **[Simulation Lab](https://jaal-drishti.vercel.app/demo)** and select **Presentation view**.
+2. Select **Start Simulation** to run a fresh, isolated scenario.
+3. Watch Customer A move from **0.00 LOW** to **85.43 HIGH** as five connected applicants emerge around a shared device and dealer inside two hours.
+4. Inspect the relationship graph, ranked evidence, and human-authorized enhanced-verification action.
 
-- deterministic entity resolution across customers, devices, accounts, dealers, and locations;
-- graph intelligence such as linked applicants, component size, density, centrality, and communities;
-- point-in-time temporal intelligence for velocity, bursts, growth, and recency; and
-- versioned explainable rules with optional supervised-model probability.
+The transition is returned by the simulation API, not calculated in the browser. Every run receives a separate scenario namespace and leaves the active portfolio unchanged.
 
-The result is a bounded `0–100` ecosystem score, ranked evidence objects, and one of three analyst actions: standard processing, manual review, or enhanced verification. JaalDrishti is decision support; it does not execute a lending decision.
+For the complete narration, use the **[three-minute judge presentation guide](docs/judge-presentation-guide.md)**.
 
-## What is included
+## The problem
 
-- seeded synthetic generation with 5,000 normal applications and 100 suspicious ecosystems;
-- exact relationship resolution and weighted customer projection;
-- NetworkX graph features and deterministic community detection;
-- leakage-safe rolling temporal features;
-- explainable hybrid risk scoring;
-- Random Forest, XGBoost, and Isolation Forest comparison;
-- versioned FastAPI contracts with SQLite demo persistence;
-- a responsive React, TypeScript, Tailwind, React Flow, and Recharts analyst console with animated, draggable, relationship-aware graph exploration; and
-- an isolated one-click LOW-to-HIGH emerging-risk demonstration.
+Traditional lending checks focus on the applicant in front of them: KYC, bureau score, income, documents, and repayment history. Coordinated risk often exists **between** otherwise plausible applications:
 
-Phases 0–9 are complete. Phase 10 release documentation, CI, and regression verification are complete; repository screenshots await an available in-app browser capture session.
+- several applicants reuse the same device or repayment account;
+- applications concentrate around one dealer or location;
+- identity signals overlap across a growing network; and
+- activity accelerates inside a short time window.
 
-## Architecture
+A row-based system can approve each application independently while missing the ecosystem forming around it. By the time repayment behaviour confirms the pattern, the exposure may already be distributed across many connected loans.
+
+## The solution
+
+JaalDrishti continuously converts fragmented lending events into a time-aware relationship graph. It combines deterministic entity resolution, graph analytics, temporal intelligence, explainable policy rules, and a versioned ML probability to produce:
+
+- a bounded **0–100 ecosystem risk score**;
+- a navigable customer–device–account–dealer–location graph;
+- ranked, machine-readable evidence with entity IDs, observed values, thresholds, and time windows; and
+- one of three responsible actions: standard processing, manual review, or enhanced verification.
+
+JaalDrishti is an intelligence and decision-support layer. It complements an LOS/LMS; it does not replace the lending system, make an autonomous rejection, or label a customer as fraudulent.
+
+<p align="center">
+  <img src="output/imagegen/jaal-drishti-slide-2.png" alt="JaalDrishti workflow from live monitoring to connected intelligence and explainable action" width="100%" />
+</p>
+
+## How the intelligence works
+
+| Stage | What JaalDrishti does | Judge-visible output |
+|---|---|---|
+| **1. Observe** | Ingests applications and their device, account, dealer, location, and event-time identifiers | Live application stream |
+| **2. Resolve** | Converts repeated identifiers into typed, weighted relationships without merging distinct customers | Shared-entity signals |
+| **3. Connect** | Builds a heterogeneous graph and the relevant customer projection | Interactive evidence map |
+| **4. Detect** | Measures network size, density, centrality, bursts, velocity, growth, and recency at the correct point in time | Emerging ecosystem alerts |
+| **5. Explain** | Combines policy evidence with a versioned ML probability and ranks the contributing signals | Risk score and evidence cards |
+| **6. Decide** | Maps the assessment to a review action while retaining human authority | Auditable recommendation |
+
+## What makes it different
+
+| Conventional application screening | TVS JaalDrishti |
+|---|---|
+| Evaluates one application | Evaluates the connected ecosystem |
+| Sees static fields | Sees relationships and how they evolve over time |
+| Treats shared infrastructure as isolated attributes | Measures shared-entity concentration and network growth |
+| Produces a score with limited context | Returns ranked evidence and the involved entities |
+| Risks opaque automation | Keeps the final lending action human-authorized |
+
+## Working product
+
+The analyst console contains six connected workspaces:
+
+| Route | Workspace | Purpose |
+|---|---|---|
+| [`/`](https://jaal-drishti.vercel.app/) | **Live Monitor** | Follow the 30-second hosted event replay, select an application, and inspect its ecosystem |
+| [`/investigate`](https://jaal-drishti.vercel.app/investigate) | **Investigations** | Compare the borrower profile with connected evidence and review the recommended action |
+| [`/network`](https://jaal-drishti.vercel.app/network) | **Network Intelligence** | Explore a bounded, draggable, relationship-aware entity graph |
+| [`/dealers`](https://jaal-drishti.vercel.app/dealers) | **Dealer Intelligence** | Inspect concentration, exposure, and dealer-level risk indicators |
+| [`/analytics`](https://jaal-drishti.vercel.app/analytics) | **Portfolio Insights** | Review risk distribution, temporal movement, clusters, and exposure |
+| [`/demo`](https://jaal-drishti.vercel.app/demo) | **Simulation Lab** | Run the isolated LOW-to-HIGH emerging-ecosystem demonstration |
+
+### Ready-made investigation cases
+
+| Application | Demonstrates | Expected level |
+|---|---|---|
+| `APP-S-005001` | Eight applicants reuse one device | HIGH |
+| `APP-S-005013` | Shared account combined with rapid activity | HIGH |
+| `APP-S-005021` | Five applications through one dealer | HIGH |
+| `APP-S-005024` | Overlapping device and account signals | HIGH |
+| `APP-N-000031` | Clean comparison application | LOW |
+
+Use the corresponding `CUS-*` identifier on the Network Intelligence page—for example, `CUS-S-005013`.
+
+## System architecture
 
 ```mermaid
 flowchart LR
-    analyst["Risk analyst"] -->|"Uses"| console["React analyst console"]
-    console -->|"HTTPS JSON"| api["FastAPI API"]
-    api -->|"Orchestrates"| intelligence["Generation, resolution, graph, temporal, risk, explanation"]
-    intelligence -->|"Reads and writes"| sqlite["SQLite demo store"]
-    intelligence -->|"Loads trusted"| model["Versioned model artifact"]
-    intelligence -->|"Exports"| snapshots["Inspectable CSV and JSON artifacts"]
-    cli["Engineering CLI"] -->|"Generates and trains"| intelligence
-    los["Future LOS or LMS"] -.->|"Application and repayment data"| intelligence
+    sources["Applications + devices + accounts + dealers + locations"] --> resolve["Entity resolution"]
+    resolve --> graph["Graph intelligence"]
+    graph --> temporal["Point-in-time temporal intelligence"]
+    temporal --> risk["Rules + versioned ML"]
+    risk --> explain["Evidence + 0–100 score + action"]
+    explain --> console["React analyst console"]
+
+    api["FastAPI contract"] --- resolve
+    store[("SQLite demo store")] --- graph
+    model[("Versioned model artifact")] --- risk
+    analyst["Risk analyst"] --> console
 ```
 
-Authoritative risk calculations stay in the backend. The browser is a typed visualization client and never reconstructs a score. See [System architecture](docs/architecture.md), [data model](docs/data-model.md), and [API contract](docs/api-contract.md).
+Authoritative risk calculations remain in the backend. The browser is a typed visualization client and never reconstructs a score. The modular boundaries allow SQLite, in-memory NetworkX, and local artifacts to be replaced with enterprise storage, graph infrastructure, and a governed model registry without changing the public contract.
 
-## Quick start
+Read the detailed [system architecture](docs/architecture.md), [data model](docs/data-model.md), and [API contract](docs/api-contract.md).
+
+## AI and evidence design
+
+The production-style prototype uses a hybrid approach:
+
+- **Entity resolution:** deterministic matching for the normalized synthetic identifiers;
+- **Graph intelligence:** NetworkX features including linked applicants, component size, centrality, density, community, and connection strength;
+- **Temporal intelligence:** leakage-safe rolling features for velocity, bursts, recency, and network growth;
+- **Explainable rules:** versioned policy signals that remain visible to an analyst; and
+- **Machine learning:** Random Forest, XGBoost, and Isolation Forest are evaluated, with XGBoost selected by validation PR-AUC for the bundled artifact.
+
+On the deterministic synthetic benchmark, the selected XGBoost model reached **0.9949 test PR-AUC**, **0.9843 precision**, and **0.9690 recall**. These results validate the implementation against generated ground truth; they are **not** claims of production fraud performance. See the versioned [training summary](models/ml-training-summary.json).
+
+## Reproducible evidence
+
+The standard seed (`2026`) produces:
+
+| Evidence | Verified value |
+|---|---:|
+| Total applications | 5,588 |
+| Normal applications | 5,000 |
+| Suspicious ecosystems | 100 |
+| Suspicious applications | 588 |
+| Pattern families | 4 |
+| Backend and cross-layer tests | 64 passing |
+| Frontend tests | 23 passing |
+
+The four generated pattern families are shared-device rings, shared-account rings, dealer bursts, and mixed-identity rings. Dataset manifests include the seed, generator version, row counts, and SHA-256 hashes so the portfolio can be regenerated and audited.
+
+## Technology
+
+- **Frontend:** React 19, TypeScript, Next.js/Vinext, Tailwind CSS, React Flow, Recharts
+- **Backend:** Python 3.11, FastAPI, Pydantic, SQLite
+- **Intelligence:** NetworkX, scikit-learn, XGBoost, Isolation Forest
+- **Quality:** Ruff, unittest, Vitest, Testing Library, GitHub Actions
+- **Deployment:** Vercel frontend and API-compatible hosted handlers; Dockerized FastAPI backend
+
+## Run locally
 
 ### Prerequisites
 
@@ -61,7 +163,7 @@ Authoritative risk calculations stay in the backend. The browser is a typed visu
 - Node.js 22.13+
 - npm
 
-### 1. Install and start the API
+### 1. Start the intelligence API
 
 ```bash
 python3 -m venv .venv
@@ -69,13 +171,12 @@ python3 -m venv .venv
 .venv/bin/jaal-api --host 127.0.0.1 --port 8000
 ```
 
-The service exposes:
+The API will be available at:
 
 - health: `http://127.0.0.1:8000/health`
 - interactive OpenAPI: `http://127.0.0.1:8000/docs`
-- OpenAPI JSON: `http://127.0.0.1:8000/openapi.json`
 
-### 2. Populate the standard demo portfolio
+### 2. Generate the standard portfolio
 
 In another terminal:
 
@@ -90,8 +191,6 @@ curl -X POST http://127.0.0.1:8000/api/v1/generate_demo_data \
   }'
 ```
 
-The standard seed currently produces 5,588 applications. Counts are derived from generated ecosystem sizes rather than hardcoded in the product.
-
 ### 3. Start the analyst console
 
 ```bash
@@ -101,133 +200,67 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:3000`. Set `NEXT_PUBLIC_API_BASE_URL` in `frontend/.env.local` when the API is hosted elsewhere.
+Open `http://localhost:3000`. Set `NEXT_PUBLIC_API_BASE_URL` in `frontend/.env.local` when the API runs elsewhere.
 
-## Demo walkthrough
-
-### One-click emerging ecosystem
-
-1. Open `/demo`.
-2. Select **Presentation view** for the distraction-free judge experience.
-3. Follow the five-stage application → relationship → network → risk → action path.
-4. Select **Start Simulation**.
-5. Observe Customer A score LOW as an isolated applicant.
-6. Review the live processing trace, six-applicant shared-device and dealer network, and temporal burst.
-7. Observe the recomputed HIGH score, ranked evidence, and human-authorized enhanced-verification action.
-
-Each click creates a new in-memory scenario namespace. It does not require, replace, or mutate the active portfolio.
-
-Use the [three-minute judge presentation guide](docs/judge-presentation-guide.md) for the exact talk track, process explanation, and likely Q&A.
-
-### Portfolio investigation
-
-With the standard seed-2026 portfolio:
-
-- use the labeled casebook on `/investigate` to compare shared-device, shared-account, dealer-burst, mixed-ring, and clean-control applications;
-- use the matching customer casebook on `/network` to compare their relationship structures;
-- the canonical shared-device example remains `APP-S-005001` / `CUS-S-005001`.
-- review the operational activity stream on `/`;
-- inspect dealer concentration on `/dealers`; and
-- filter risk, dealer, and temporal patterns on `/analytics`.
-
-## Analyst routes
-
-| Route | Purpose |
-|---|---|
-| `/` | Live application stream, relationship graph, intelligence queue, and portfolio snapshot |
-| `/investigate` | Borrower profile, score, ranked evidence, and action |
-| `/network` | Bounded interactive customer-device-account-dealer-location graph |
-| `/dealers` | Dealer concentration table, risk indicators, exposure, and selected-dealer detail |
-| `/analytics` | Portfolio risk distribution, dealer clusters, temporal movement, and exposure |
-| `/demo` | Five-stage, isolated before-and-after ecosystem simulation |
-
-## API summary
+## API surface
 
 | Method | Path | Purpose |
 |---|---|---|
-| GET | `/health` | Liveness, version, and dataset readiness |
-| POST | `/api/v1/generate_demo_data` | Generate and persist a seeded portfolio |
-| POST | `/api/v1/analyse` | Analyse or refresh one application |
-| GET | `/api/v1/risk_score/{application_id}` | Retrieve the stored score |
-| GET | `/api/v1/network/{customer_id}` | Retrieve a bounded relationship projection |
-| GET | `/api/v1/explanation/{application_id}` | Retrieve profile, evidence, versions, and action |
-| GET | `/api/v1/monitor/activity` | Retrieve recent scored application activity for the live monitor |
-| GET | `/api/v1/dashboard/summary` | Retrieve executive metrics |
-| GET | `/api/v1/analytics` | Retrieve bounded portfolio analytics |
-| POST | `/api/v1/demo/simulate` | Compute an isolated emerging-risk scenario |
-
-See [API contract](docs/api-contract.md) for request/response examples and error semantics.
+| `GET` | `/health` | Service and dataset readiness |
+| `POST` | `/api/v1/generate_demo_data` | Generate and persist a seeded portfolio |
+| `POST` | `/api/v1/analyse` | Analyse or refresh an application |
+| `GET` | `/api/v1/risk_score/{application_id}` | Retrieve its stored ecosystem score |
+| `GET` | `/api/v1/network/{customer_id}` | Retrieve a bounded relationship projection |
+| `GET` | `/api/v1/explanation/{application_id}` | Retrieve profile, evidence, versions, and action |
+| `GET` | `/api/v1/monitor/activity` | Retrieve recent scored activity |
+| `GET` | `/api/v1/dashboard/summary` | Retrieve executive metrics |
+| `GET` | `/api/v1/analytics` | Retrieve bounded portfolio analytics |
+| `POST` | `/api/v1/demo/simulate` | Compute an isolated emerging-risk scenario |
 
 ## Verification
 
-Backend and cross-layer suite:
-
 ```bash
+# Backend and cross-layer checks
 PYTHONPATH=backend .venv/bin/ruff check backend tests
 PYTHONPATH=backend .venv/bin/python -m compileall -q backend/app tests
 PYTHONPATH=backend .venv/bin/python -W error::ResourceWarning \
   -m unittest discover -s tests -v
-```
 
-Frontend suite:
-
-```bash
+# Frontend checks
 cd frontend
 npm run lint
 npm test
 npm run build
-npm audit
+npm audit --audit-level=high
 ```
 
-The release candidate has 64 passing backend/cross-layer tests and 23 passing frontend tests. See the [test-case catalog](docs/test-cases.md) for coverage mapped to product behavior.
+Every push and pull request runs the same release checks in GitHub Actions. The [test-case catalog](docs/test-cases.md) maps automated and manual coverage to product behaviour.
 
-## Reproduce the intelligence pipeline directly
+## Deployment and production boundary
 
-The HTTP API is the normal demo path. Engineering CLIs are also available:
+- **Presentation frontend:** [jaal-drishti.vercel.app](https://jaal-drishti.vercel.app)
+- **Hosted health check:** [jaal-drishti.vercel.app/health](https://jaal-drishti.vercel.app/health)
+- **FastAPI contract deployment:** [backend-fawn-theta-78.vercel.app](https://backend-fawn-theta-78.vercel.app)
 
-```bash
-PYTHONPATH=backend .venv/bin/python -m app.services.synthetic_data.cli --help
-PYTHONPATH=backend .venv/bin/python -m app.services.entity_resolution.cli --help
-PYTHONPATH=backend .venv/bin/python -m app.services.graph_intelligence.cli --help
-PYTHONPATH=backend .venv/bin/python -m app.services.temporal_intelligence.cli --help
-PYTHONPATH=backend .venv/bin/python -m app.services.risk_intelligence.cli --help
-.venv/bin/jaal-train-ml --help
-```
+The hosted presentation uses deterministic, same-origin API handlers so every judge-facing workflow is available without a persistent external database. Local development uses the complete FastAPI intelligence pipeline.
 
-Generated databases, bulk datasets, model binaries, caches, local environment files, and secrets remain untracked. Compact deterministic manifests and benchmark summaries are versioned for review.
-
-## Deployment
-
-The backend can run locally or in Docker:
-
-```bash
-docker compose up --build backend
-```
-
-The public presentation frontend is deployed at [jaal-drishti.vercel.app](https://jaal-drishti.vercel.app), with a private Sites release at [jaal-drishti.nitgoa2023.chatgpt.site](https://jaal-drishti.nitgoa2023.chatgpt.site). Hosted presentation builds use deterministic, same-origin `/api/v1` handlers so every judge-facing graph and workflow remains available without a persistent external database. Local development continues to use the full FastAPI intelligence pipeline on port 8000; set `NEXT_PUBLIC_API_BASE_URL` to connect a hosted frontend to an externally reachable API instead.
-
-The FastAPI service is deployed at [backend-fawn-theta-78.vercel.app](https://backend-fawn-theta-78.vercel.app) for contract inspection and lightweight demos. Vercel uses `/tmp` for SQLite because the deployment filesystem is otherwise read-only and ephemeral; use PostgreSQL or another durable service for real hosted state.
-
-For production, replace SQLite with PostgreSQL, move artifacts to governed object storage/model registry, introduce enterprise OIDC/RBAC, mask sensitive attributes, add durable audit retention and rate limiting, and run graph/training workloads asynchronously.
-
-## Documentation
-
-- [Architecture](docs/architecture.md)
-- [Data model and feature contract](docs/data-model.md)
-- [API contract](docs/api-contract.md)
-- [Test-case catalog](docs/test-cases.md)
-- [Phase plan and approval record](docs/phase-plan.md)
-- [Phase 1: synthetic data](docs/phase-1-synthetic-data.md)
-- [Phase 2: entity resolution](docs/phase-2-entity-resolution.md)
-- [Phase 3: graph intelligence](docs/phase-3-graph-intelligence.md)
-- [Phase 4: temporal intelligence](docs/phase-4-temporal-intelligence.md)
-- [Phase 5: explainable risk](docs/phase-5-risk-intelligence.md)
-- [Phase 6: ML enhancement](docs/phase-6-ml-enhancement.md)
-- [Phase 7: FastAPI backend](docs/phase-7-fastapi-backend.md)
-- [Phase 8: analyst dashboard](docs/phase-8-enterprise-dashboard.md)
-- [Phase 9: demo mode](docs/phase-9-demo-mode.md)
-- [Phase 10: release candidate](docs/phase-10-release-candidate.md)
+A production deployment would introduce governed LOS/LMS ingestion, PostgreSQL, durable audit retention, object storage and a model registry, enterprise OIDC/RBAC, encryption and attribute masking, rate limiting, monitoring, and asynchronous graph/training workloads.
 
 ## Responsible-use boundary
 
-All bundled records are synthetic. The prototype is not a fraud verdict, credit-decision engine, or system of record. A production implementation requires legal, model-risk, privacy, security, fairness, and human-oversight review before any customer-impacting use.
+All bundled records are synthetic. JaalDrishti provides **risk intelligence**, not a fraud verdict or an autonomous credit decision. MEDIUM and HIGH results route cases for authorized human review. Any use with real customer data requires legal, privacy, security, fairness, model-risk, and lending-policy validation.
+
+## Documentation
+
+- [Three-minute judge presentation guide](docs/judge-presentation-guide.md)
+- [System architecture](docs/architecture.md)
+- [Data model and feature contract](docs/data-model.md)
+- [API contract](docs/api-contract.md)
+- [Test-case catalog](docs/test-cases.md)
+- [Implementation phase record](docs/phase-plan.md)
+
+---
+
+Built for **TVS Credit EPIC 8 — Process E** with one principle at the center:
+
+> **See the ecosystem. Explain the risk. Keep the decision human.**
