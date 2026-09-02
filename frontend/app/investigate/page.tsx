@@ -19,8 +19,10 @@ import Link from 'next/link';
 import { type FormEvent, useState } from 'react';
 
 import { AppShell } from '../../components/app-shell';
+import { DemoCasePicker } from '../../components/demo-case-picker';
 import { EmptyPanel, ErrorPanel, LoadingPanel, PageHeading, RiskBadge } from '../../components/ui';
 import { analyseApplication, getExplanation } from '../../lib/api';
+import { investigationDemoCases } from '../../lib/demo-cases';
 import type { Analysis, Explanation } from '../../lib/types';
 
 const inr = new Intl.NumberFormat('en-IN', {
@@ -36,10 +38,10 @@ export default function InvestigationPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function investigate(event: FormEvent, forceRefresh = false) {
-    event.preventDefault();
-    const normalized = applicationId.trim();
+  async function runInvestigation(targetId: string, forceRefresh = false) {
+    const normalized = targetId.trim();
     if (!normalized) return;
+    setApplicationId(normalized);
     setLoading(true);
     setError(null);
     try {
@@ -54,6 +56,11 @@ export default function InvestigationPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  async function investigate(event: FormEvent) {
+    event.preventDefault();
+    await runInvestigation(applicationId);
   }
 
   return (
@@ -73,7 +80,13 @@ export default function InvestigationPage() {
           </div>
           <button type="submit" disabled={loading || !applicationId.trim()} className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-[var(--blue)] px-5 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50">Analyse ecosystem <ArrowRight size={14} /></button>
         </form>
-        <p className="mt-2 text-[11px] text-[var(--muted)]">Standard seed demo: try <button type="button" onClick={() => setApplicationId('APP-S-005001')} className="font-semibold text-[var(--blue)] hover:underline">APP-S-005001</button></p>
+        <DemoCasePicker
+          cases={investigationDemoCases}
+          selectedId={applicationId}
+          loading={loading}
+          onSelect={(id) => void runInvestigation(id)}
+          entityLabel="application"
+        />
 
         <div className="mt-5">
           {loading ? <LoadingPanel label="Analysing application ecosystem" /> : error ? <ErrorPanel message={error} /> : !analysis || !explanation ? (
@@ -87,11 +100,15 @@ export default function InvestigationPage() {
 
 function InvestigationResult({ analysis, explanation }: { analysis: Analysis; explanation: Explanation }) {
   const profile = explanation.borrower;
+  const requiresReview = analysis.recommended_action.human_review_required;
+  const scoreTone = analysis.risk_level === 'HIGH' ? 'text-[var(--red)]' : analysis.risk_level === 'MEDIUM' ? 'text-[var(--amber)]' : 'text-[var(--green)]';
+  const decisionLabel = analysis.risk_level === 'HIGH' ? 'Requires Review' : analysis.risk_level === 'MEDIUM' ? 'Review Suggested' : 'Standard Checks';
+  const decisionTone = analysis.risk_level === 'HIGH' ? 'bg-red-50 text-red-700' : analysis.risk_level === 'MEDIUM' ? 'bg-amber-50 text-amber-700' : 'bg-green-50 text-green-700';
   return (
     <div className="space-y-4">
       <div className="flex flex-col justify-between gap-3 rounded-lg border border-[var(--line)] bg-white px-5 py-4 sm:flex-row sm:items-center">
         <div className="flex items-center gap-4"><span className="grid h-9 w-9 place-items-center rounded-md bg-[#eef7f2] text-[var(--blue)]"><Fingerprint size={17} /></span><div><p className="text-[10px] font-semibold uppercase tracking-[.1em] text-[var(--muted)]">Investigation ID</p><p className="mt-0.5 font-mono text-sm font-semibold text-[var(--navy)]">{analysis.analysis_id}</p></div></div>
-        <div className="flex items-center gap-3"><span className="text-[11px] text-[var(--muted)]">Application {analysis.application_id}</span><span className="rounded bg-red-50 px-2.5 py-1.5 text-[10px] font-semibold text-red-700">Requires Review</span></div>
+        <div className="flex items-center gap-3"><span className="text-[11px] text-[var(--muted)]">Application {analysis.application_id}</span><span className={`rounded px-2.5 py-1.5 text-[10px] font-semibold ${decisionTone}`}>{decisionLabel}</span></div>
       </div>
 
       <section className="grid gap-4 xl:grid-cols-[minmax(280px,.8fr)_minmax(420px,1.15fr)_minmax(320px,.88fr)]">
@@ -107,7 +124,7 @@ function InvestigationResult({ analysis, explanation }: { analysis: Analysis; ex
               <ProfileFact icon={Fingerprint} label="Loan type" value={profile.loan_type.replaceAll('_', ' ')} />
               <ProfileFact icon={Network} label="Originating dealer" value={profile.dealer_id} />
             </dl>
-            <div className="mt-5 rounded-md border border-green-200 bg-green-50 p-4"><p className="text-[9px] font-bold uppercase tracking-[.1em] text-green-700">Individual-only view</p><p className="mt-2 text-sm font-semibold text-[var(--navy)]">No obvious profile anomaly</p><p className="mt-1 text-[11px] leading-5 text-slate-600">The borrower attributes remain individually plausible. The material risk is found in connected behaviour.</p></div>
+            <div className="mt-5 rounded-md border border-green-200 bg-green-50 p-4"><p className="text-[9px] font-bold uppercase tracking-[.1em] text-green-700">Individual-only view</p><p className="mt-2 text-sm font-semibold text-[var(--navy)]">No obvious profile anomaly</p><p className="mt-1 text-[11px] leading-5 text-slate-600">{requiresReview ? 'The borrower attributes remain individually plausible. The material risk is found in connected behaviour.' : 'The borrower profile and connected ecosystem remain within standard review thresholds.'}</p></div>
           </div>
         </article>
 
@@ -115,18 +132,19 @@ function InvestigationResult({ analysis, explanation }: { analysis: Analysis; ex
           <SectionHeader title="Ecosystem analysis" detail="Graph + temporal intelligence" />
           <div className="p-5">
             <div className="flex items-end justify-between gap-5 border-b border-[var(--line)] pb-5">
-              <div aria-label={`Risk score ${analysis.risk_score} out of 100`}><p className="text-[10px] font-semibold uppercase tracking-[.1em] text-[var(--muted)]">Ecosystem risk</p><div className="mt-1 flex items-end gap-2"><span className="text-5xl font-semibold tracking-[-.06em] text-[var(--red)]">{analysis.risk_score.toFixed(0)}</span><span className="pb-1.5 text-xs text-[var(--muted)]">/ 100</span></div></div>
+              <div aria-label={`Risk score ${analysis.risk_score} out of 100`}><p className="text-[10px] font-semibold uppercase tracking-[.1em] text-[var(--muted)]">Ecosystem risk</p><div className="mt-1 flex items-end gap-2"><span className={`text-5xl font-semibold tracking-[-.06em] ${scoreTone}`}>{analysis.risk_score.toFixed(0)}</span><span className="pb-1.5 text-xs text-[var(--muted)]">/ 100</span></div></div>
               <RiskBadge level={analysis.risk_level} />
             </div>
             <div className="mt-4 grid grid-cols-3 divide-x divide-[var(--line)] rounded-md border border-[var(--line)] bg-[var(--subtle)] py-3 text-center"><Metric label="Connected entities" value={explanation.graph_evidence.cluster_size} /><Metric label="Related applicants" value={explanation.graph_evidence.connected_applicant_count} /><Metric label="Shared signals" value={explanation.graph_evidence.shared_identity_signal_count} /></div>
-            <div className="mt-6"><p className="text-[10px] font-semibold uppercase tracking-[.1em] text-[var(--muted)]">Risk evolution</p><div className="mt-4 space-y-0"><TimelineStep icon={CircleUserRound} label="Application received" detail="Individual borrower indicators recorded" /><TimelineStep icon={Fingerprint} label="Identity relationship found" detail={`${explanation.graph_evidence.shared_identity_signal_count} shared identity signals`} /><TimelineStep icon={Clock3} label="Temporal pattern evaluated" detail={`${explanation.temporal_evidence.application_velocity_2h} linked applications inside two hours`} /><TimelineStep icon={ShieldCheck} label="Risk threshold crossed" detail={`${analysis.risk_level} ecosystem · ${analysis.risk_score.toFixed(0)} risk score`} last /></div></div>
+            <div className="mt-6"><p className="text-[10px] font-semibold uppercase tracking-[.1em] text-[var(--muted)]">Risk evolution</p><div className="mt-4 space-y-0"><TimelineStep icon={CircleUserRound} label="Application received" detail="Individual borrower indicators recorded" /><TimelineStep icon={Fingerprint} label="Identity relationships evaluated" detail={`${explanation.graph_evidence.shared_identity_signal_count} shared identity signals`} /><TimelineStep icon={Clock3} label="Temporal pattern evaluated" detail={`${explanation.temporal_evidence.application_velocity_2h} linked applications inside two hours`} /><TimelineStep icon={ShieldCheck} label={requiresReview ? 'Risk threshold crossed' : 'Decision threshold evaluated'} detail={`${analysis.risk_level} ecosystem · ${analysis.risk_score.toFixed(0)} risk score`} last /></div></div>
             <Link href={`/network?customer=${encodeURIComponent(profile.customer_id)}`} className="mt-5 inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--blue)]">Open connected network <ChevronRight size={13} /></Link>
           </div>
         </article>
 
         <aside className="rounded-lg border border-[var(--line)] bg-white">
-          <SectionHeader title="Why was this flagged?" detail={`${analysis.signals.length} evidence signals`} />
+          <SectionHeader title="Decision evidence" detail={analysis.signals.length ? `${analysis.signals.length} evidence signals` : 'No elevated signals'} />
           <div className="divide-y divide-[var(--line)]">
+            {analysis.signals.length === 0 && <div className="p-5 text-[11px] leading-5 text-[var(--muted)]">No material graph or temporal concentration was found in the bounded ecosystem.</div>}
             {analysis.signals.map((signal, index) => <div key={signal.code} className="p-4"><div className="flex gap-3"><span className="grid h-7 w-7 shrink-0 place-items-center rounded bg-red-50 text-[10px] font-bold text-[var(--red)]">{index + 1}</span><div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><p className="text-[11px] font-semibold text-[var(--navy)]">{signal.code.replaceAll('_', ' ')}</p><span className="text-[9px] font-semibold text-[var(--red)]">+{signal.points}</span></div><p className="mt-1.5 text-[11px] leading-5 text-[var(--muted)]">{signal.message}</p>{signal.entity_ids.length > 0 && <p className="mt-2 truncate font-mono text-[9px] text-[var(--blue)]">{signal.entity_ids.join(' · ')}</p>}</div></div></div>)}
           </div>
           <div className="m-4 rounded-md bg-[var(--navy)] p-4 text-white"><p className="text-[9px] font-bold uppercase tracking-[.1em] text-[#bdebd0]">Recommended action</p><h2 className="mt-2 text-base font-semibold">{analysis.recommended_action.label}</h2><p className="mt-2 text-[11px] leading-5 text-slate-300">{analysis.recommended_action.rationale}</p><div className="mt-4 border-t border-white/10 pt-3 text-[10px] text-slate-400">Human authorization required · Policy {analysis.versions.risk_policy}</div></div>

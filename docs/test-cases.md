@@ -37,7 +37,7 @@ Backend/cross-layer count at the Phase 10 candidate: **64 passing tests**.
 | Network Intelligence | Signal view, low-specificity noise suppression, evidence narrative, Full graph control | The default graph prioritizes shared device/account/dealer context while preserving access to every returned node |
 | Demo mode | explicit initial action, presentation view, LOW-to-HIGH rendering, process trace, evidence, network, isolation notice | One click renders the backend response, exposes the complete intelligence path, and never substitutes browser-side scoring |
 
-Frontend count at the Phase 10 candidate: **21 passing tests**.
+Current frontend count: **23 passing tests**.
 
 ## Verification commands
 
@@ -59,8 +59,8 @@ npm audit
 | Check | Acceptance |
 |---|---|
 | Live Monitor | Recent applications, relationship graph, intelligence queue, and computed portfolio snapshot load together |
-| Investigation | `APP-S-005001` returns profile, HIGH evidence, and an action |
-| Network | `CUS-S-005001` renders a bounded traversable graph |
+| Investigation | Five labeled application presets cover shared-device, shared-account, dealer-burst, mixed-ring, and clean-control evidence |
+| Network | Five matching customer presets render distinct bounded relationship structures |
 | Dealer Intelligence | Dealer table supports selection and exposes concentration, exposure, and risk context |
 | Analytics | Valid date range updates all charts; reversed range produces an actionable error |
 | Demo | Presentation view hides navigation; one click renders the live process trace, LOW before, HIGH after, network evidence, and isolation notice |

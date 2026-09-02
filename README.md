@@ -123,8 +123,9 @@ Use the [three-minute judge presentation guide](docs/judge-presentation-guide.md
 
 With the standard seed-2026 portfolio:
 
-- use `APP-S-005001` on `/investigate`;
-- follow `CUS-S-005001` into `/network`;
+- use the labeled casebook on `/investigate` to compare shared-device, shared-account, dealer-burst, mixed-ring, and clean-control applications;
+- use the matching customer casebook on `/network` to compare their relationship structures;
+- the canonical shared-device example remains `APP-S-005001` / `CUS-S-005001`.
 - review the operational activity stream on `/`;
 - inspect dealer concentration on `/dealers`; and
 - filter risk, dealer, and temporal patterns on `/analytics`.
@@ -178,7 +179,7 @@ npm run build
 npm audit
 ```
 
-The Phase 10 release candidate has 64 passing backend/cross-layer tests and 21 passing frontend tests. See the [test-case catalog](docs/test-cases.md) for coverage mapped to product behavior.
+The release candidate has 64 passing backend/cross-layer tests and 23 passing frontend tests. See the [test-case catalog](docs/test-cases.md) for coverage mapped to product behavior.
 
 ## Reproduce the intelligence pipeline directly
 

@@ -31,8 +31,10 @@ import { useSearchParams } from 'next/navigation';
 import { type FormEvent, type ReactNode, useMemo, useState } from 'react';
 
 import { getNetwork } from '../lib/api';
+import { networkDemoCases } from '../lib/demo-cases';
 import type { NetworkGraph, RiskLevel } from '../lib/types';
 import { AppShell } from './app-shell';
+import { DemoCasePicker } from './demo-case-picker';
 import { EmptyPanel, ErrorPanel, LoadingPanel, PageHeading, RiskBadge } from './ui';
 
 type GraphNode = NetworkGraph['nodes'][number];
@@ -85,10 +87,10 @@ export function NetworkExplorer() {
   );
   const evidence = useMemo(() => (network ? buildEvidenceRead(network) : []), [network]);
 
-  async function explore(event: FormEvent) {
-    event.preventDefault();
-    const normalized = customerId.trim();
+  async function loadNetwork(targetId: string) {
+    const normalized = targetId.trim();
     if (!normalized) return;
+    setCustomerId(normalized);
     setLoading(true);
     setError(null);
     try {
@@ -103,6 +105,11 @@ export function NetworkExplorer() {
     } finally {
       setLoading(false);
     }
+  }
+
+  async function explore(event: FormEvent) {
+    event.preventDefault();
+    await loadNetwork(customerId);
   }
 
   function changeView(nextMode: ViewMode) {
@@ -155,12 +162,13 @@ export function NetworkExplorer() {
             <Network size={16} /> Explore network
           </button>
         </form>
-        <p className="mt-2 text-[11px] text-[var(--muted)]">
-          Presentation example:{' '}
-          <button type="button" onClick={() => setCustomerId('CUS-S-005001')} className="font-semibold text-[var(--blue)] hover:underline">
-            CUS-S-005001
-          </button>
-        </p>
+        <DemoCasePicker
+          cases={networkDemoCases}
+          selectedId={customerId}
+          loading={loading}
+          onSelect={(id) => void loadNetwork(id)}
+          entityLabel="customer"
+        />
 
         <div className="mt-6">
           {loading ? (

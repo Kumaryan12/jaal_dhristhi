@@ -45,6 +45,38 @@ describe('hosted demo API', () => {
     });
   });
 
+  it('serves distinct investigation and network casebook scenarios', async () => {
+    const dealerResponse = await handleHostedApi(
+      new Request('https://demo.example/api/v1/analyse', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ application_id: 'APP-S-005021' }),
+      }),
+    );
+    const cleanNetworkResponse = await handleHostedApi(
+      new Request('https://demo.example/api/v1/network/CUS-N-000031?depth=2&max_nodes=150'),
+    );
+
+    expect(dealerResponse.status).toBe(200);
+    const dealerPayload = await dealerResponse.json();
+    expect(dealerPayload).toMatchObject({
+      risk_score: 70,
+      risk_level: 'HIGH',
+    });
+    expect(dealerPayload.signals).toEqual(expect.arrayContaining([
+      expect.objectContaining({ code: 'RAPID_DEALER_APPLICATION_BURST' }),
+    ]));
+    expect(cleanNetworkResponse.status).toBe(200);
+    const cleanNetworkPayload = await cleanNetworkResponse.json();
+    expect(cleanNetworkPayload).toMatchObject({
+      customer_id: 'CUS-N-000031',
+      summary: { linked_applicant_count: 0 },
+    });
+    expect(cleanNetworkPayload.nodes).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: 'CUS-N-000031', risk_level: 'LOW' }),
+    ]));
+  });
+
   it('rejects unknown applications without leaking transport details', async () => {
     const response = await handleHostedApi(
       new Request('https://demo.example/api/v1/explanation/APP-UNKNOWN'),

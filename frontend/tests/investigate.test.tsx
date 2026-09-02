@@ -108,19 +108,21 @@ describe('application investigation', () => {
     render(<InvestigationPage />);
     expect(screen.getByText('Start with an application')).toBeInTheDocument();
     expect(screen.getByText(/No score is guessed/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Load APP-S-005013: Shared account burst/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Load APP-N-000031: Clean control/i })).toBeInTheDocument();
   });
 
-  it('submits the selected application and renders evidence and action', async () => {
+  it('loads a selected demo application and renders evidence and action', async () => {
     const user = userEvent.setup();
     render(<InvestigationPage />);
 
-    await user.click(screen.getByRole('button', { name: 'APP-S-005001' }));
-    await user.click(screen.getByRole('button', { name: /Analyse ecosystem/i }));
+    await user.click(screen.getByRole('button', { name: /Load APP-S-005001: Shared device ring/i }));
 
     await waitFor(() => {
       expect(screen.getByText('Enhanced verification required')).toBeInTheDocument();
     });
     expect(analyseApplication).toHaveBeenCalledWith('APP-S-005001', false);
+    expect(analyseApplication).toHaveBeenCalledTimes(1);
     expect(getExplanation).toHaveBeenCalledWith('APP-S-005001');
     expect(screen.getByText('Device DEV-1 is linked to 6 applicants.')).toBeInTheDocument();
     expect(screen.getByLabelText('Risk score 82 out of 100')).toBeInTheDocument();
@@ -128,5 +130,46 @@ describe('application investigation', () => {
       'href',
       '/network?customer=CUS-S-005001',
     );
+  });
+
+  it('presents the clean control as a standard-processing comparison', async () => {
+    const user = userEvent.setup();
+    const cleanAnalysis: Analysis = {
+      ...analysis,
+      application_id: 'APP-N-000031',
+      customer_id: 'CUS-N-000031',
+      risk_score: 1,
+      risk_level: 'LOW',
+      signals: [],
+      recommended_action: {
+        code: 'STANDARD_PROCESSING',
+        label: 'Proceed with standard checks',
+        rationale: 'No material ecosystem concentration is present.',
+        human_review_required: false,
+      },
+    };
+    vi.mocked(analyseApplication).mockResolvedValue(cleanAnalysis);
+    vi.mocked(getExplanation).mockResolvedValue({
+      ...explanation,
+      application_id: cleanAnalysis.application_id,
+      customer_id: cleanAnalysis.customer_id,
+      risk_score: cleanAnalysis.risk_score,
+      risk_level: cleanAnalysis.risk_level,
+      signals: [],
+      borrower: {
+        ...explanation.borrower,
+        application_id: cleanAnalysis.application_id,
+        customer_id: cleanAnalysis.customer_id,
+      },
+      graph_evidence: { ...explanation.graph_evidence, connected_applicant_count: 0, cluster_size: 1, shared_identity_signal_count: 0 },
+      recommended_action: cleanAnalysis.recommended_action,
+    });
+    render(<InvestigationPage />);
+
+    await user.click(screen.getByRole('button', { name: /Load APP-N-000031: Clean control/i }));
+
+    expect(await screen.findByText('Standard Checks')).toBeInTheDocument();
+    expect(screen.getByText(/No material graph or temporal concentration/)).toBeInTheDocument();
+    expect(screen.queryByText('Requires Review')).not.toBeInTheDocument();
   });
 });

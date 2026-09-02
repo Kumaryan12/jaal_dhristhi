@@ -74,11 +74,13 @@ describe('network intelligence presentation', () => {
     const user = userEvent.setup();
     render(<NetworkExplorer />);
 
-    await user.click(screen.getByRole('button', { name: 'CUS-S-005001' }));
-    await user.click(screen.getByRole('button', { name: /Explore network/i }));
+    expect(screen.getByRole('button', { name: /Load CUS-S-005024: Mixed identity ring/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Load CUS-N-000031: Clean control/i })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: /Load CUS-S-005001: Shared device ring/i }));
 
     await waitFor(() => expect(screen.getByText('What this graph proves')).toBeInTheDocument());
     expect(screen.getByText(/2 customers connect through device DEV-1/)).toBeInTheDocument();
+    expect(getNetwork).toHaveBeenCalledTimes(1);
     expect(screen.getByTestId('network-graph')).toHaveAttribute('data-node-count', '6');
     expect(screen.getByText(/1 low-priority nodes hidden/)).toBeInTheDocument();
 

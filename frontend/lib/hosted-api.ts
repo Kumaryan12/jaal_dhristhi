@@ -7,6 +7,7 @@ import type {
   LiveMonitor,
   NetworkGraph,
   RecommendedAction,
+  RiskLevel,
   RiskSignal,
 } from './types';
 
@@ -176,35 +177,43 @@ function portfolioAnalytics(): Analytics {
 
 function networkFor(customerId: string): NetworkGraph {
   const suffix = customerId.split('-').at(-1) ?? '005001';
+  const demoCase = hostedCaseFor(customerId.replace(/^CUS-/, 'APP-'));
   const deviceId = `DEV-${suffix.padStart(7, '0')}`;
   const accountId = `ACC-${suffix.padStart(7, '0')}`;
-  const dealerId = `DLR-${String(181 + (Number(suffix) % 14)).padStart(4, '0')}`;
+  const dealerId = demoCase.dealerId;
   const locationId = `LOC-${String(1 + (Number(suffix) % 8)).padStart(3, '0')}`;
-  const related = Array.from({ length: 7 }, (_, index) => `CUS-S-${String(6001 + index).padStart(6, '0')}`);
+  const related = Array.from(
+    { length: demoCase.linkedApplicants },
+    (_, index) => `CUS-S-${String(Number(suffix) + 100 + index).padStart(6, '0')}`,
+  );
+  const includesDevice = demoCase.kind === 'shared_device' || demoCase.kind === 'mixed_ring';
+  const includesAccount = demoCase.kind === 'shared_account' || demoCase.kind === 'mixed_ring';
   const nodes: NetworkGraph['nodes'] = [
-    { id: customerId, type: 'customer', label: `Customer ${suffix}`, risk_level: 'HIGH', is_focus: true },
-    { id: deviceId, type: 'device', label: `Device ${suffix}`, risk_level: null, is_focus: false },
-    { id: accountId, type: 'account', label: `Account ${suffix}`, risk_level: null, is_focus: false },
+    { id: customerId, type: 'customer', label: `Customer ${suffix}`, risk_level: demoCase.riskLevel, is_focus: true },
+    ...(includesDevice ? [{ id: deviceId, type: 'device' as const, label: `Shared device ${suffix}`, risk_level: null, is_focus: false }] : []),
+    ...(includesAccount ? [{ id: accountId, type: 'account' as const, label: `Shared account ${suffix}`, risk_level: null, is_focus: false }] : []),
     { id: dealerId, type: 'dealer', label: `Dealer ${dealerId.slice(-4)}`, risk_level: null, is_focus: false },
     { id: locationId, type: 'location', label: `Location ${locationId.slice(-3)}`, risk_level: null, is_focus: false },
-    ...related.map((id, index) => ({ id, type: 'customer' as const, label: `Connected customer ${index + 1}`, risk_level: index < 4 ? 'HIGH' as const : 'MEDIUM' as const, is_focus: false })),
+    ...related.map((id, index) => ({ id, type: 'customer' as const, label: `Connected customer ${index + 1}`, risk_level: index < Math.ceil(related.length / 2) ? 'HIGH' as const : 'MEDIUM' as const, is_focus: false })),
   ];
   const observed = '2026-08-29T10:00:00Z';
   const edge = (id: string, source: string, target: string, type: string, strength = 1): NetworkGraph['edges'][number] => ({ id, source, target, type, strength, first_seen: observed, last_seen: DATA_TIMESTAMP });
   const edges: NetworkGraph['edges'] = [
-    edge(`focus-device-${suffix}`, customerId, deviceId, 'uses_device'),
-    edge(`focus-account-${suffix}`, customerId, accountId, 'linked_account'),
     edge(`focus-dealer-${suffix}`, customerId, dealerId, 'applied_via', 0.7),
     edge(`focus-location-${suffix}`, customerId, locationId, 'located_in', 0.2),
+    ...(includesDevice ? [edge(`focus-device-${suffix}`, customerId, deviceId, 'uses_device')] : []),
+    ...(includesAccount ? [edge(`focus-account-${suffix}`, customerId, accountId, 'linked_account')] : []),
     ...related.flatMap((id, index) => [
-      edge(`device-${index}-${suffix}`, id, deviceId, 'uses_device'),
+      ...(includesDevice ? [edge(`device-${index}-${suffix}`, id, deviceId, 'uses_device')] : []),
+      ...(includesAccount ? [edge(`account-${index}-${suffix}`, id, accountId, 'linked_account')] : []),
       edge(`dealer-${index}-${suffix}`, id, dealerId, 'applied_via', 0.7),
     ]),
   ];
+  const possibleEdges = Math.max(1, (nodes.length * (nodes.length - 1)) / 2);
   return {
     customer_id: customerId,
     as_of: DATA_TIMESTAMP,
-    summary: { node_count: nodes.length, edge_count: edges.length, linked_applicant_count: related.length, component_density: 0.61, community_id: `community-${suffix}`, truncated: false },
+    summary: { node_count: nodes.length, edge_count: edges.length, linked_applicant_count: related.length, component_density: Number((edges.length / possibleEdges).toFixed(2)), community_id: `community-${suffix}`, truncated: false },
     nodes,
     edges,
     request_id: REQUEST_ID,
@@ -226,20 +235,108 @@ function sharedDeviceSignal(): RiskSignal {
   };
 }
 
+function sharedAccountSignal(): RiskSignal {
+  return {
+    code: 'SHARED_ACCOUNT_MANY_APPLICANTS',
+    category: 'IDENTITY',
+    severity: 'HIGH',
+    message: 'One repayment account is linked to 8 applicants in the current ecosystem.',
+    entity_ids: ['ACC-0004962'],
+    observed_value: 8,
+    threshold: 3,
+    points: 28,
+    score_floor: 70,
+    window: null,
+  };
+}
+
+function rapidDealerSignal(): RiskSignal {
+  return {
+    code: 'RAPID_DEALER_APPLICATION_BURST',
+    category: 'TEMPORAL',
+    severity: 'HIGH',
+    message: 'Five connected applications arrived through one dealer inside two hours.',
+    entity_ids: ['DLR-0183'],
+    observed_value: 5,
+    threshold: 4,
+    points: 24,
+    score_floor: 70,
+    window: '2h',
+  };
+}
+
+function highVelocitySignal(): RiskSignal {
+  return {
+    code: 'HIGH_APPLICATION_VELOCITY',
+    category: 'TEMPORAL',
+    severity: 'HIGH',
+    message: 'The connected ecosystem accumulated applications faster than the review threshold.',
+    entity_ids: [],
+    observed_value: 5,
+    threshold: 4,
+    points: 18,
+    score_floor: 0,
+    window: '2h',
+  };
+}
+
+function multipleIdentitySignal(): RiskSignal {
+  return {
+    code: 'MULTIPLE_SHARED_IDENTITY_SIGNALS',
+    category: 'IDENTITY',
+    severity: 'HIGH',
+    message: 'Device and repayment-account reuse overlap inside the same applicant ring.',
+    entity_ids: ['DEV-0004959', 'ACC-0004968'],
+    observed_value: 2,
+    threshold: 2,
+    points: 20,
+    score_floor: 72,
+    window: null,
+  };
+}
+
+type HostedCaseKind = 'shared_device' | 'shared_account' | 'dealer_burst' | 'mixed_ring' | 'clean';
+
+interface HostedCase {
+  kind: HostedCaseKind;
+  riskScore: number;
+  riskLevel: RiskLevel;
+  signals: RiskSignal[];
+  linkedApplicants: number;
+  clusterSize: number;
+  velocity: number;
+  dealerId: string;
+}
+
+function hostedCaseFor(applicationId: string): HostedCase {
+  if (applicationId.startsWith('APP-N-')) {
+    return { kind: 'clean', riskScore: 0.9, riskLevel: 'LOW', signals: [], linkedApplicants: 0, clusterSize: 1, velocity: 1, dealerId: 'DLR-0049' };
+  }
+  if (applicationId === 'APP-S-005013') {
+    return { kind: 'shared_account', riskScore: 80.65, riskLevel: 'HIGH', signals: [sharedAccountSignal(), rapidDealerSignal(), highVelocitySignal()], linkedApplicants: 7, clusterSize: 11, velocity: 6, dealerId: 'DLR-0182' };
+  }
+  if (applicationId === 'APP-S-005021') {
+    return { kind: 'dealer_burst', riskScore: 70, riskLevel: 'HIGH', signals: [rapidDealerSignal(), highVelocitySignal()], linkedApplicants: 4, clusterSize: 7, velocity: 5, dealerId: 'DLR-0183' };
+  }
+  if (applicationId === 'APP-S-005024') {
+    return { kind: 'mixed_ring', riskScore: 86.55, riskLevel: 'HIGH', signals: [sharedDeviceSignal(), sharedAccountSignal(), multipleIdentitySignal()], linkedApplicants: 3, clusterSize: 8, velocity: 4, dealerId: 'DLR-0184' };
+  }
+  return { kind: 'shared_device', riskScore: 72, riskLevel: 'HIGH', signals: [sharedDeviceSignal()], linkedApplicants: 7, clusterSize: 11, velocity: 6, dealerId: 'DLR-0181' };
+}
+
 function analysisFor(applicationId: string): Analysis {
-  const high = applicationId.startsWith('APP-S-');
+  const demoCase = hostedCaseFor(applicationId);
+  const high = demoCase.riskLevel === 'HIGH';
   const customerId = applicationId.replace(/^APP-/, 'CUS-');
-  const signals = high ? [sharedDeviceSignal()] : [];
-  const riskScore = high ? 72 : 12;
   return {
     analysis_id: `analysis_hosted_${applicationId.toLowerCase()}`,
     application_id: applicationId,
     customer_id: customerId,
-    risk_score: riskScore,
-    risk_level: high ? 'HIGH' : 'LOW',
-    signals,
+    risk_score: demoCase.riskScore,
+    risk_level: demoCase.riskLevel,
+    signals: demoCase.signals,
     recommended_action: high ? enhancedVerification : standardProcessing,
-    score_components: { rule_score: high ? 46 : 8, graph_score: high ? 54.4 : 4, temporal_score: high ? 18 : 2, ml_score: high ? 91 : 8, weights: { rule: 0.4, graph: 0.2, temporal: 0.15, ml: 0.25 }, weighted_score: high ? 52 : 7.1, enforced_floor: high ? 72 : 0, final_score: riskScore },
+    score_components: { rule_score: high ? Math.min(100, demoCase.signals.reduce((total, signal) => total + signal.points, 0)) : 0, graph_score: high ? 54.4 : 4, temporal_score: high ? Math.min(100, demoCase.velocity * 12) : 2, ml_score: high ? 91 : 8, weights: { rule: 0.4, graph: 0.2, temporal: 0.15, ml: 0.25 }, weighted_score: high ? Math.max(52, demoCase.riskScore - 12) : 0.9, enforced_floor: high ? Math.max(...demoCase.signals.map((signal) => signal.score_floor)) : 0, final_score: demoCase.riskScore },
     versions: { feature_schema: '1.0.0', temporal_feature_schema: '1.0.0', risk_policy: '1.0.0', model: 'xgboost:1.0.0' },
     analysed_at: DATA_TIMESTAMP,
     request_id: REQUEST_ID,
@@ -248,15 +345,18 @@ function analysisFor(applicationId: string): Analysis {
 
 function explanationFor(applicationId: string): Explanation {
   const analysis = analysisFor(applicationId);
+  const demoCase = hostedCaseFor(applicationId);
+  const identitySignals = analysis.signals.filter((signal) => signal.category === 'IDENTITY').length;
+  const temporalSignals = analysis.signals.filter((signal) => signal.category === 'TEMPORAL');
   return {
     application_id: applicationId,
     customer_id: analysis.customer_id,
     risk_score: analysis.risk_score,
     risk_level: analysis.risk_level,
-    borrower: { application_id: applicationId, customer_id: analysis.customer_id, age: 28, annual_income_inr: 194000, credit_score: 724, location_id: 'LOC-006', loan_amount_inr: 319000, loan_type: 'three_wheeler', dealer_id: 'DLR-0181' },
+    borrower: { application_id: applicationId, customer_id: analysis.customer_id, age: 28, annual_income_inr: 194000, credit_score: 724, location_id: 'LOC-006', loan_amount_inr: 319000, loan_type: 'three_wheeler', dealer_id: demoCase.dealerId },
     signals: analysis.signals,
-    graph_evidence: { connected_applicant_count: analysis.risk_level === 'HIGH' ? 7 : 0, cluster_size: analysis.risk_level === 'HIGH' ? 12 : 1, network_density: analysis.risk_level === 'HIGH' ? 0.61 : 0, community_id: 'community-00158', shared_identity_signal_count: analysis.signals.length, max_connection_strength: analysis.risk_level === 'HIGH' ? 0.7 : 0 },
-    temporal_evidence: { as_of: DATA_TIMESTAMP, application_velocity_2h: analysis.risk_level === 'HIGH' ? 6 : 1, linked_applicants_24h: analysis.risk_level === 'HIGH' ? 7 : 0, network_growth_rate_24h: analysis.risk_level === 'HIGH' ? 2.4 : 0, recency_score: analysis.risk_level === 'HIGH' ? 0.92 : 0.08, rapid_burst_detected: analysis.risk_level === 'HIGH', burst_signal_types: analysis.risk_level === 'HIGH' ? ['dealer_2h'] : [] },
+    graph_evidence: { connected_applicant_count: demoCase.linkedApplicants, cluster_size: demoCase.clusterSize, network_density: analysis.risk_level === 'HIGH' ? 0.61 : 0, community_id: `community-${analysis.customer_id.slice(-6)}`, shared_identity_signal_count: identitySignals, max_connection_strength: analysis.risk_level === 'HIGH' ? 0.7 : 0 },
+    temporal_evidence: { as_of: DATA_TIMESTAMP, application_velocity_2h: demoCase.velocity, linked_applicants_24h: demoCase.linkedApplicants, network_growth_rate_24h: analysis.risk_level === 'HIGH' ? 2.4 : 0, recency_score: analysis.risk_level === 'HIGH' ? 0.92 : 0.08, rapid_burst_detected: temporalSignals.length > 0, burst_signal_types: temporalSignals.map((signal) => signal.window ?? signal.code.toLowerCase()) },
     recommended_action: analysis.recommended_action,
     versions: analysis.versions,
     analysed_at: analysis.analysed_at,
