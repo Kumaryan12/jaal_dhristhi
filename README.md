@@ -101,18 +101,18 @@ Use the corresponding `CUS-*` identifier on the Network Intelligence page—for 
 ## System architecture
 
 ```mermaid
-flowchart LR
-    sources["Applications + devices + accounts + dealers + locations"] --> resolve["Entity resolution"]
-    resolve --> graph["Graph intelligence"]
-    graph --> temporal["Point-in-time temporal intelligence"]
-    temporal --> risk["Rules + versioned ML"]
-    risk --> explain["Evidence + 0–100 score + action"]
-    explain --> console["React analyst console"]
+graph LR;
+    A[Applications and entity signals] --> B[Entity resolution];
+    B --> C[Relationship graph];
+    C --> D[Point in time temporal intelligence];
+    D --> E[Rules and versioned ML];
+    E --> F[Evidence score and action];
+    F --> G[React analyst console];
 
-    api["FastAPI contract"] --- resolve
-    store[("SQLite demo store")] --- graph
-    model[("Versioned model artifact")] --- risk
-    analyst["Risk analyst"] --> console
+    H[FastAPI contract] --- B;
+    I[(SQLite demo store)] --- C;
+    J[(Versioned model artifact)] --- E;
+    K[Risk analyst] --> G;
 ```
 
 Authoritative risk calculations remain in the backend. The browser is a typed visualization client and never reconstructs a score. The modular boundaries allow SQLite, in-memory NetworkX, and local artifacts to be replaced with enterprise storage, graph infrastructure, and a governed model registry without changing the public contract.
