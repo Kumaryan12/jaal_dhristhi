@@ -88,6 +88,41 @@ button:focus-visible, a:focus-visible, input:focus-visible {
 .risk-bar-low { background: var(--green); }
 .risk-bar-medium { background: var(--amber); }
 .risk-bar-high { background: var(--red); }
+.graph-node-motion {
+  transition: filter .18s ease, opacity .18s ease, box-shadow .18s ease;
+}
+.graph-node-motion:hover,
+.graph-node-motion.selected {
+  filter: drop-shadow(0 8px 12px rgba(16, 72, 63, .16));
+}
+.graph-node-motion.selected {
+  box-shadow: 0 0 0 4px rgba(16, 138, 67, .14) !important;
+}
+.graph-node-focus {
+  animation: graph-focus-pulse 2.6s ease-in-out infinite;
+}
+.react-flow__edge-path {
+  transition: opacity .18s ease, stroke-width .18s ease;
+}
+.react-flow__edge.animated path {
+  stroke-dasharray: 7 5;
+  animation-duration: 1.15s;
+}
+.react-flow__controls,
+.react-flow__minimap {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  box-shadow: 0 7px 18px rgba(16, 72, 63, .08);
+}
+.react-flow__controls-button {
+  border-color: var(--line) !important;
+  color: var(--navy);
+}
+@keyframes graph-focus-pulse {
+  0%, 100% { filter: drop-shadow(0 0 0 rgba(16, 138, 67, 0)); }
+  50% { filter: drop-shadow(0 0 10px rgba(16, 138, 67, .34)); }
+}
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
 }

@@ -10,8 +10,11 @@ vi.mock('@xyflow/react', () => ({
   Background: () => null,
   BackgroundVariant: { Dots: 'dots' },
   Controls: () => null,
-  ReactFlow: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="demo-network">{children}</div>
+  MiniMap: () => null,
+  useEdgesState: (initial: unknown[]) => [initial, vi.fn(), vi.fn()],
+  useNodesState: (initial: unknown[]) => [initial, vi.fn(), vi.fn()],
+  ReactFlow: ({ nodes, edges, children }: { nodes: unknown[]; edges: unknown[]; children: React.ReactNode }) => (
+    <div data-testid="demo-network" data-node-count={nodes.length} data-edge-count={edges.length}>{children}</div>
   ),
 }));
 
@@ -165,6 +168,7 @@ describe('emerging-risk demo', () => {
     expect(screen.getAllByText('6 applications')).toHaveLength(2);
     expect(screen.getByText(sharedDeviceSignal.message)).toBeInTheDocument();
     expect(screen.getByTestId('demo-network')).toBeInTheDocument();
+    expect(screen.getByText(/Hover to trace · drag nodes/)).toBeInTheDocument();
     expect(screen.getByText(/SIM-2026-test is isolated/)).toBeInTheDocument();
     expect(screen.getByText('Simulation processing trace')).toBeInTheDocument();
     expect(screen.getByText('Decision support outcome')).toBeInTheDocument();

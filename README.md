@@ -32,7 +32,7 @@ The result is a bounded `0–100` ecosystem score, ranked evidence objects, and 
 - explainable hybrid risk scoring;
 - Random Forest, XGBoost, and Isolation Forest comparison;
 - versioned FastAPI contracts with SQLite demo persistence;
-- a responsive React, TypeScript, Tailwind, React Flow, and Recharts analyst console; and
+- a responsive React, TypeScript, Tailwind, React Flow, and Recharts analyst console with animated, draggable, relationship-aware graph exploration; and
 - an isolated one-click LOW-to-HIGH emerging-risk demonstration.
 
 Phases 0–9 are complete. Phase 10 release documentation, CI, and regression verification are complete; repository screenshots await an available in-app browser capture session.

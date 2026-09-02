@@ -15,6 +15,8 @@ vi.mock('@xyflow/react', () => ({
   BackgroundVariant: { Dots: 'dots' },
   Controls: () => null,
   MiniMap: () => null,
+  useEdgesState: (initial: unknown[]) => [initial, vi.fn(), vi.fn()],
+  useNodesState: (initial: unknown[]) => [initial, vi.fn(), vi.fn()],
   ReactFlow: ({ nodes, edges, children }: { nodes: unknown[]; edges: unknown[]; children: React.ReactNode }) => (
     <div data-testid="network-graph" data-node-count={nodes.length} data-edge-count={edges.length}>{children}</div>
   ),
@@ -83,6 +85,10 @@ describe('network intelligence presentation', () => {
     expect(getNetwork).toHaveBeenCalledTimes(1);
     expect(screen.getByTestId('network-graph')).toHaveAttribute('data-node-count', '6');
     expect(screen.getByText(/1 low-priority nodes hidden/)).toBeInTheDocument();
+    expect(screen.getByText(/Hover to isolate · drag to rearrange/)).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Pause flow' }));
+    expect(screen.getByRole('button', { name: 'Animate flow' })).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Full graph' }));
     expect(screen.getByTestId('network-graph')).toHaveAttribute('data-node-count', '7');

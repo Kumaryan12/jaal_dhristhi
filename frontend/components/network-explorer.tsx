@@ -2,15 +2,7 @@
 
 import '@xyflow/react/dist/style.css';
 
-import {
-  Background,
-  BackgroundVariant,
-  Controls,
-  type Edge,
-  MiniMap,
-  type Node,
-  ReactFlow,
-} from '@xyflow/react';
+import { type Edge, type Node } from '@xyflow/react';
 import {
   AlertTriangle,
   Banknote,
@@ -24,7 +16,9 @@ import {
   Link2,
   LocateFixed,
   Network,
+  Pause,
   Search,
+  Sparkles,
   Smartphone,
 } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
@@ -35,6 +29,7 @@ import { networkDemoCases } from '../lib/demo-cases';
 import type { NetworkGraph, RiskLevel } from '../lib/types';
 import { AppShell } from './app-shell';
 import { DemoCasePicker } from './demo-case-picker';
+import { InteractiveGraph } from './interactive-graph';
 import { EmptyPanel, ErrorPanel, LoadingPanel, PageHeading, RiskBadge } from './ui';
 
 type GraphNode = NetworkGraph['nodes'][number];
@@ -71,6 +66,7 @@ export function NetworkExplorer() {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('signals');
   const [showEdgeLabels, setShowEdgeLabels] = useState(true);
+  const [motionEnabled, setMotionEnabled] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -81,9 +77,9 @@ export function NetworkExplorer() {
   const mapped = useMemo(
     () =>
       displayGraph && network
-        ? mapGraph(displayGraph.nodes, displayGraph.edges, network.customer_id, showEdgeLabels, viewMode)
+        ? mapGraph(displayGraph.nodes, displayGraph.edges, network.customer_id, showEdgeLabels, viewMode, motionEnabled)
         : { nodes: [], edges: [] },
-    [displayGraph, network, showEdgeLabels, viewMode],
+    [displayGraph, motionEnabled, network, showEdgeLabels, viewMode],
   );
   const evidence = useMemo(() => (network ? buildEvidenceRead(network) : []), [network]);
 
@@ -207,6 +203,15 @@ export function NetworkExplorer() {
                         {showEdgeLabels ? <EyeOff size={13} /> : <Eye size={13} />}
                         {showEdgeLabels ? 'Hide labels' : 'Show labels'}
                       </button>
+                      <button
+                        type="button"
+                        onClick={() => setMotionEnabled((value) => !value)}
+                        aria-pressed={motionEnabled}
+                        className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[var(--line)] bg-white px-2.5 text-[10px] font-semibold text-slate-600"
+                      >
+                        {motionEnabled ? <Pause size={13} /> : <Sparkles size={13} />}
+                        {motionEnabled ? 'Pause flow' : 'Animate flow'}
+                      </button>
                     </div>
                   </div>
 
@@ -223,25 +228,16 @@ export function NetworkExplorer() {
                     <span className="ml-auto hidden text-[9px] text-[var(--muted)] sm:inline">Select any node to inspect its evidence</span>
                   </div>
 
-                  <div className="h-[630px] bg-white">
-                    <ReactFlow
-                      nodes={mapped.nodes}
-                      edges={mapped.edges}
-                      onNodeClick={(_, node) => setSelectedNodeId(node.id)}
-                      fitView
-                      fitViewOptions={{ padding: 0.2 }}
+                  <div className="relative h-[630px] bg-white">
+                    <InteractiveGraph
+                      graph={mapped}
+                      onSelectNode={setSelectedNodeId}
+                      showMiniMap={viewMode === 'full'}
+                      fitPadding={0.2}
                       minZoom={0.2}
-                      maxZoom={2}
-                      nodesDraggable={false}
-                      nodesConnectable={false}
-                      proOptions={{ hideAttribution: true }}
-                    >
-                      <Background variant={BackgroundVariant.Dots} color="#e5e7eb" gap={20} size={1} />
-                      <Controls showInteractive={false} />
-                      {viewMode === 'full' && (
-                        <MiniMap pannable zoomable nodeColor={(node) => String(node.style?.borderColor ?? '#9ca3af')} maskColor="rgba(247,248,250,.82)" />
-                      )}
-                    </ReactFlow>
+                      ariaLabel="Interactive customer ecosystem graph canvas"
+                    />
+                    <div className="pointer-events-none absolute bottom-3 left-14 z-10 rounded border border-[var(--line)] bg-white/95 px-2 py-1 text-[9px] text-[var(--muted)]">Hover to isolate · drag to rearrange · select to inspect</div>
                   </div>
                 </section>
 
@@ -415,7 +411,7 @@ function selectDisplayGraph(graph: NetworkGraph, mode: ViewMode): { nodes: Graph
   return { nodes, edges, hiddenNodes: Math.max(0, graph.nodes.length - nodes.length) };
 }
 
-function mapGraph(nodes: GraphNode[], graphEdges: GraphEdge[], focusId: string, showLabels: boolean, mode: ViewMode): { nodes: Node[]; edges: Edge[] } {
+function mapGraph(nodes: GraphNode[], graphEdges: GraphEdge[], focusId: string, showLabels: boolean, mode: ViewMode, motionEnabled: boolean): { nodes: Node[]; edges: Edge[] } {
   const positions = mode === 'signals' ? signalPositions(nodes, graphEdges, focusId) : fullPositions(nodes);
   const mappedNodes = nodes.map((item) => {
     const style = typeStyle[item.type];
@@ -430,7 +426,7 @@ function mapGraph(nodes: GraphNode[], graphEdges: GraphEdge[], focusId: string, 
     return {
       id: item.id,
       position: positions.get(item.id) ?? { x: 0, y: 0 },
-      data: { label },
+      data: { label, isFocus: focus },
       style: {
         width: focus ? 188 : 174,
         minHeight: 48,
@@ -452,6 +448,7 @@ function mapGraph(nodes: GraphNode[], graphEdges: GraphEdge[], focusId: string, 
       source: item.source,
       target: item.target,
       type: 'smoothstep',
+      animated: motionEnabled && item.type !== 'located_in',
       label: showLabels ? relationshipLabels[item.type] ?? item.type.replaceAll('_', ' ') : undefined,
       labelStyle: { fontSize: 8, fill: '#4b5563', fontWeight: 600 },
       labelBgStyle: { fill: '#ffffff', fillOpacity: 0.95 },

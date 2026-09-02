@@ -2,14 +2,7 @@
 
 import '@xyflow/react/dist/style.css';
 
-import {
-  Background,
-  BackgroundVariant,
-  Controls,
-  type Edge,
-  type Node,
-  ReactFlow,
-} from '@xyflow/react';
+import { type Edge, type Node } from '@xyflow/react';
 import {
   ArrowRight,
   BrainCircuit,
@@ -20,6 +13,7 @@ import {
   GitCompareArrows,
   Lightbulb,
   Maximize2,
+  MousePointer2,
   Minimize2,
   Network,
   Play,
@@ -32,6 +26,7 @@ import {
 import { useMemo, useState } from 'react';
 
 import { AppShell } from '../../components/app-shell';
+import { InteractiveGraph } from '../../components/interactive-graph';
 import { ErrorPanel, LoadingPanel, PageHeading, RiskBadge } from '../../components/ui';
 import { simulateEmergingRisk } from '../../lib/api';
 import type { DemoSimulation, DemoRiskSnapshot } from '../../lib/types';
@@ -155,20 +150,16 @@ function SimulationResult({ simulation }: { simulation: DemoSimulation }) {
               </div>
             </div>
           </div>
-          <div className="h-[520px]" aria-label="Simulated emerging risk network">
-            <ReactFlow
-              nodes={graph.nodes}
-              edges={graph.edges}
-              fitView
+          <div className="relative h-[520px]" aria-label="Simulated emerging risk network">
+            <InteractiveGraph
+              graph={graph}
+              showMiniMap
+              fitPadding={0.22}
               minZoom={0.4}
               maxZoom={1.8}
-              nodesDraggable={false}
-              nodesConnectable={false}
-              proOptions={{ hideAttribution: true }}
-            >
-              <Background variant={BackgroundVariant.Dots} color="#d7deea" gap={18} />
-              <Controls showInteractive={false} />
-            </ReactFlow>
+              ariaLabel="Dynamic simulated emerging risk network canvas"
+            />
+            <div className="pointer-events-none absolute bottom-3 left-14 z-10 inline-flex items-center gap-1.5 rounded border border-[var(--line)] bg-white/95 px-2 py-1 text-[9px] text-[var(--muted)]"><MousePointer2 size={11} /> Hover to trace · drag nodes · zoom to explore</div>
           </div>
         </article>
 
@@ -323,7 +314,7 @@ function mapDemoGraph(simulation: DemoSimulation): { nodes: Node[]; edges: Edge[
     return {
       id: item.id,
       position,
-      data: { label: item.label },
+      data: { label: item.label, isFocus: item.is_focus },
       style: {
         width: 168,
         minHeight: 44,
@@ -341,8 +332,13 @@ function mapDemoGraph(simulation: DemoSimulation): { nodes: Node[]; edges: Edge[
     id: item.id,
     source: item.source,
     target: item.target,
+    type: 'smoothstep',
+    animated: true,
     label: item.type === 'uses_device' ? 'shared device' : 'same dealer',
     labelStyle: { fontSize: 8, fill: '#6f7b8f', fontWeight: 600 },
+    labelBgStyle: { fill: '#ffffff', fillOpacity: 0.94 },
+    labelBgPadding: [4, 2] as [number, number],
+    labelBgBorderRadius: 3,
     style: { stroke: item.type === 'uses_device' ? '#10483f' : '#d97706', strokeWidth: 1.4 },
   } satisfies Edge));
   return { nodes, edges };

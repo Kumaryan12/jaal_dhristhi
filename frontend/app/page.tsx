@@ -2,18 +2,7 @@
 
 import '@xyflow/react/dist/style.css';
 
-import {
-  Background,
-  BackgroundVariant,
-  Controls,
-  type Edge,
-  MiniMap,
-  type Node,
-  ReactFlow,
-  type ReactFlowInstance,
-  useEdgesState,
-  useNodesState,
-} from '@xyflow/react';
+import { type Edge, type Node } from '@xyflow/react';
 import {
   AlertTriangle,
   ArrowUpRight,
@@ -34,9 +23,10 @@ import {
   X,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { AppShell } from '../components/app-shell';
+import { InteractiveGraph } from '../components/interactive-graph';
 import { ErrorPanel, LoadingPanel, PageHeading, RiskBadge } from '../components/ui';
 import { getDashboardSummary, getLiveMonitor, getNetwork } from '../lib/api';
 import type { ActivityEvent, DashboardSummary, LiveMonitor, NetworkGraph, RiskLevel } from '../lib/types';
@@ -301,9 +291,9 @@ export default function LiveMonitorPage() {
                         <GraphKey icon={Building2} label="Dealer" color="#d97706" />
                       </div>
                       <LiveRelationshipCanvas graph={graph} onSelectNode={setSelectedNodeId} />
-                      <div className="pointer-events-none absolute bottom-3 left-3 z-10 flex items-center gap-1.5 rounded border border-[var(--line)] bg-white px-2 py-1 text-[9px] text-[var(--muted)]"><MousePointer2 size={11} /> Drag nodes · scroll to zoom · select to inspect</div>
+                      <div className="pointer-events-none absolute bottom-3 left-14 z-10 flex items-center gap-1.5 rounded border border-[var(--line)] bg-white/95 px-2 py-1 text-[9px] text-[var(--muted)]"><MousePointer2 size={11} /> Hover to trace · drag nodes · select to inspect</div>
                       {selectedNodeId && <SelectedGraphNode network={network} nodeId={selectedNodeId} onClose={() => setSelectedNodeId(null)} />}
-                      {signalGraph.hiddenNodes > 0 && <div className="absolute bottom-3 right-3 z-10 rounded border border-[var(--line)] bg-white px-2 py-1 text-[9px] font-medium text-[var(--muted)]">{signalGraph.hiddenNodes} low-specificity nodes suppressed</div>}
+                      {signalGraph.hiddenNodes > 0 && <div className="absolute bottom-36 right-3 z-10 rounded border border-[var(--line)] bg-white px-2 py-1 text-[9px] font-medium text-[var(--muted)]">{signalGraph.hiddenNodes} low-specificity nodes suppressed</div>}
                     </>
                   ) : null}
                 </div>
@@ -339,37 +329,15 @@ export default function LiveMonitorPage() {
 }
 
 function LiveRelationshipCanvas({ graph, onSelectNode }: { graph: { nodes: Node[]; edges: Edge[] }; onSelectNode: (id: string) => void }) {
-  const [nodes, setNodes, onNodesChange] = useNodesState(graph.nodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(graph.edges);
-  const instance = useRef<ReactFlowInstance<Node, Edge> | null>(null);
-
-  useEffect(() => {
-    setNodes(graph.nodes);
-    setEdges(graph.edges);
-    const frame = window.requestAnimationFrame(() => instance.current?.fitView({ padding: 0.24, duration: 280 }));
-    return () => window.cancelAnimationFrame(frame);
-  }, [graph, setEdges, setNodes]);
-
   return (
-    <ReactFlow
-      nodes={nodes}
-      edges={edges}
-      onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
-      onNodeClick={(_, node) => onSelectNode(node.id)}
-      onInit={(nextInstance) => { instance.current = nextInstance; }}
-      fitView
-      fitViewOptions={{ padding: 0.24 }}
+    <InteractiveGraph
+      graph={graph}
+      onSelectNode={onSelectNode}
+      showMiniMap
+      fitPadding={0.24}
       minZoom={0.3}
-      maxZoom={2}
-      nodesDraggable
-      nodesConnectable={false}
-      proOptions={{ hideAttribution: true }}
-    >
-      <Background variant={BackgroundVariant.Dots} color="#e5e7eb" gap={20} size={1} />
-      <Controls showInteractive={false} />
-      <MiniMap nodeColor={(node) => String(node.style?.borderColor ?? '#9ca3af')} maskColor="rgba(247,248,250,.84)" />
-    </ReactFlow>
+      ariaLabel="Live relationship graph canvas"
+    />
   );
 }
 
@@ -483,6 +451,7 @@ function mapMonitorGraph(graphNodes: GraphNode[], graphEdges: GraphEdge[], focus
       id: item.id,
       position: positions.get(item.id) ?? { x: 0, y: 0 },
       data: {
+        isFocus: focus,
         label: (
           <div className="flex items-center gap-2 text-left">
             <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-md ${focus ? 'bg-white/15' : 'bg-white'}`}><Icon size={13} /></span>
@@ -510,7 +479,7 @@ function mapMonitorGraph(graphNodes: GraphNode[], graphEdges: GraphEdge[], focus
       source: edge.source,
       target: edge.target,
       type: 'smoothstep',
-      animated: animate && !touchesFocus,
+      animated: animate,
       label: edge.type.replaceAll('_', ' '),
       labelStyle: { fontSize: 7, fill: '#4b5563', fontWeight: 600 },
       labelBgStyle: { fill: '#fff', fillOpacity: 0.94 },
