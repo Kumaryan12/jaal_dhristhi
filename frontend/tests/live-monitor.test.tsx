@@ -1,6 +1,6 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import LiveMonitorPage from '../app/page';
 import { getDashboardSummary, getLiveMonitor, getNetwork } from '../lib/api';
@@ -92,6 +92,10 @@ const network = {
 };
 
 describe('live ecosystem monitor', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   beforeEach(() => {
     vi.mocked(getLiveMonitor).mockResolvedValue(monitor);
     vi.mocked(getDashboardSummary).mockResolvedValue(summary);
@@ -121,7 +125,7 @@ describe('live ecosystem monitor', () => {
     const user = userEvent.setup();
     render(<LiveMonitorPage />);
 
-    await user.click(await screen.findByRole('button', { name: 'Focus graph on APP-S-005002' }));
+    await user.click(await screen.findByRole('button', { name: 'Show relationship graph for APP-S-005002' }));
 
     await waitFor(() => {
       expect(getNetwork).toHaveBeenCalledWith(
@@ -130,6 +134,39 @@ describe('live ecosystem monitor', () => {
         expect.any(AbortSignal),
       );
     });
-    expect(screen.getByRole('button', { name: /Resume live/i })).toBeInTheDocument();
+    expect(screen.getByText('Click to update graph')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Inspect insight/i })).not.toBeInTheDocument();
+  });
+
+  it('keeps the graph on the selected application while new stream events appear', async () => {
+    vi.useFakeTimers();
+    const events = Array.from({ length: 7 }, (_, index) => ({
+      ...monitor.events[0],
+      timestamp: new Date(Date.UTC(2026, 7, 31, 10, 0) - index * 5 * 60_000).toISOString(),
+      application_id: `APP-S-${String(5001 + index).padStart(6, '0')}`,
+      customer_id: `CUS-S-${String(5001 + index).padStart(6, '0')}`,
+    }));
+    vi.mocked(getLiveMonitor).mockResolvedValue({ ...monitor, events });
+
+    render(<LiveMonitorPage />);
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(getNetwork).toHaveBeenCalledWith(
+      'CUS-S-005002',
+      { depth: 2, maxNodes: 50 },
+      expect.any(AbortSignal),
+    );
+    vi.mocked(getNetwork).mockClear();
+
+    await act(async () => {
+      vi.advanceTimersByTime(30_000);
+      await Promise.resolve();
+    });
+
+    expect(screen.getByRole('button', { name: 'Show relationship graph for APP-S-005001' })).toBeInTheDocument();
+    expect(getNetwork).not.toHaveBeenCalled();
   });
 });

@@ -27,7 +27,6 @@ import {
   Network,
   Pause,
   Play,
-  Radio,
   RefreshCw,
   RotateCcw,
   ShieldAlert,
@@ -77,7 +76,6 @@ export default function LiveMonitorPage() {
   const [visibleCount, setVisibleCount] = useState(6);
   const [revealCount, setRevealCount] = useState(1);
   const [graphPlaying, setGraphPlaying] = useState(true);
-  const [autoFollow, setAutoFollow] = useState(true);
   const [loading, setLoading] = useState(true);
   const [graphLoading, setGraphLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -97,8 +95,11 @@ export default function LiveMonitorPage() {
         setMonitor(nextMonitor);
         setSummary(nextSummary);
         setVisibleCount(initialCount);
-        setSelectedApplicationId(initialEvent?.application_id ?? null);
-        setAutoFollow(true);
+        setSelectedApplicationId((current) =>
+          current && nextMonitor.events.some((event) => event.application_id === current)
+            ? current
+            : initialEvent?.application_id ?? null,
+        );
         setGraphLoading(true);
         setGraphError(null);
       })
@@ -126,18 +127,9 @@ export default function LiveMonitorPage() {
     const timer = window.setInterval(() => {
       const nextCount = Math.min(visibleCount + 1, monitor.events.length);
       setVisibleCount(nextCount);
-      if (autoFollow) {
-        const nextEvents = [...monitor.events].reverse().slice(0, nextCount).reverse();
-        const nextEvent = nextEvents[0];
-        if (nextEvent && nextEvent.application_id !== selectedApplicationId) {
-          setGraphLoading(true);
-          setGraphError(null);
-          setSelectedApplicationId(nextEvent.application_id);
-        }
-      }
     }, 30_000);
     return () => window.clearInterval(timer);
-  }, [autoFollow, monitor, selectedApplicationId, visibleCount]);
+  }, [monitor, visibleCount]);
 
   useEffect(() => {
     if (!selectedEvent) return;
@@ -189,20 +181,10 @@ export default function LiveMonitorPage() {
   }, [visibleEvents]);
 
   function focusEvent(event: ActivityEvent) {
-    setAutoFollow(false);
     if (event.application_id === selectedApplicationId) return;
     setGraphLoading(true);
     setGraphError(null);
     setSelectedApplicationId(event.application_id);
-  }
-
-  function resumeLiveFollow() {
-    setAutoFollow(true);
-    if (visibleEvents[0] && visibleEvents[0].application_id !== selectedApplicationId) {
-      setGraphLoading(true);
-      setGraphError(null);
-      setSelectedApplicationId(visibleEvents[0].application_id);
-    }
   }
 
   function controlTrace() {
@@ -257,9 +239,9 @@ export default function LiveMonitorPage() {
               <article className="overflow-hidden rounded-lg border border-[var(--line)] bg-white">
                 <div className="flex h-[56px] items-center justify-between border-b border-[var(--line)] px-4">
                   <div><h2 className="text-sm font-semibold text-[var(--navy)]">Application stream</h2><p className="mt-0.5 text-[9px] text-[var(--muted)]">Select a row to inspect its ecosystem</p></div>
-                  <button type="button" onClick={resumeLiveFollow} className={`inline-flex items-center gap-1.5 rounded px-2 py-1 text-[9px] font-semibold ${autoFollow ? 'bg-green-50 text-[var(--green)]' : 'bg-slate-100 text-slate-500'}`} aria-pressed={autoFollow}>
-                    <Radio size={11} /> {autoFollow ? 'Following live' : 'Resume live'}
-                  </button>
+                  <span className="inline-flex items-center gap-1.5 rounded bg-blue-50 px-2 py-1 text-[9px] font-semibold text-[var(--blue)]">
+                    <MousePointer2 size={11} /> Click to update graph
+                  </span>
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full min-w-[620px] border-collapse text-left text-[11px]">
@@ -273,7 +255,7 @@ export default function LiveMonitorPage() {
                           <tr key={event.application_id} className={selected ? 'bg-blue-50' : 'cursor-pointer hover:bg-slate-50'} aria-selected={selected}>
                             <td className="whitespace-nowrap px-4 py-3 font-mono text-[10px] text-[var(--muted)]">{formatTime(event.timestamp)}</td>
                             <td className="px-3 py-3">
-                              <button type="button" onClick={() => focusEvent(event)} className="inline-flex items-center gap-1.5 font-mono font-semibold text-[var(--navy)]" aria-label={`Focus graph on ${event.application_id}`}>
+                              <button type="button" onClick={() => focusEvent(event)} className="inline-flex items-center gap-1.5 font-mono font-semibold text-[var(--navy)] hover:text-[var(--blue)]" aria-label={`Show relationship graph for ${event.application_id}`}>
                                 {selected && <Focus size={11} className="text-[var(--blue)]" />}{event.application_id}
                               </button>
                             </td>
@@ -330,7 +312,7 @@ export default function LiveMonitorPage() {
               <aside className="overflow-hidden rounded-lg border border-[var(--line)] bg-white">
                 <PanelHeader title="Intelligence panel" detail="Recent insights" />
                 <div className="divide-y divide-[var(--line)]">
-                  {insights.map((event) => <InsightEvent key={event.application_id} event={event} onSelect={() => focusEvent(event)} selected={event.application_id === selectedApplicationId} />)}
+                  {insights.map((event) => <InsightEvent key={event.application_id} event={event} selected={event.application_id === selectedApplicationId} />)}
                 </div>
                 <div className="m-4 rounded-md border border-red-200 bg-red-50 p-4">
                   <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.09em] text-[var(--red)]"><ShieldAlert size={14} /> Needs attention</div>
@@ -418,10 +400,10 @@ function StatusLabel({ status }: { status: ActivityEvent['status'] }) {
   return <span className={`inline-flex whitespace-nowrap rounded px-2 py-1 text-[9px] font-semibold ${classes}`}>{status}</span>;
 }
 
-function InsightEvent({ event, onSelect, selected }: { event: ActivityEvent; onSelect: () => void; selected: boolean }) {
+function InsightEvent({ event, selected }: { event: ActivityEvent; selected: boolean }) {
   const high = event.risk_level === 'HIGH';
   return (
-    <button type="button" onClick={onSelect} className={`w-full p-4 text-left ${selected ? 'bg-blue-50/70' : 'hover:bg-slate-50'}`} aria-label={`Inspect insight for ${event.application_id}`}>
+    <article className={`w-full p-4 text-left ${selected ? 'bg-blue-50/70' : ''}`} aria-label={`Insight for ${event.application_id}`}>
       <div className="flex items-start gap-3">
         <span className={`mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded ${high ? 'bg-red-50 text-[var(--red)]' : 'bg-amber-50 text-[var(--amber)]'}`}>{high ? <AlertTriangle size={14} /> : <Network size={14} />}</span>
         <div className="min-w-0 flex-1">
@@ -430,7 +412,7 @@ function InsightEvent({ event, onSelect, selected }: { event: ActivityEvent; onS
           <div className="mt-2 flex items-center justify-between text-[10px]"><span className="font-mono text-slate-500">{event.application_id}</span><span className="font-semibold text-[var(--navy)]">Risk {event.risk_score.toFixed(0)}</span></div>
         </div>
       </div>
-    </button>
+    </article>
   );
 }
 

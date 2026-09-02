@@ -178,7 +178,7 @@ npm run build
 npm audit
 ```
 
-The Phase 10 release candidate has 64 passing backend/cross-layer tests and 19 passing frontend tests. See the [test-case catalog](docs/test-cases.md) for coverage mapped to product behavior.
+The Phase 10 release candidate has 64 passing backend/cross-layer tests and 20 passing frontend tests. See the [test-case catalog](docs/test-cases.md) for coverage mapped to product behavior.
 
 ## Reproduce the intelligence pipeline directly
 
