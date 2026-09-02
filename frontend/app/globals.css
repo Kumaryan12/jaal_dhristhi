@@ -1,23 +1,25 @@
 @import 'tailwindcss';
 
 :root {
-  --canvas: #f4f7fb;
-  --subtle: #f6f8fc;
-  --ink: #111b2e;
-  --muted: #667085;
-  --navy: #071b4a;
-  --blue: #1246a0;
-  --aqua: #1246a0;
-  --green: #00843d;
-  --red: #d71920;
+  --canvas: #f6faf8;
+  --subtle: #eef7f2;
+  --ink: #26332d;
+  --muted: #66736e;
+  --navy: #10483f;
+  --blue: #108a43;
+  --aqua: #5dcddb;
+  --green: #108a43;
+  --brand-blue: #174c82;
+  --brand-green: #178944;
+  --red: #be0100;
   --amber: #d97706;
-  --line: #dfe5ef;
+  --line: #dce8e1;
 }
 
 @theme inline {
   --color-background: var(--canvas);
   --color-foreground: var(--ink);
-  --font-sans: var(--font-inter);
+  --font-sans: var(--font-poppins);
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
@@ -27,16 +29,19 @@ body {
   margin: 0;
   background: var(--canvas);
   color: var(--ink);
-  font-family: var(--font-inter), Inter, Arial, Helvetica, sans-serif;
+  font-family: var(--font-poppins), Poppins, Arial, Helvetica, sans-serif;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-raleway), Raleway, var(--font-poppins), Arial, Helvetica, sans-serif;
 }
 button, a { -webkit-tap-highlight-color: transparent; }
 button:focus-visible, a:focus-visible, input:focus-visible {
-  outline: 3px solid rgba(18, 70, 160, .24);
+  outline: 3px solid rgba(16, 138, 67, .24);
   outline-offset: 2px;
 }
 .tvs-brand-rule {
   height: 4px;
-  background: linear-gradient(90deg, var(--blue) 0 68%, var(--red) 68% 100%);
+  background: linear-gradient(90deg, var(--brand-blue) 0 42%, var(--brand-green) 42% 100%);
 }
 .tvs-brand-mark {
   position: relative;
@@ -47,11 +52,11 @@ button:focus-visible, a:focus-visible, input:focus-visible {
   inset: 0 0 auto;
   height: 3px;
   border-radius: inherit;
-  background: var(--red);
+  background: var(--brand-green);
   content: '';
 }
-.tvs-wordmark span { color: var(--red); font-style: italic; }
-.tvs-wordmark strong { color: var(--blue); font-style: normal; }
+.tvs-wordmark span { color: var(--brand-blue); }
+.tvs-wordmark strong { color: var(--brand-green); }
 .metric-card {
   position: relative;
   overflow: hidden;
@@ -60,19 +65,19 @@ button:focus-visible, a:focus-visible, input:focus-visible {
   border-radius: 6px;
   background: #fff;
   padding: 16px;
-  box-shadow: 0 6px 18px rgba(7, 27, 74, .035);
+  box-shadow: 0 6px 18px rgba(16, 72, 63, .035);
 }
 .metric-icon { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 11px; }
-.metric-icon-blue { color: #1b62ff; background: #eaf0ff; }
+.metric-icon-blue { color: #0d4a85; background: #edf4f8; }
 .metric-icon-violet { color: #7656df; background: #f0ecff; }
 .metric-icon-red { color: #d93a50; background: #ffeaed; }
-.metric-icon-green { color: #078b67; background: #e2f7f0; }
+.metric-icon-green { color: #108a43; background: #e7f3ec; }
 .panel {
   border: 1px solid var(--line);
   border-radius: 6px;
   background: #fff;
   padding: clamp(16px, 2vw, 22px);
-  box-shadow: 0 6px 18px rgba(7, 27, 74, .035);
+  box-shadow: 0 6px 18px rgba(16, 72, 63, .035);
 }
 .eyebrow { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--blue); }
 .panel-title { margin-top: 4px; font-size: 18px; font-weight: 650; letter-spacing: -.015em; color: var(--navy); }

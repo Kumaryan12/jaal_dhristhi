@@ -53,16 +53,16 @@ const inr = new Intl.NumberFormat('en-IN', {
 });
 
 const graphTypeStyle = {
-  customer: { color: '#0057a8', background: '#eff6ff', label: 'Customer', icon: CircleUserRound },
-  device: { color: '#0b1f3a', background: '#f3f4f6', label: 'Device', icon: Smartphone },
-  account: { color: '#00843d', background: '#f0fdf4', label: 'Account', icon: Landmark },
+  customer: { color: '#174c82', background: '#edf4f8', label: 'Customer', icon: CircleUserRound },
+  device: { color: '#10483f', background: '#f1f6f4', label: 'Device', icon: Smartphone },
+  account: { color: '#108a43', background: '#eef7f2', label: 'Account', icon: Landmark },
   dealer: { color: '#d97706', background: '#fffbeb', label: 'Dealer', icon: Building2 },
   location: { color: '#6b7280', background: '#f9fafb', label: 'Location', icon: LocateFixed },
 };
 
 const edgeColors: Record<string, string> = {
-  uses_device: '#0b1f3a',
-  linked_account: '#00843d',
+  uses_device: '#10483f',
+  linked_account: '#108a43',
   applied_via: '#d97706',
   located_in: '#9ca3af',
 };
@@ -239,7 +239,7 @@ export default function LiveMonitorPage() {
               <article className="overflow-hidden rounded-lg border border-[var(--line)] bg-white">
                 <div className="flex h-[56px] items-center justify-between border-b border-[var(--line)] px-4">
                   <div><h2 className="text-sm font-semibold text-[var(--navy)]">Application stream</h2><p className="mt-0.5 text-[9px] text-[var(--muted)]">Select a row to inspect its ecosystem</p></div>
-                  <span className="inline-flex items-center gap-1.5 rounded bg-blue-50 px-2 py-1 text-[9px] font-semibold text-[var(--blue)]">
+                  <span className="inline-flex items-center gap-1.5 rounded bg-[#eef7f2] px-2 py-1 text-[9px] font-semibold text-[var(--blue)]">
                     <MousePointer2 size={11} /> Click to update graph
                   </span>
                 </div>
@@ -252,7 +252,7 @@ export default function LiveMonitorPage() {
                       {visibleEvents.map((event) => {
                         const selected = event.application_id === selectedApplicationId;
                         return (
-                          <tr key={event.application_id} className={selected ? 'bg-blue-50' : 'cursor-pointer hover:bg-slate-50'} aria-selected={selected}>
+                          <tr key={event.application_id} className={selected ? 'bg-[#eef7f2]' : 'cursor-pointer hover:bg-slate-50'} aria-selected={selected}>
                             <td className="whitespace-nowrap px-4 py-3 font-mono text-[10px] text-[var(--muted)]">{formatTime(event.timestamp)}</td>
                             <td className="px-3 py-3">
                               <button type="button" onClick={() => focusEvent(event)} className="inline-flex items-center gap-1.5 font-mono font-semibold text-[var(--navy)] hover:text-[var(--blue)]" aria-label={`Show relationship graph for ${event.application_id}`}>
@@ -295,9 +295,9 @@ export default function LiveMonitorPage() {
                   ) : network && signalGraph ? (
                     <>
                       <div className="absolute left-3 top-3 z-10 flex flex-wrap gap-1.5">
-                        <GraphKey icon={CircleUserRound} label="Customer" color="#0057a8" />
-                        <GraphKey icon={Smartphone} label="Device" color="#0b1f3a" />
-                        <GraphKey icon={Landmark} label="Account" color="#00843d" />
+                        <GraphKey icon={CircleUserRound} label="Customer" color="#174c82" />
+                        <GraphKey icon={Smartphone} label="Device" color="#10483f" />
+                        <GraphKey icon={Landmark} label="Account" color="#108a43" />
                         <GraphKey icon={Building2} label="Dealer" color="#d97706" />
                       </div>
                       <LiveRelationshipCanvas graph={graph} onSelectNode={setSelectedNodeId} />
@@ -403,7 +403,7 @@ function StatusLabel({ status }: { status: ActivityEvent['status'] }) {
 function InsightEvent({ event, selected }: { event: ActivityEvent; selected: boolean }) {
   const high = event.risk_level === 'HIGH';
   return (
-    <article className={`w-full p-4 text-left ${selected ? 'bg-blue-50/70' : ''}`} aria-label={`Insight for ${event.application_id}`}>
+    <article className={`w-full p-4 text-left ${selected ? 'bg-[#eef7f2]/70' : ''}`} aria-label={`Insight for ${event.application_id}`}>
       <div className="flex items-start gap-3">
         <span className={`mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded ${high ? 'bg-red-50 text-[var(--red)]' : 'bg-amber-50 text-[var(--amber)]'}`}>{high ? <AlertTriangle size={14} /> : <Network size={14} />}</span>
         <div className="min-w-0 flex-1">
@@ -486,7 +486,7 @@ function mapMonitorGraph(graphNodes: GraphNode[], graphEdges: GraphEdge[], focus
         label: (
           <div className="flex items-center gap-2 text-left">
             <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-md ${focus ? 'bg-white/15' : 'bg-white'}`}><Icon size={13} /></span>
-            <span className="min-w-0"><span className="block truncate text-[10px] font-semibold">{focus ? 'Focus customer' : style.label}</span><span className={`block truncate font-mono text-[8px] ${focus ? 'text-blue-100' : 'opacity-65'}`}>{item.id}</span></span>
+            <span className="min-w-0"><span className="block truncate text-[10px] font-semibold">{focus ? 'Focus customer' : style.label}</span><span className={`block truncate font-mono text-[8px] ${focus ? 'text-[#d8eee1]' : 'opacity-65'}`}>{item.id}</span></span>
           </div>
         ),
       },

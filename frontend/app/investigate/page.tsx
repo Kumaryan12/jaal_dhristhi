@@ -69,7 +69,7 @@ export default function InvestigationPage() {
           <label htmlFor="application-id" className="sr-only">Application ID</label>
           <div className="relative min-w-0 flex-1">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input id="application-id" value={applicationId} onChange={(event) => setApplicationId(event.target.value)} placeholder="Enter application ID, e.g. APP-S-005001" autoComplete="off" className="h-10 w-full rounded-md border border-[var(--line)] bg-[var(--subtle)] pl-9 pr-3 text-xs font-medium text-[var(--navy)] placeholder:text-slate-400 focus:border-blue-300 focus:bg-white" />
+            <input id="application-id" value={applicationId} onChange={(event) => setApplicationId(event.target.value)} placeholder="Enter application ID, e.g. APP-S-005001" autoComplete="off" className="h-10 w-full rounded-md border border-[var(--line)] bg-[var(--subtle)] pl-9 pr-3 text-xs font-medium text-[var(--navy)] placeholder:text-slate-400 focus:border-green-400 focus:bg-white" />
           </div>
           <button type="submit" disabled={loading || !applicationId.trim()} className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-[var(--blue)] px-5 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50">Analyse ecosystem <ArrowRight size={14} /></button>
         </form>
@@ -90,7 +90,7 @@ function InvestigationResult({ analysis, explanation }: { analysis: Analysis; ex
   return (
     <div className="space-y-4">
       <div className="flex flex-col justify-between gap-3 rounded-lg border border-[var(--line)] bg-white px-5 py-4 sm:flex-row sm:items-center">
-        <div className="flex items-center gap-4"><span className="grid h-9 w-9 place-items-center rounded-md bg-blue-50 text-[var(--blue)]"><Fingerprint size={17} /></span><div><p className="text-[10px] font-semibold uppercase tracking-[.1em] text-[var(--muted)]">Investigation ID</p><p className="mt-0.5 font-mono text-sm font-semibold text-[var(--navy)]">{analysis.analysis_id}</p></div></div>
+        <div className="flex items-center gap-4"><span className="grid h-9 w-9 place-items-center rounded-md bg-[#eef7f2] text-[var(--blue)]"><Fingerprint size={17} /></span><div><p className="text-[10px] font-semibold uppercase tracking-[.1em] text-[var(--muted)]">Investigation ID</p><p className="mt-0.5 font-mono text-sm font-semibold text-[var(--navy)]">{analysis.analysis_id}</p></div></div>
         <div className="flex items-center gap-3"><span className="text-[11px] text-[var(--muted)]">Application {analysis.application_id}</span><span className="rounded bg-red-50 px-2.5 py-1.5 text-[10px] font-semibold text-red-700">Requires Review</span></div>
       </div>
 
@@ -129,7 +129,7 @@ function InvestigationResult({ analysis, explanation }: { analysis: Analysis; ex
           <div className="divide-y divide-[var(--line)]">
             {analysis.signals.map((signal, index) => <div key={signal.code} className="p-4"><div className="flex gap-3"><span className="grid h-7 w-7 shrink-0 place-items-center rounded bg-red-50 text-[10px] font-bold text-[var(--red)]">{index + 1}</span><div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><p className="text-[11px] font-semibold text-[var(--navy)]">{signal.code.replaceAll('_', ' ')}</p><span className="text-[9px] font-semibold text-[var(--red)]">+{signal.points}</span></div><p className="mt-1.5 text-[11px] leading-5 text-[var(--muted)]">{signal.message}</p>{signal.entity_ids.length > 0 && <p className="mt-2 truncate font-mono text-[9px] text-[var(--blue)]">{signal.entity_ids.join(' · ')}</p>}</div></div></div>)}
           </div>
-          <div className="m-4 rounded-md bg-[var(--navy)] p-4 text-white"><p className="text-[9px] font-bold uppercase tracking-[.1em] text-blue-200">Recommended action</p><h2 className="mt-2 text-base font-semibold">{analysis.recommended_action.label}</h2><p className="mt-2 text-[11px] leading-5 text-slate-300">{analysis.recommended_action.rationale}</p><div className="mt-4 border-t border-white/10 pt-3 text-[10px] text-slate-400">Human authorization required · Policy {analysis.versions.risk_policy}</div></div>
+          <div className="m-4 rounded-md bg-[var(--navy)] p-4 text-white"><p className="text-[9px] font-bold uppercase tracking-[.1em] text-[#bdebd0]">Recommended action</p><h2 className="mt-2 text-base font-semibold">{analysis.recommended_action.label}</h2><p className="mt-2 text-[11px] leading-5 text-slate-300">{analysis.recommended_action.rationale}</p><div className="mt-4 border-t border-white/10 pt-3 text-[10px] text-slate-400">Human authorization required · Policy {analysis.versions.risk_policy}</div></div>
         </aside>
       </section>
     </div>

@@ -110,7 +110,7 @@ export default function AnalyticsPage() {
               type="date"
               value={fromDate}
               onChange={(event) => setFromDate(event.target.value)}
-              className="mt-1.5 h-10 w-full rounded-md border border-[var(--line)] bg-[var(--subtle)] px-3 text-xs font-medium normal-case tracking-normal focus:border-blue-300 focus:bg-white"
+              className="mt-1.5 h-10 w-full rounded-md border border-[var(--line)] bg-[var(--subtle)] px-3 text-xs font-medium normal-case tracking-normal focus:border-green-400 focus:bg-white"
             />
           </label>
           <label className="flex-1 text-[10px] font-bold uppercase tracking-wider text-[var(--muted)]">
@@ -119,7 +119,7 @@ export default function AnalyticsPage() {
               type="date"
               value={toDate}
               onChange={(event) => setToDate(event.target.value)}
-              className="mt-1.5 h-10 w-full rounded-md border border-[var(--line)] bg-[var(--subtle)] px-3 text-xs font-medium normal-case tracking-normal focus:border-blue-300 focus:bg-white"
+              className="mt-1.5 h-10 w-full rounded-md border border-[var(--line)] bg-[var(--subtle)] px-3 text-xs font-medium normal-case tracking-normal focus:border-green-400 focus:bg-white"
             />
           </label>
           <button
@@ -189,11 +189,11 @@ export default function AnalyticsPage() {
                   <div className="mt-6 h-[295px]" aria-label="Dealer cluster bar chart">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={analytics.top_dealer_clusters.slice(0, 8)} layout="vertical" margin={{ left: 15, right: 15 }}>
-                        <CartesianGrid stroke="#e8edf4" strokeDasharray="3 5" horizontal={false} />
+                        <CartesianGrid stroke="#dce8e1" strokeDasharray="3 5" horizontal={false} />
                         <XAxis type="number" axisLine={false} tickLine={false} tick={{ fill: '#7c8799', fontSize: 10 }} />
                         <YAxis type="category" dataKey="dealer_id" axisLine={false} tickLine={false} width={78} tick={{ fill: '#536176', fontSize: 10, fontWeight: 600 }} />
                         <Tooltip cursor={{ fill: '#f5f7fa' }} />
-                        <Bar dataKey="application_count" name="Applications" fill="#cfd9e9" radius={[0, 2, 2, 0]} />
+                        <Bar dataKey="application_count" name="Applications" fill="#acd6bd" radius={[0, 2, 2, 0]} />
                         <Bar dataKey="high_risk_count" name="High risk" fill="#dc2626" radius={[0, 2, 2, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
@@ -215,11 +215,11 @@ export default function AnalyticsPage() {
                 <div className="mt-6 h-[310px]" aria-label="Daily portfolio activity chart">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={daily} margin={{ left: -20, right: 5 }}>
-                      <CartesianGrid stroke="#e8edf4" strokeDasharray="3 5" vertical={false} />
+                      <CartesianGrid stroke="#dce8e1" strokeDasharray="3 5" vertical={false} />
                       <XAxis dataKey="label" axisLine={false} tickLine={false} minTickGap={45} tick={{ fill: '#7c8799', fontSize: 9 }} />
                       <YAxis axisLine={false} tickLine={false} tick={{ fill: '#7c8799', fontSize: 10 }} />
                       <Tooltip />
-                      <Area type="monotone" dataKey="application_count" name="Applications" stroke="#0057a8" fill="#dbeafe" fillOpacity={0.7} strokeWidth={2} />
+                      <Area type="monotone" dataKey="application_count" name="Applications" stroke="#174c82" fill="#e7f3ec" fillOpacity={0.7} strokeWidth={2} />
                       <Area type="monotone" dataKey="high_risk_count" name="High risk" stroke="#dc2626" fill="transparent" strokeWidth={2} />
                     </AreaChart>
                   </ResponsiveContainer>

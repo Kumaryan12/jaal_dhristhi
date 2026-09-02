@@ -18,12 +18,14 @@ describe('shared UI states', () => {
     expect(screen.getByText('HIGH')).toBeVisible();
   });
 
-  it('uses the TVS-branded shell without transient status and date chrome', () => {
+  it('uses the TVS Credit shell without transient status and date chrome', () => {
     render(<AppShell activePath="/"><p>Workspace content</p></AppShell>);
 
     expect(screen.getAllByText('TVS')).not.toHaveLength(0);
     expect(screen.getAllByText('Credit')).not.toHaveLength(0);
-    expect(screen.getAllByRole('link', { name: 'Live Monitor' }).every((link) => link.getAttribute('aria-current') === 'page')).toBe(true);
+    const activeLinks = screen.getAllByRole('link', { name: 'Live Monitor' });
+    expect(activeLinks.every((link) => link.getAttribute('aria-current') === 'page')).toBe(true);
+    expect(activeLinks.every((link) => link.className.includes('border-[var(--green)]'))).toBe(true);
     expect(screen.queryByText('System status')).not.toBeInTheDocument();
     expect(screen.queryByText('Live stream active')).not.toBeInTheDocument();
     expect(screen.queryByText('01 Aug – 31 Aug 2026')).not.toBeInTheDocument();

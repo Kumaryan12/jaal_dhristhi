@@ -40,16 +40,16 @@ type GraphEdge = NetworkGraph['edges'][number];
 type ViewMode = 'signals' | 'full';
 
 const typeStyle = {
-  customer: { color: '#0057a8', background: '#eff6ff', icon: CircleUserRound, label: 'Customer' },
-  device: { color: '#0b1f3a', background: '#f3f4f6', icon: Smartphone, label: 'Device' },
-  account: { color: '#00843d', background: '#f0fdf4', icon: Landmark, label: 'Account' },
+  customer: { color: '#174c82', background: '#edf4f8', icon: CircleUserRound, label: 'Customer' },
+  device: { color: '#10483f', background: '#f1f6f4', icon: Smartphone, label: 'Device' },
+  account: { color: '#108a43', background: '#eef7f2', icon: Landmark, label: 'Account' },
   dealer: { color: '#d97706', background: '#fffbeb', icon: Building2, label: 'Dealer' },
   location: { color: '#6b7280', background: '#f9fafb', icon: LocateFixed, label: 'Location' },
 };
 
 const edgeColors: Record<string, string> = {
-  uses_device: '#0b1f3a',
-  linked_account: '#00843d',
+  uses_device: '#10483f',
+  linked_account: '#108a43',
   applied_via: '#d97706',
   located_in: '#9ca3af',
 };
@@ -131,7 +131,7 @@ export function NetworkExplorer() {
               value={customerId}
               onChange={(event) => setCustomerId(event.target.value)}
               placeholder="Customer ID, e.g. CUS-S-005001"
-              className="h-10 w-full rounded-md border border-[var(--line)] bg-[var(--subtle)] pl-10 pr-3 text-xs font-medium focus:border-blue-300 focus:bg-white"
+              className="h-10 w-full rounded-md border border-[var(--line)] bg-[var(--subtle)] pl-10 pr-3 text-xs font-medium focus:border-green-400 focus:bg-white"
             />
           </label>
           <label htmlFor="network-depth" className="relative">
@@ -140,7 +140,7 @@ export function NetworkExplorer() {
               id="network-depth"
               value={depth}
               onChange={(event) => setDepth(Number(event.target.value))}
-              className="h-10 w-full appearance-none rounded-md border border-[var(--line)] bg-[var(--subtle)] px-3 pt-3 text-xs font-semibold focus:border-blue-300 focus:bg-white"
+              className="h-10 w-full appearance-none rounded-md border border-[var(--line)] bg-[var(--subtle)] px-3 pt-3 text-xs font-semibold focus:border-green-400 focus:bg-white"
             >
               <option value={1}>1 hop</option>
               <option value={2}>2 hops</option>
@@ -177,7 +177,7 @@ export function NetworkExplorer() {
                 <section className="overflow-hidden rounded-lg border border-[var(--line)] bg-white" aria-label="Interactive customer ecosystem graph">
                   <div className="flex flex-col gap-3 border-b border-[var(--line)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="grid h-8 w-8 place-items-center rounded-md bg-blue-50 text-[var(--blue)]"><Layers3 size={15} /></span>
+                      <span className="grid h-8 w-8 place-items-center rounded-md bg-[#eef7f2] text-[var(--blue)]"><Layers3 size={15} /></span>
                       <div>
                         <h2 className="text-sm font-semibold text-[var(--navy)]">Evidence map</h2>
                         <p className="mt-0.5 text-[10px] text-[var(--muted)]">
@@ -263,7 +263,7 @@ function NetworkBrief({ network, evidence }: { network: NetworkGraph; evidence: 
         <BriefFact label="Shared evidence entities" value={sharedEntityCount.toLocaleString('en-IN')} />
         <BriefFact label="Community" value={network.summary.community_id} mono />
       </div>
-      <div className="flex items-start gap-3 border-t border-blue-100 bg-blue-50 px-4 py-3">
+      <div className="flex items-start gap-3 border-t border-[#cfe5d8] bg-[#eef7f2] px-4 py-3">
         <span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-md bg-[var(--blue)] text-white"><Link2 size={13} /></span>
         <div>
           <p className="text-[9px] font-bold uppercase tracking-[.1em] text-[var(--blue)]">What this graph proves</p>
@@ -416,7 +416,7 @@ function mapGraph(nodes: GraphNode[], graphEdges: GraphEdge[], focusId: string, 
     const label = (
       <div className="flex items-center gap-2 text-left">
         <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-md ${focus ? 'bg-white/15' : 'bg-white'}`}><Icon size={13} /></span>
-        <span className="min-w-0"><span className="block truncate text-[10px] font-semibold">{focus ? 'Focus customer' : style.label}</span><span className={`block truncate font-mono text-[8px] ${focus ? 'text-blue-100' : 'opacity-65'}`}>{item.id}</span></span>
+        <span className="min-w-0"><span className="block truncate text-[10px] font-semibold">{focus ? 'Focus customer' : style.label}</span><span className={`block truncate font-mono text-[8px] ${focus ? 'text-[#d8eee1]' : 'opacity-65'}`}>{item.id}</span></span>
       </div>
     );
     return {

@@ -37,9 +37,9 @@ import { simulateEmergingRisk } from '../../lib/api';
 import type { DemoSimulation, DemoRiskSnapshot } from '../../lib/types';
 
 const nodeStyle: Record<string, { background: string; border: string; color: string }> = {
-  focus_customer: { background: '#0057a8', border: '#0057a8', color: '#fff' },
-  applicant: { background: '#eff6ff', border: '#0057a8', color: '#0b1f3a' },
-  shared_device: { background: '#f3f4f6', border: '#0b1f3a', color: '#0b1f3a' },
+  focus_customer: { background: '#174c82', border: '#174c82', color: '#fff' },
+  applicant: { background: '#edf4f8', border: '#174c82', color: '#10483f' },
+  shared_device: { background: '#f1f6f4', border: '#10483f', color: '#10483f' },
   dealer: { background: '#fffbeb', border: '#d97706', color: '#92400e' },
 };
 
@@ -106,7 +106,7 @@ export default function DemoPage() {
             <ErrorPanel message={error} />
           ) : !simulation ? (
             <section className="panel grid min-h-[240px] place-items-center text-center">
-              <div className="max-w-xl"><span className="mx-auto grid h-11 w-11 place-items-center rounded-md bg-blue-50 text-[var(--blue)]"><GitCompareArrows size={19} /></span><h2 className="mt-4 text-lg font-semibold text-[var(--navy)]">Simulation ready</h2><p className="mt-2 text-sm leading-6 text-[var(--muted)]">Start the scenario to generate applications, resolve relationships, assemble the graph, evaluate temporal behaviour, and calculate the recommended action.</p></div>
+              <div className="max-w-xl"><span className="mx-auto grid h-11 w-11 place-items-center rounded-md bg-[#eef7f2] text-[var(--blue)]"><GitCompareArrows size={19} /></span><h2 className="mt-4 text-lg font-semibold text-[var(--navy)]">Simulation ready</h2><p className="mt-2 text-sm leading-6 text-[var(--muted)]">Start the scenario to generate applications, resolve relationships, assemble the graph, evaluate temporal behaviour, and calculate the recommended action.</p></div>
             </section>
           ) : (
             <SimulationResult simulation={simulation} />
@@ -127,7 +127,7 @@ function SimulationResult({ simulation }: { simulation: DemoSimulation }) {
       <section className="grid gap-4 lg:grid-cols-[1fr_auto_1fr] lg:items-stretch">
         <RiskStateCard stage="Before" context="Individual application view" snapshot={simulation.before} customer="Customer A" />
         <div className="grid place-items-center text-[var(--blue)]" aria-hidden="true">
-          <span className="grid h-11 w-11 rotate-90 place-items-center rounded-full border border-blue-100 bg-blue-50 lg:rotate-0">
+          <span className="grid h-11 w-11 rotate-90 place-items-center rounded-full border border-[#cfe5d8] bg-[#eef7f2] lg:rotate-0">
             <ArrowRight size={19} />
           </span>
         </div>
@@ -149,8 +149,8 @@ function SimulationResult({ simulation }: { simulation: DemoSimulation }) {
                 <h2 className="panel-title">The relationships behind the transition</h2>
               </div>
               <div className="flex flex-wrap gap-3 text-[9px] font-bold uppercase tracking-wider text-[var(--muted)]">
-                <GraphLegend color="#0057a8" label="Applicants" />
-                <GraphLegend color="#0b1f3a" label="Shared device" />
+                <GraphLegend color="#174c82" label="Applicants" />
+                <GraphLegend color="#10483f" label="Shared device" />
                 <GraphLegend color="#d97706" label="Dealer" />
               </div>
             </div>
@@ -185,7 +185,7 @@ function SimulationResult({ simulation }: { simulation: DemoSimulation }) {
           <div className="mt-6 divide-y divide-white/10">
             {simulation.explanations.slice(0, 5).map((signal, index) => (
               <div key={signal.code} className="flex gap-3 py-4 first:pt-0">
-                <span className="grid h-7 w-7 shrink-0 place-items-center rounded bg-white/10 text-[10px] font-bold text-blue-200">
+                <span className="grid h-7 w-7 shrink-0 place-items-center rounded bg-white/10 text-[10px] font-bold text-[#bdebd0]">
                   {index + 1}
                 </span>
                 <div>
@@ -202,7 +202,7 @@ function SimulationResult({ simulation }: { simulation: DemoSimulation }) {
         </aside>
       </section>
 
-      <section className="overflow-hidden rounded-lg border border-blue-200 bg-blue-50 p-5">
+      <section className="overflow-hidden rounded-lg border border-[#b9ddc7] bg-[#eef7f2] p-5">
         <div className="grid gap-5 lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:items-center">
           <span className="grid h-10 w-10 place-items-center rounded-md bg-[var(--blue)] text-white"><Lightbulb size={18} /></span>
           <div>
@@ -231,7 +231,7 @@ function PresentationCompass({ complete }: { complete: boolean }) {
   return (
     <section className="mt-5 grid gap-px overflow-hidden rounded-lg border border-[var(--line)] bg-[var(--line)] sm:grid-cols-5" aria-label="Simulation stages">
       {beats.map((beat, index) => (
-        <div key={beat.label} className={`flex items-center gap-3 px-3 py-3 ${complete || index === 0 ? 'bg-blue-50' : 'bg-white'}`}>
+        <div key={beat.label} className={`flex items-center gap-3 px-3 py-3 ${complete || index === 0 ? 'bg-[#eef7f2]' : 'bg-white'}`}>
           <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-full text-[10px] font-extrabold ${complete ? 'bg-[var(--green)] text-white' : index === 0 ? 'bg-[var(--blue)] text-white' : 'bg-white text-slate-400'}`}>{complete ? '✓' : index + 1}</span>
           <div><p className="text-[9px] font-semibold uppercase tracking-[.06em] text-[var(--navy)]">{beat.label}</p><p className="mt-0.5 text-[9px] leading-4 text-[var(--muted)]">{beat.detail}</p></div>
         </div>
@@ -258,7 +258,7 @@ function ProcessReveal({ simulation }: { simulation: DemoSimulation }) {
       <div className="mt-4 grid gap-px overflow-hidden rounded-md border border-[var(--line)] bg-[var(--line)] sm:grid-cols-2 xl:grid-cols-5">
         {stages.map(({ icon: Icon, label, value, note }, index) => (
           <article key={label} className="relative bg-white p-4">
-            <div className="flex items-center justify-between"><span className="grid h-8 w-8 place-items-center rounded-md bg-blue-50 text-[var(--blue)]"><Icon size={15} /></span><span className="text-[9px] font-semibold text-slate-400">0{index + 1}</span></div>
+            <div className="flex items-center justify-between"><span className="grid h-8 w-8 place-items-center rounded-md bg-[#eef7f2] text-[var(--blue)]"><Icon size={15} /></span><span className="text-[9px] font-semibold text-slate-400">0{index + 1}</span></div>
             <p className="mt-3 text-[9px] font-semibold uppercase tracking-wider text-[var(--muted)]">{label}</p>
             <p className="mt-1 text-sm font-bold text-[var(--navy)]">{value}</p>
             <p className="mt-1 text-[10px] leading-4 text-[var(--muted)]">{note}</p>
@@ -304,7 +304,7 @@ function StateFact({ label, value }: { label: string; value: number }) {
 }
 
 function EvidenceCard({ icon: Icon, label, value, detail, why }: { icon: typeof Smartphone; label: string; value: string; detail: string; why: string }) {
-  return <article className="panel"><div className="flex items-center gap-3"><span className="grid h-9 w-9 place-items-center rounded-md bg-blue-50 text-[var(--blue)]"><Icon size={16} /></span><div><p className="text-[10px] font-bold uppercase tracking-wider text-[var(--muted)]">{label}</p><p className="mt-1 text-base font-bold text-[var(--navy)]">{value}</p></div></div><p className="mt-4 text-xs leading-5 text-[var(--ink)]">{why}</p><p className="mt-3 truncate border-t border-[var(--line)] pt-3 font-mono text-[10px] text-[var(--muted)]" title={detail}>{detail}</p></article>;
+  return <article className="panel"><div className="flex items-center gap-3"><span className="grid h-9 w-9 place-items-center rounded-md bg-[#eef7f2] text-[var(--blue)]"><Icon size={16} /></span><div><p className="text-[10px] font-bold uppercase tracking-wider text-[var(--muted)]">{label}</p><p className="mt-1 text-base font-bold text-[var(--navy)]">{value}</p></div></div><p className="mt-4 text-xs leading-5 text-[var(--ink)]">{why}</p><p className="mt-3 truncate border-t border-[var(--line)] pt-3 font-mono text-[10px] text-[var(--muted)]" title={detail}>{detail}</p></article>;
 }
 
 function GraphLegend({ color, label }: { color: string; label: string }) {
@@ -343,7 +343,7 @@ function mapDemoGraph(simulation: DemoSimulation): { nodes: Node[]; edges: Edge[
     target: item.target,
     label: item.type === 'uses_device' ? 'shared device' : 'same dealer',
     labelStyle: { fontSize: 8, fill: '#6f7b8f', fontWeight: 600 },
-    style: { stroke: item.type === 'uses_device' ? '#0b1f3a' : '#d97706', strokeWidth: 1.4 },
+    style: { stroke: item.type === 'uses_device' ? '#10483f' : '#d97706', strokeWidth: 1.4 },
   } satisfies Edge));
   return { nodes, edges };
 }
