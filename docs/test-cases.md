@@ -31,13 +31,13 @@ Backend/cross-layer count at the Phase 10 candidate: **64 passing tests**.
 |---|---|---|
 | Typed API client | dashboard GET, stable errors, encoded network query, simulation POST | Requests use the configured base URL, bounded parameters, and deterministic seed body |
 | Hosted demo API | dashboard snapshot, bounded monitor validation, simulation, missing application | Production presentation mode remains complete without browser-local or external API dependencies |
-| Shared UI | risk labels and metric presentation | Risk semantics and portfolio figures render consistently |
+| Shared UI | risk labels, metric presentation, TVS-branded shell, removed transient status chrome | Risk semantics and portfolio figures render consistently within the approved product shell |
 | Live monitor | activity stream, manually selected customer graph, selection lock, graph projection, review status, portfolio context, investigation handoff | New activity appears without moving the graph; only an explicit Application Stream selection changes its ecosystem |
 | Investigation | honest empty state, submit, explanation, action, network handoff | No result is invented before the API responds; evidence and navigation use returned identifiers |
 | Network Intelligence | Signal view, low-specificity noise suppression, evidence narrative, Full graph control | The default graph prioritizes shared device/account/dealer context while preserving access to every returned node |
 | Demo mode | explicit initial action, presentation view, LOW-to-HIGH rendering, process trace, evidence, network, isolation notice | One click renders the backend response, exposes the complete intelligence path, and never substitutes browser-side scoring |
 
-Frontend count at the Phase 10 candidate: **20 passing tests**.
+Frontend count at the Phase 10 candidate: **21 passing tests**.
 
 ## Verification commands
 

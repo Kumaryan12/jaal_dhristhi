@@ -1,17 +1,17 @@
 @import 'tailwindcss';
 
 :root {
-  --canvas: #f7f8fa;
-  --subtle: #f7f8fa;
-  --ink: #111827;
-  --muted: #6b7280;
-  --navy: #0b1f3a;
-  --blue: #0057a8;
-  --aqua: #0057a8;
+  --canvas: #f4f7fb;
+  --subtle: #f6f8fc;
+  --ink: #111b2e;
+  --muted: #667085;
+  --navy: #071b4a;
+  --blue: #1246a0;
+  --aqua: #1246a0;
   --green: #00843d;
-  --red: #dc2626;
+  --red: #d71920;
   --amber: #d97706;
-  --line: #e5e7eb;
+  --line: #dfe5ef;
 }
 
 @theme inline {
@@ -31,18 +31,36 @@ body {
 }
 button, a { -webkit-tap-highlight-color: transparent; }
 button:focus-visible, a:focus-visible, input:focus-visible {
-  outline: 3px solid rgba(27, 98, 255, .25);
+  outline: 3px solid rgba(18, 70, 160, .24);
   outline-offset: 2px;
 }
+.tvs-brand-rule {
+  height: 4px;
+  background: linear-gradient(90deg, var(--blue) 0 68%, var(--red) 68% 100%);
+}
+.tvs-brand-mark {
+  position: relative;
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, .08);
+}
+.tvs-brand-mark::after {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  border-radius: inherit;
+  background: var(--red);
+  content: '';
+}
+.tvs-wordmark span { color: var(--red); font-style: italic; }
+.tvs-wordmark strong { color: var(--blue); font-style: normal; }
 .metric-card {
   position: relative;
   overflow: hidden;
   min-height: 142px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 6px;
   background: #fff;
   padding: 16px;
-  box-shadow: none;
+  box-shadow: 0 6px 18px rgba(7, 27, 74, .035);
 }
 .metric-icon { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 11px; }
 .metric-icon-blue { color: #1b62ff; background: #eaf0ff; }
@@ -51,10 +69,10 @@ button:focus-visible, a:focus-visible, input:focus-visible {
 .metric-icon-green { color: #078b67; background: #e2f7f0; }
 .panel {
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 6px;
   background: #fff;
   padding: clamp(16px, 2vw, 22px);
-  box-shadow: none;
+  box-shadow: 0 6px 18px rgba(7, 27, 74, .035);
 }
 .eyebrow { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--blue); }
 .panel-title { margin-top: 4px; font-size: 18px; font-weight: 650; letter-spacing: -.015em; color: var(--navy); }
