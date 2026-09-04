@@ -21,9 +21,10 @@ This catalog maps the automated suite to product behavior and risk controls. Exa
 | API contract | OpenAPI paths, request IDs, validation, stable errors, bounded reads | Invalid input returns safe machine-readable envelopes without echoing sensitive values |
 | Live monitor | bounded event count, scored records, entity identifiers, operational statuses | The activity feed is backend-derived and rejects out-of-range limits |
 | Demo mode | LOW-to-HIGH transition, evidence codes, unique namespaces, active-state isolation | Each run is computed, repeatable by seed, separately namespaced, and non-mutating |
+| Prototype validation | measured baseline comparison, metric arithmetic, staged detection, protected artifact | Seed-2026 results remain reproducible and unsupported presentation figures cannot replace measured counts |
 | End-to-end journey | populated portfolio plus Phase 9 mutation through ASGI | The demo escalates Customer A while portfolio metrics remain unchanged |
 
-Backend/cross-layer count at the Phase 10 candidate: **64 passing tests**.
+Current backend/cross-layer count: **68 passing tests**.
 
 ## Frontend coverage
 

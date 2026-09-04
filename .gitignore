@@ -18,6 +18,7 @@ data/processed/*
 !data/processed/graph-intelligence-summary.json
 !data/processed/temporal-intelligence-summary.json
 !data/processed/risk-intelligence-summary.json
+!data/processed/prototype-validation-summary.json
 models/*.joblib
 models/*.json
 !models/ml-training-summary.json

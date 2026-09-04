@@ -142,10 +142,30 @@ The standard seed (`2026`) produces:
 | Suspicious ecosystems | 100 |
 | Suspicious applications | 588 |
 | Pattern families | 4 |
-| Backend and cross-layer tests | 64 passing |
+| Backend and cross-layer tests | 68 passing |
 | Frontend tests | 23 passing |
 
 The four generated pattern families are shared-device rings, shared-account rings, dealer bursts, and mixed-identity rings. Dataset manifests include the seed, generator version, row counts, and SHA-256 hashes so the portfolio can be regenerated and audited.
+
+## Measured prototype validation
+
+The repository now includes a reproducible terminal benchmark against a transparent application-only reference screen. These are measured seed-2026 synthetic results—not assumed presentation figures and not production performance claims.
+
+| Metric | Application-only baseline | JaalDrishti |
+|---|---:|---:|
+| Suspicious-application recall | 23.30% | **82.99%** |
+| False-positive rate | 18.26% | **0.00%** |
+| Applications stepped up | 18.79% | **8.73%** |
+| High-confidence ecosystem recall | N/A | **93.00%** |
+| Median ecosystem detection point | N/A | **Application 4** |
+
+```bash
+.venv/bin/jaal-validate-prototype \
+  --output data/processed/prototype-validation-summary.json \
+  --replace
+```
+
+Every printed percentage includes its numerator and denominator. Read the [benchmark definitions, limitations, and complete result](docs/prototype-validation.md) before quoting these values.
 
 ## Technology
 
@@ -257,6 +277,7 @@ All bundled records are synthetic. JaalDrishti provides **risk intelligence**, n
 - [Data model and feature contract](docs/data-model.md)
 - [API contract](docs/api-contract.md)
 - [Test-case catalog](docs/test-cases.md)
+- [Prototype validation benchmark](docs/prototype-validation.md)
 - [Implementation phase record](docs/phase-plan.md)
 
 ---

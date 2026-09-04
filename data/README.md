@@ -117,3 +117,16 @@ Bulk assessment files are ignored by Git; the compact checksum summary is commit
 ```
 
 The training command rebuilds the approved 38-feature matrix, creates deterministic ecosystem-grouped train/validation/test splits, compares all three Phase 6 candidates, persists the selected local model, and regenerates risk assessments with versioned ML probabilities. See `models/README.md` for the artifact contract.
+
+## Validate the prototype against an application-only baseline
+
+```bash
+.venv/bin/jaal-validate-prototype \
+  --seed 2026 \
+  --normal-applications 5000 \
+  --suspicious-ecosystems 100 \
+  --output data/processed/prototype-validation-summary.json \
+  --replace
+```
+
+The command prints the measured comparison in the terminal and writes an optional compact JSON report. The committed seed-2026 artifact contains definitions, confusion-matrix counts, rates, and staged ecosystem-detection timing. See `docs/prototype-validation.md` for interpretation boundaries.

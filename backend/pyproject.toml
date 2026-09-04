@@ -28,6 +28,7 @@ jaal-analyze-graph = "app.services.graph_intelligence.cli:main"
 jaal-analyze-temporal = "app.services.temporal_intelligence.cli:main"
 jaal-score-risk = "app.services.risk_intelligence.cli:main"
 jaal-train-ml = "app.services.ml.cli:main"
+jaal-validate-prototype = "app.services.prototype_validation.cli:main"
 jaal-api = "app.cli:main"
 
 [tool.setuptools.packages.find]

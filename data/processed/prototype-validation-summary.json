@@ -1,0 +1,44 @@
+{
+  "baseline": {
+    "false_negatives": 451,
+    "false_positive_rate": 0.1826,
+    "false_positives": 913,
+    "normal_applications": 5000,
+    "step_up_rate": 0.187903,
+    "stepped_up_applications": 1050,
+    "suspicious_application_recall": 0.232993,
+    "suspicious_applications": 588,
+    "true_negatives": 4087,
+    "true_positives": 137
+  },
+  "baseline_definition": "Application-only reference screen: credit score below 600 OR loan-to-income at least 0.75.",
+  "benchmark_version": "1.0.0",
+  "dataset_id": "jaaldrishti-seed-2026",
+  "decision_threshold": "HIGH / enhanced verification",
+  "ecosystem_detection": {
+    "detected_ecosystems": 93,
+    "detection_point_distribution": {
+      "4": 75,
+      "5": 18
+    },
+    "ecosystem_recall": 0.93,
+    "mean_detection_application": 4.19,
+    "median_detection_application": 4.0,
+    "total_ecosystems": 100
+  },
+  "evaluation_scope": "Deterministic synthetic benchmark; ground truth is used only after scoring and the results are not production fraud-performance claims.",
+  "jaaldrishti": {
+    "false_negatives": 100,
+    "false_positive_rate": 0.0,
+    "false_positives": 0,
+    "normal_applications": 5000,
+    "step_up_rate": 0.08733,
+    "stepped_up_applications": 488,
+    "suspicious_application_recall": 0.829932,
+    "suspicious_applications": 588,
+    "true_negatives": 5000,
+    "true_positives": 488
+  },
+  "jaaldrishti_definition": "Explainable rules plus graph and point-in-time temporal intelligence; no repayment outcomes, model probability, or ground-truth fields are inputs.",
+  "seed": 2026
+}
